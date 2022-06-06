@@ -17,6 +17,7 @@
 
 # misc
 .DS_Store
+firebase-debug.log
 
 # dependencies
 node_modules
