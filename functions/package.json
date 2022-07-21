@@ -4,31 +4,41 @@
     "lint": "eslint --ext .js,.ts .",
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "serve": "npm run build && firebase emulators:start --only functions",
+    "serve": "npm run build && npm run build:watch & firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "test": "mocha --reporter spec"
+    "testbackup": "mocha --reporter spec",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "engines": {
     "node": "16"
   },
   "main": "lib/index.js",
   "dependencies": {
-    "cap-ts": "^0.2.0",
+    "axios": "^0.27.2",
+    "cap-ts": "git+https://github.com/philgresh/cap-ts#5850b89",
+    "fast-xml-parser": "^4.0.9",
     "firebase-admin": "^10.0.2",
-    "firebase-functions": "^3.18.0"
+    "firebase-functions": "^3.22.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.18.2",
+    "@babel/preset-env": "^7.18.2",
+    "@babel/preset-typescript": "^7.17.12",
     "@typescript-eslint/eslint-plugin": "^5.12.0",
     "@typescript-eslint/parser": "^5.12.0",
+    "babel-jest": "^28.1.1",
     "eslint": "^8.9.0",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-import": "^2.25.4",
     "firebase-functions-test": "^0.2.3",
     "mocha": "^10.0.0",
-    "typescript": "^4.5.4"
+    "ts-node": "^10.8.1",
+    "typescript": "^4.5.4",
+    "wait-for-expect": "^3.0.2"
   },
   "private": true
 }
