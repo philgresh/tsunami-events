@@ -1,16 +1,11 @@
 import axios from 'axios';
 import { CAP_1_2 } from 'cap-ts';
-import { XMLParser, X2jOptionsOptional } from 'fast-xml-parser';
+import { XMLParser } from 'fast-xml-parser';
 import * as functions from 'firebase-functions';
+import { FEED_PARSER_OPTIONS, NTWC_TSUNAMI_FEED_URL, GENERIC_ERROR_MSG } from './constants';
 import type { AtomFeed, Entry, ErrorResp, ParsedAtomFeed } from './types';
 
-const NTWC_TSUNAMI_FEED_URL = 'https://www.tsunami.gov/events/xml/PAAQAtom.xml';
-const GENERIC_ERROR_MSG = 'Error trying to fetch or parse the XML document.';
-const feedAlwaysArray = new Set(['feed.entry', 'feed.entry.link']);
-const feedParserOptions: X2jOptionsOptional = {
-  ignoreAttributes: false,
-  isArray: (_name, jpath) => feedAlwaysArray.has(jpath),
-};
+const feedParser = new XMLParser(FEED_PARSER_OPTIONS);
 
 /**
  * `getLinkForCapDocument` returns the link to the CAP XML document if it exists on the entry.
@@ -39,7 +34,13 @@ export const handleError = (errorResp: ErrorResp) => {
 /**
  * `fetchXMLDocument` fetches an XML document given a URL.
  */
-const fetchXMLDocument = async (url: string): Promise<string> => {
+export const fetchXMLDocument = async (url: string): Promise<string> => {
+  if (!url)
+    return handleError({
+      message: 'Unable to fetch XML document: no URL parameter given',
+      statusCode: 'internal',
+    });
+
   try {
     const resp = await axios.get(url, {
       responseType: 'text',
@@ -48,25 +49,26 @@ const fetchXMLDocument = async (url: string): Promise<string> => {
 
     if (resp?.status !== 200)
       return handleError({
-        message: `Unable to fetch NTWC Tsunami feed: received status '${resp?.status}' (${resp?.statusText})`,
+        message: `received status '${resp?.status}' (${resp?.statusText})`,
         statusCode: 'unavailable',
         data: resp,
       });
 
     if (!resp?.data)
       return handleError({
-        message: 'Unable to fetch NTWC Tsunami feed: no data received',
+        message: 'no data received',
         statusCode: 'unavailable',
         data: resp,
       });
 
     functions.logger.log(`XML successfully fetched from ${url}`);
     return Promise.resolve(resp.data);
-  } catch (err) {
-    return handleError({
-      message: `Unable to fetch NTWC Tsunami feed: ${err}`,
-      statusCode: 'internal',
+  } catch (err: any) {
+    return Promise.reject({
+      message: `Unable to fetch XML document: ${err?.message}`,
+      statusCode: err?.statusCode ?? 'internal',
       data: err,
+      ...err,
     });
   }
 };
@@ -76,8 +78,7 @@ const fetchXMLDocument = async (url: string): Promise<string> => {
  */
 const parseAtomFeed = async (xmlStr: string): Promise<ParsedAtomFeed> => {
   try {
-    const parser = new XMLParser(feedParserOptions);
-    const atomFeed: AtomFeed = parser.parse(xmlStr);
+    const atomFeed: AtomFeed = feedParser.parse(xmlStr);
     const feedEvent = atomFeed.feed;
 
     const parsedAtomFeed: ParsedAtomFeed = {

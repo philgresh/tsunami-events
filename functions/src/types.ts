@@ -1,3 +1,5 @@
+import type { https } from 'firebase-functions';
+
 type XMLLink = {
   '@_type': string;
   '@_rel': string;
@@ -28,7 +30,7 @@ export type AtomFeed = {
 };
 
 export type ErrorResp = {
-  statusCode?: number;
+  statusCode?: https.FunctionsErrorCode;
   message?: string;
   data?: any;
 };

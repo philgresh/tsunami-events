@@ -29,6 +29,7 @@ coverage
 
 # production
 build
+.serviceAccountKey.json
 
 # misc
 .DS_Store

@@ -1,5 +1,8 @@
+import { AxiosResponse } from 'axios';
 import * as functions from 'firebase-functions';
-import { getLinkForCapDocument, handleError } from '../src/CAPdocument';
+import mockAxios from 'jest-mock-axios';
+import { fetchXMLDocument, getLinkForCapDocument, handleError } from '../src/CAPdocument';
+import { NTWC_TSUNAMI_FEED_URL } from '../src/constants';
 import type { Entry, ErrorResp } from '../src/types';
 
 const defaultEntry: Entry = {
@@ -61,8 +64,8 @@ describe('handleError', () => {
     data: errDetails,
   };
 
+  /** `testHandleError` is a test-only helper that catches and returns an Error thrown from `handleError` */
   const testHandleError = (errorRespOverride?: Partial<ErrorResp>): functions.https.HttpsError | undefined => {
-    let error: Error;
     try {
       handleError({
         ...defaultErrorResp,
@@ -92,5 +95,68 @@ describe('handleError', () => {
   it('falls back to the `internal` status if a `statusCode` is not given', () => {
     const err = testHandleError({ statusCode: undefined });
     expect(err?.code).toBe('internal');
+  });
+});
+
+describe('fetchXMLDocument', () => {
+  const successfulData =
+    '<?xml version="1.0" encoding="UTF-8"?>\n <feed xmlns="http://www.w3.org/2005/Atom" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:georss="http://www.georss.org/georss"></feed>';
+
+  afterEach(() => {
+    mockAxios.reset();
+  });
+
+  /** `testFetchXMLDocument` is a test-only helper that returns an object rather than a Promise. */
+  const testFetchXMLDocument = async (urlArg: string) =>
+    fetchXMLDocument(urlArg)
+      .then((xmlDoc) => ({
+        xmlDoc,
+        err: undefined,
+      }))
+      .catch((err) => ({
+        xmlDoc: undefined,
+        err,
+      }));
+
+  it('should return a rejected Promise if a URL parameter is not given', async () => {
+    const { xmlDoc, err } = await testFetchXMLDocument('');
+    expect(xmlDoc).toBeUndefined();
+    expect(err?.message).toBe('Unable to fetch XML document: no URL parameter given');
+  });
+
+  it('should return a rejected Promise if the response status is not 200', async () => {
+    const mockResp: Partial<AxiosResponse> = {
+      status: 404,
+      statusText: 'Not found',
+    };
+    mockAxios.get.mockResolvedValueOnce(mockResp);
+
+    const { xmlDoc, err } = await testFetchXMLDocument('https://www.not-a-real-url.com');
+    expect(xmlDoc).toBeUndefined();
+    expect(err?.message).toBe("Unable to fetch XML document: received status '404' (Not found)");
+  });
+
+  it('should return a rejected Promise if the response `data` is not received', async () => {
+    const mockResp: Partial<AxiosResponse> = {
+      status: 200,
+      data: undefined,
+    };
+    mockAxios.get.mockResolvedValueOnce(mockResp);
+
+    const { xmlDoc, err } = await testFetchXMLDocument(NTWC_TSUNAMI_FEED_URL);
+    expect(xmlDoc).toBeUndefined();
+    expect(err?.message).toBe('Unable to fetch XML document: no data received');
+  });
+
+  it('should return a Promise with an XML document as the resolved value', async () => {
+    const mockResp = {
+      status: 200,
+      data: successfulData,
+    };
+    mockAxios.get.mockResolvedValueOnce(mockResp);
+
+    const { xmlDoc, err } = await testFetchXMLDocument(NTWC_TSUNAMI_FEED_URL);
+    expect(err).toBeUndefined();
+    expect(xmlDoc).toBe(successfulData);
   });
 });
