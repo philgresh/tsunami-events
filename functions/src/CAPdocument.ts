@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { CAP_1_2 } from 'cap-ts';
-// import { CAP_1_2 } from 'cap-ts';
 import { XMLParser, X2jOptionsOptional } from 'fast-xml-parser';
 import * as functions from 'firebase-functions';
 import type { AtomFeed, Entry, ErrorResp, ParsedAtomFeed } from './types';
@@ -13,7 +12,11 @@ const feedParserOptions: X2jOptionsOptional = {
   isArray: (_name, jpath) => feedAlwaysArray.has(jpath),
 };
 
-const getCAPXMLURL = (entry: Entry): string => {
+/**
+ * `getLinkForCapDocument` returns the link to the CAP XML document if it exists on the entry.
+ * It returns an empty string if none is found.
+ */
+export const getLinkForCapDocument = (entry?: Entry): string => {
   for (const link of entry?.link ?? []) {
     if (link?.['@_type'] === 'application/cap+xml') return link?.['@_href'] ?? '';
   }
@@ -76,7 +79,7 @@ const parseAtomFeed = async (xmlStr: string): Promise<ParsedAtomFeed> => {
     };
 
     (feedEvent?.entry ?? []).forEach((entry) => {
-      const entryCopy: Entry = { ...entry, capXMLURL: getCAPXMLURL(entry) };
+      const entryCopy: Entry = { ...entry, capXMLURL: getLinkForCapDocument(entry) };
 
       parsedAtomFeed.entries.push(entryCopy);
       functions.logger.log(`Successfully parsed entry for feed ID:'${feedEvent.id}'`, { entry: entryCopy });
