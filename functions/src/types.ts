@@ -36,7 +36,6 @@ export type ErrorResp = {
 };
 
 export type ParsedAtomFeed = {
-  parsedFeed: FeedEvent;
   feedID: string;
   entries: Array<Entry>;
 };

@@ -8,4 +8,9 @@ export const FEED_PARSER_OPTIONS: X2jOptionsOptional = {
   ignoreAttributes: false,
   /* jest ignore next */
   isArray: (_name, jpath) => feedAlwaysArray.has(jpath),
+  /** `transformTagName` is needed for Atom feed tags `geo:long` and `geo:lat` */
+  transformTagName: (tagname: string) => {
+    if (tagname.includes(':')) return tagname.split(':').join('');
+    return tagname;
+  },
 };

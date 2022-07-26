@@ -37,7 +37,7 @@ export const handleError = (errorResp: ErrorResp) => {
 export const fetchXMLDocument = async (url: string): Promise<string> => {
   if (!url)
     return handleError({
-      message: 'Unable to fetch XML document: no URL parameter given',
+      message: 'Unable to fetch XML document: no URL argument given',
       statusCode: 'internal',
     });
 
@@ -65,7 +65,7 @@ export const fetchXMLDocument = async (url: string): Promise<string> => {
     return Promise.resolve(resp.data);
   } catch (err: any) {
     return Promise.reject({
-      message: `Unable to fetch XML document: ${err?.message}`,
+      message: `Unable to fetch XML document: ${err?.message ?? err}`,
       statusCode: err?.statusCode ?? 'internal',
       data: err,
       ...err,
@@ -76,33 +76,40 @@ export const fetchXMLDocument = async (url: string): Promise<string> => {
 /**
  * `parseAtomFeed` parses the RSS Atom feed to capture each event's ID and feed entries.
  */
-const parseAtomFeed = async (xmlStr: string): Promise<ParsedAtomFeed> => {
-  try {
-    const atomFeed: AtomFeed = feedParser.parse(xmlStr);
-    const feedEvent = atomFeed.feed;
-
-    const parsedAtomFeed: ParsedAtomFeed = {
-      feedID: feedEvent.id,
-      entries: [],
-      parsedFeed: feedEvent,
-    };
-
-    (feedEvent?.entry ?? []).forEach((entry) => {
-      const entryCopy: Entry = { ...entry, capXMLURL: getLinkForCapDocument(entry) };
-
-      parsedAtomFeed.entries.push(entryCopy);
-      functions.logger.log(`Successfully parsed entry for feed ID:'${feedEvent.id}'`, { entry: entryCopy });
+export const parseAtomFeed = async (xmlStr: string): Promise<ParsedAtomFeed> => {
+  if (!xmlStr)
+    return Promise.reject({
+      message: 'unable to parse feed XML document: no XML document string given',
+      statusCode: 500,
     });
 
-    return Promise.resolve(parsedAtomFeed);
+  let atomFeed: AtomFeed;
+
+  try {
+    atomFeed = feedParser.parse(xmlStr, true);
   } catch (err: any) {
-    const errMsg = `Unable to fetch NTWC Tsunami feed: unable to parse feed XML document: ${err}`;
+    const errMsg = `unable to parse feed XML document: ${err?.message ?? err}`;
     return Promise.reject({
       message: errMsg,
       statusCode: 500,
       data: err,
     });
   }
+
+  const feedEvent = atomFeed.feed;
+  const parsedAtomFeed: ParsedAtomFeed = {
+    feedID: feedEvent?.id,
+    entries: [],
+  };
+
+  (feedEvent?.entry ?? []).forEach((entry) => {
+    const entryCopy: Entry = { ...entry, capXMLURL: getLinkForCapDocument(entry) };
+
+    parsedAtomFeed.entries.push(entryCopy);
+    functions.logger.log(`Successfully parsed entry for feed ID:'${parsedAtomFeed.feedID}'`, { entry: entryCopy });
+  });
+
+  return Promise.resolve(parsedAtomFeed);
 };
 
 /**

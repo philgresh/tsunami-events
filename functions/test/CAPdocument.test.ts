@@ -1,8 +1,9 @@
 import { AxiosResponse } from 'axios';
 import * as functions from 'firebase-functions';
 import mockAxios from 'jest-mock-axios';
-import { fetchXMLDocument, getLinkForCapDocument, handleError } from '../src/CAPdocument';
+import { fetchXMLDocument, getLinkForCapDocument, handleError, parseAtomFeed } from '../src/CAPdocument';
 import { NTWC_TSUNAMI_FEED_URL } from '../src/constants';
+import { getValidAtomFeed } from './mockData';
 import type { Entry, ErrorResp } from '../src/types';
 
 const defaultEntry: Entry = {
@@ -99,8 +100,7 @@ describe('handleError', () => {
 });
 
 describe('fetchXMLDocument', () => {
-  const successfulData =
-    '<?xml version="1.0" encoding="UTF-8"?>\n <feed xmlns="http://www.w3.org/2005/Atom" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:georss="http://www.georss.org/georss"></feed>';
+  const successfulData = getValidAtomFeed();
 
   afterEach(() => {
     mockAxios.reset();
@@ -118,10 +118,10 @@ describe('fetchXMLDocument', () => {
         err,
       }));
 
-  it('should return a rejected Promise if a URL parameter is not given', async () => {
+  it('should return a rejected Promise if a URL argument is not given', async () => {
     const { xmlDoc, err } = await testFetchXMLDocument('');
     expect(xmlDoc).toBeUndefined();
-    expect(err?.message).toBe('Unable to fetch XML document: no URL parameter given');
+    expect(err?.message).toBe('Unable to fetch XML document: no URL argument given');
   });
 
   it('should return a rejected Promise if the response status is not 200', async () => {
@@ -158,5 +158,41 @@ describe('fetchXMLDocument', () => {
     const { xmlDoc, err } = await testFetchXMLDocument(NTWC_TSUNAMI_FEED_URL);
     expect(err).toBeUndefined();
     expect(xmlDoc).toBe(successfulData);
+  });
+});
+
+describe('parseAtomFeed', () => {
+  /** `parseAtomFeed` is a test-only helper that returns an object rather than a Promise. */
+  const testParseAtomFeed = async (xmlStrArg: string) =>
+    parseAtomFeed(xmlStrArg)
+      .then((parsedAtomFeed) => ({
+        parsedAtomFeed,
+        err: undefined,
+      }))
+      .catch((err) => ({
+        parsedAtomFeed: undefined,
+        err,
+      }));
+
+  it('returns a rejected Promise if an `xmlStr` argument is not given', async () => {
+    const { parsedAtomFeed, err } = await testParseAtomFeed('');
+    expect(parsedAtomFeed).toBeUndefined();
+    expect(err?.message).toBe('unable to parse feed XML document: no XML document string given');
+  });
+
+  it('returns a rejected Promise if a xmlStr argument is not a valid XML document', async () => {
+    const { parsedAtomFeed, err } = await testParseAtomFeed('not a parseable XML document');
+    expect(parsedAtomFeed).toBeUndefined();
+    expect(err?.message).toBe("unable to parse feed XML document: char 'n' is not expected.:1:1");
+  });
+
+  it('parses the given Atom feed and returns an object of type ParsedAtomFeed', async () => {
+    const { parsedAtomFeed, err } = await testParseAtomFeed(getValidAtomFeed());
+    expect(err).toBeUndefined();
+    expect(parsedAtomFeed?.entries?.length).toBe(1);
+    expect(parsedAtomFeed?.entries?.[0]?.capXMLURL).toBe(
+      'http://ntwc.arh.noaa.gov/events/PAAQ/2022/07/15/rf32nv/1/WEAK53/PAAQCAP.xml'
+    );
+    expect(parsedAtomFeed?.feedID).toBe('urn:uuid:7d3dea95-b739-4cb3-a688-92422cb8b942');
   });
 });
