@@ -5,26 +5,33 @@ module.exports = {
     node: true,
   },
   extends: [
-    'airbnb',
-    'plugin:prettier/recommended',
+    'eslint-config-airbnb-base',
+    'prettier',
     'eslint:recommended',
     'plugin:import/errors',
     'plugin:import/warnings',
-    'plugin:import/typescript',
     'google',
-    'plugin:@typescript-eslint/recommended',
   ],
-  parser: '@typescript-eslint/parser',
+  overrides: [
+    {
+      files: ['*.ts', '*.tsx'],
+      extends: ['typescript', 'plugin:import/typescript'],
+      parserOptions: {
+        project: ['./tsconfig.json'], // Specify it only for TypeScript files
+      },
+      parser: '@typescript-eslint/parser',
+    },
+  ],
   parserOptions: {
-    // files: ['./src/**/*.ts'],
-    project: ['./tsconfig.json'],
     sourceType: 'module',
   },
   ignorePatterns: [
     '/lib/**/*', // Ignore built files.
     '.eslintrc.js',
+    '/test/**/*',
+    '*.ts',
   ],
-  plugins: ['@typescript-eslint', 'import'],
+  plugins: ['import'],
   rules: {
     'no-underscore-dangle': 'off',
     'no-unused-vars': ['warn', { varsIgnorePattern: '^_', argsIgnorePattern: '^_' }],
@@ -45,5 +52,9 @@ module.exports = {
       },
     ],
     'import/no-unresolved': 0,
+    'import/extensions': 0,
+    'valid-jsdoc': 0,
+    'prefer-promise-reject-errors': 0,
+    curly: 0,
   },
 };

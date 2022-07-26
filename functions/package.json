@@ -20,9 +20,11 @@
   "dependencies": {
     "axios": "^0.27.2",
     "cap-ts": "git+https://github.com/philgresh/cap-ts#5850b89",
+    "eslint-config-prettier": "^8.5.0",
     "fast-xml-parser": "^4.0.9",
     "firebase-admin": "^10.0.2",
-    "firebase-functions": "^3.22.0"
+    "firebase-functions": "^3.22.0",
+    "prettier": "^2.7.1"
   },
   "devDependencies": {
     "@babel/core": "^7.18.2",
@@ -31,9 +33,12 @@
     "@typescript-eslint/eslint-plugin": "^5.12.0",
     "@typescript-eslint/parser": "^5.12.0",
     "babel-jest": "^28.1.1",
-    "eslint": "^8.9.0",
+    "eslint": "^8.20.0",
+    "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-google": "^0.14.0",
-    "eslint-plugin-import": "^2.25.4",
+    "eslint-config-typescript": "^3.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "firebase-functions-test": "^0.2.3",
     "jest-mock-axios": "^4.6.1",
     "mocha": "^10.0.0",

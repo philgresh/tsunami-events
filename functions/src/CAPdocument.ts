@@ -133,15 +133,31 @@ export const fetchAndParseLatestEvents = async (): Promise<any> => {
   }
 
   functions.logger.log('parsedAtomFeed', parsedAtomFeed);
-  for (const entry of parsedAtomFeed.entries) {
+
+  let alertDocuments: Array<string> = [];
+  try {
+    alertDocuments = await Promise.all(parsedAtomFeed.entries.map((entry) => fetchXMLDocument(entry.capXMLURL)));
+  } catch (err: any) {
+    const message = `Unable to fetch NTWC Tsunami Atom feed: unable to fetch XML document: ${
+      err?.message ?? JSON.stringify(err)
+    }`;
+    return handleError({
+      message,
+      statusCode: 'internal',
+      data: err,
+    });
+  }
+
+  let alerts: Array<CAP_1_2.Alert> = [];
+
+  for (let i = 0; i < alertDocuments.length; i++) {
+    const alertStr = alertDocuments[i];
+
     // TODO: Check the DB for existing entries. If all have been seen already, return.
     try {
-      const alertStr = await fetchXMLDocument(entry.capXMLURL);
-
       const alert = CAP_1_2.Alert.fromXML(alertStr);
       functions.logger.log(`Alert ID '${alert?.identifier ?? 'no-identifier'}' successfully parsed`);
-
-      return { alert };
+      alerts.push(alert);
     } catch (err: any) {
       const message = `Unable to fetch NTWC Tsunami Atom feed: unable to parse XML document: ${
         err?.message ?? JSON.stringify(err)
@@ -153,4 +169,6 @@ export const fetchAndParseLatestEvents = async (): Promise<any> => {
       });
     }
   }
+
+  return { alert };
 };
