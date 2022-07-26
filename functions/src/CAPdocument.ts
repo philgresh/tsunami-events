@@ -37,7 +37,7 @@ export const handleError = (errorResp: ErrorResp) => {
 export const fetchXMLDocument = async (url: string): Promise<string> => {
   if (!url)
     return handleError({
-      message: 'Unable to fetch XML document: no URL argument given',
+      message: 'unable to fetch XML document: no URL argument given',
       statusCode: 'internal',
     });
 
@@ -65,7 +65,7 @@ export const fetchXMLDocument = async (url: string): Promise<string> => {
     return Promise.resolve(resp.data);
   } catch (err: any) {
     return Promise.reject({
-      message: `Unable to fetch XML document: ${err?.message ?? err}`,
+      message: `unable to fetch XML document: ${err?.message ?? JSON.stringify(err)}`,
       statusCode: err?.statusCode ?? 'internal',
       data: err,
       ...err,
@@ -88,7 +88,7 @@ export const parseAtomFeed = async (xmlStr: string): Promise<ParsedAtomFeed> => 
   try {
     atomFeed = feedParser.parse(xmlStr, true);
   } catch (err: any) {
-    const errMsg = `unable to parse feed XML document: ${err?.message ?? err}`;
+    const errMsg = `unable to parse feed XML document: ${err?.message ?? JSON.stringify(err)}`;
     return Promise.reject({
       message: errMsg,
       statusCode: 500,
@@ -126,17 +126,16 @@ export const fetchAndParseLatestEvents = async (): Promise<any> => {
     parsedAtomFeed = await parseAtomFeed(atomFeed);
   } catch (err: any) {
     return handleError({
-      message: `Unable to parse NTWC Tsunami Atom feed: ${err}`,
+      message: `Unable to parse NTWC Tsunami Atom feed: ${err?.message ?? JSON.stringify(err)}`,
       statusCode: 'internal',
       data: err,
     });
   }
 
+  functions.logger.log('parsedAtomFeed', parsedAtomFeed);
   for (const entry of parsedAtomFeed.entries) {
     // TODO: Check the DB for existing entries. If all have been seen already, return.
     try {
-      if (!entry.capXMLURL) throw new Error('no parsed CAP XML url');
-
       const alertStr = await fetchXMLDocument(entry.capXMLURL);
 
       const alert = CAP_1_2.Alert.fromXML(alertStr);
@@ -144,7 +143,9 @@ export const fetchAndParseLatestEvents = async (): Promise<any> => {
 
       return { alert };
     } catch (err: any) {
-      const message = `Unable to fetch NTWC Tsunami feed: unable to parse XML document: ${err}`;
+      const message = `Unable to fetch NTWC Tsunami Atom feed: unable to parse XML document: ${
+        err?.message ?? JSON.stringify(err)
+      }`;
       return handleError({
         message,
         statusCode: 'internal',
