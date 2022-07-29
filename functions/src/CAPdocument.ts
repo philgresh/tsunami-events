@@ -1,77 +1,11 @@
-import axios from 'axios';
 import { CAP_1_2 } from 'cap-ts';
 import { XMLParser } from 'fast-xml-parser';
 import * as functions from 'firebase-functions';
-import { FEED_PARSER_OPTIONS, NTWC_TSUNAMI_FEED_URL, GENERIC_ERROR_MSG } from './constants';
-import type { AtomFeed, Entry, ErrorResp, ParsedAtomFeed } from './types';
+import { FEED_PARSER_OPTIONS, NTWC_TSUNAMI_FEED_URL } from './constants';
+import { fetchXMLDocument, getLinkForCapDocument, handleError } from './utils';
+import type { AtomFeed, Entry, ParsedAtomFeed } from './types';
 
 const feedParser = new XMLParser(FEED_PARSER_OPTIONS);
-
-/**
- * `getLinkForCapDocument` returns the link to the CAP XML document if it exists on the entry.
- * It returns an empty string if none is found.
- */
-export const getLinkForCapDocument = (entry?: Entry): string => {
-  for (const link of entry?.link ?? []) {
-    if (link?.['@_type'] === 'application/cap+xml') return link?.['@_href'] ?? '';
-  }
-  return '';
-};
-
-/**
- * `handleError` logs a given error message and throws an error that the callable function can catch.
- * @link https://firebase.google.com/docs/functions/callable#handle_errors_on_the_client
- */
-export const handleError = (errorResp: ErrorResp) => {
-  const errMsg = errorResp?.message ?? GENERIC_ERROR_MSG;
-  const errCode = errorResp?.statusCode ?? 'internal';
-
-  functions.logger.error(errMsg, errorResp);
-
-  throw new functions.https.HttpsError(errCode, errMsg, errorResp.data);
-};
-
-/**
- * `fetchXMLDocument` fetches an XML document given a URL.
- */
-export const fetchXMLDocument = async (url: string): Promise<string> => {
-  if (!url)
-    return handleError({
-      message: 'unable to fetch XML document: no URL argument given',
-      statusCode: 'internal',
-    });
-
-  try {
-    const resp = await axios.get(url, {
-      responseType: 'text',
-      responseEncoding: 'utf8',
-    });
-
-    if (resp?.status !== 200)
-      return handleError({
-        message: `received status '${resp?.status}' (${resp?.statusText})`,
-        statusCode: 'unavailable',
-        data: resp,
-      });
-
-    if (!resp?.data)
-      return handleError({
-        message: 'no data received',
-        statusCode: 'unavailable',
-        data: resp,
-      });
-
-    functions.logger.log(`XML successfully fetched from ${url}`);
-    return Promise.resolve(resp.data);
-  } catch (err: any) {
-    return Promise.reject({
-      message: `unable to fetch XML document: ${err?.message ?? JSON.stringify(err)}`,
-      statusCode: err?.statusCode ?? 'internal',
-      data: err,
-      ...err,
-    });
-  }
-};
 
 /**
  * `parseAtomFeed` parses the RSS Atom feed to capture each event's ID and feed entries.
@@ -113,11 +47,32 @@ export const parseAtomFeed = async (xmlStr: string): Promise<ParsedAtomFeed> => 
 };
 
 /**
+ * `handleAlert` parses the CAP Alert XML document and checks the DB for existing entries.
+ */
+export const handleAlert = async (alertDoc: string) => {
+  try {
+    const alert = CAP_1_2.Alert.fromXML(alertDoc);
+    functions.logger.log(`Alert ID '${alert?.identifier ?? 'no-identifier'}' successfully parsed`);
+    // TODO: Check the DB for existing alerts.
+    //       If all have been handled already, return.
+    //       Else, add the alert to the DB
+    //       and dispatch a message to the appropriate pub-sub topic(s).
+    return Promise.resolve();
+  } catch (err: any) {
+    const message = `unable to parse alert XML document: ${err?.message ?? JSON.stringify(err)}`;
+    return handleError({
+      message,
+      statusCode: 'internal',
+      data: err,
+    });
+  }
+};
+
+/**
  * `fetchAndParseLatestEvents` attempts to fetch and parse the NTWC Tsunami Atom Feed XML document and do the following:
  *  - [TODO] Check to see if we have already seen each entry in the current feed event.
- *  - Parse the associated CAP XML document if we have not already seen an entry.
- *  - [TODO] Persist the event in the Firebase database.
- *  - [TODO] Publish the alert to the appropriate pub/sub topics.
+ *  - If we  the associated CAP XML document if we have not already seen an entry.
+ *  - Handle the CAP XML document
  */
 export const fetchAndParseLatestEvents = async (): Promise<any> => {
   let parsedAtomFeed: ParsedAtomFeed;
@@ -135,40 +90,35 @@ export const fetchAndParseLatestEvents = async (): Promise<any> => {
   functions.logger.log('parsedAtomFeed', parsedAtomFeed);
 
   let alertDocuments: Array<string> = [];
-  try {
-    alertDocuments = await Promise.all(parsedAtomFeed.entries.map((entry) => fetchXMLDocument(entry.capXMLURL)));
-  } catch (err: any) {
-    const message = `Unable to fetch NTWC Tsunami Atom feed: unable to fetch XML document: ${
-      err?.message ?? JSON.stringify(err)
-    }`;
-    return handleError({
-      message,
-      statusCode: 'internal',
-      data: err,
-    });
-  }
 
-  let alerts: Array<CAP_1_2.Alert> = [];
-
-  for (let i = 0; i < alertDocuments.length; i++) {
-    const alertStr = alertDocuments[i];
-
-    // TODO: Check the DB for existing entries. If all have been seen already, return.
-    try {
-      const alert = CAP_1_2.Alert.fromXML(alertStr);
-      functions.logger.log(`Alert ID '${alert?.identifier ?? 'no-identifier'}' successfully parsed`);
-      alerts.push(alert);
-    } catch (err: any) {
-      const message = `Unable to fetch NTWC Tsunami Atom feed: unable to parse XML document: ${
+  // Use `allSettled` instead of `all` to not block on network errors, etc.
+  const results = await Promise.allSettled(parsedAtomFeed.entries.map((entry) => fetchXMLDocument(entry.capXMLURL)));
+  results.forEach((result) => {
+    if (result.status === 'fulfilled') {
+      alertDocuments.push(result.value);
+    } else {
+      const err = result.reason;
+      const message = `Unable to fetch NTWC Tsunami Atom feed: unable to fetch XML document: ${
         err?.message ?? JSON.stringify(err)
       }`;
-      return handleError({
+      handleError({
         message,
         statusCode: 'internal',
         data: err,
       });
     }
-  }
+  });
 
-  return { alert };
+  return Promise.allSettled(
+    alertDocuments.map((alertDoc) =>
+      handleAlert(alertDoc).catch((err) => {
+        const message = `Unable to handle alert: ${err?.message ?? JSON.stringify(err)}`;
+        return handleError({
+          message,
+          statusCode: 'internal',
+          data: err,
+        });
+      })
+    )
+  );
 };
