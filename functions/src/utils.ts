@@ -1,6 +1,5 @@
 import axios from 'axios';
 import * as functions from 'firebase-functions';
-import { GENERIC_ERROR_MSG } from './constants';
 import type { Entry, ErrorResp } from './types';
 
 /**
@@ -19,7 +18,7 @@ export const getLinkForCapDocument = (entry?: Entry): string => {
  * @link https://firebase.google.com/docs/functions/callable#handle_errors_on_the_client
  */
 export const handleError = (errorResp: ErrorResp) => {
-  const errMsg = errorResp?.message ?? GENERIC_ERROR_MSG;
+  const errMsg = errorResp?.message ?? `An unknown error occurred: ${JSON.stringify(errorResp)}`;
   const errCode = errorResp?.statusCode ?? 'internal';
 
   functions.logger.error(errMsg, errorResp);
@@ -61,7 +60,7 @@ export const fetchXMLDocument = async (url: string): Promise<string> => {
     return Promise.resolve(resp.data);
   } catch (err: any) {
     return Promise.reject({
-      message: `unable to fetch XML document: ${err?.message ?? JSON.stringify(err)}`,
+      message: `unable to fetch XML document: ${err?.message}`,
       statusCode: err?.statusCode ?? 'internal',
       data: err,
       ...err,

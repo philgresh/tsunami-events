@@ -94,9 +94,11 @@ describe('handleError', () => {
     expect(err?.details).toBe(errDetails);
   });
 
-  it('falls back to the `GENERIC_ERROR_MSG` if a message is not given', () => {
+  it('falls back to a stringified version of `ErrorResp` if a message is not given', () => {
     const err = testHandleError({ message: undefined });
-    expect(err?.message).toBe('Error trying to fetch or parse the XML document.');
+    expect(err?.message).toBe(
+      'An unknown error occurred: {"statusCode":"internal","data":{"error":"The requested URL /events/xml/PAAQAsdftom.xml was not found on this server."}}'
+    );
   });
 
   it('falls back to the `internal` status if a `statusCode` is not given', () => {

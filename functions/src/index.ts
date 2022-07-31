@@ -1,5 +1,5 @@
 import * as functions from 'firebase-functions';
-import * as CAPDocument from './CAPdocument';
+import * as CAPDocument from './AtomFeed';
 
 export const fetchAndParseLatestEvents = functions.https.onRequest((_, resp) => {
   CAPDocument.fetchAndParseLatestEvents()

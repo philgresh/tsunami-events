@@ -3,8 +3,9 @@ import fs from 'fs';
 import mockAxios from 'jest-mock-axios';
 import path from 'path';
 import sinon from 'sinon';
-import { fetchAndParseLatestEvents, parseAtomFeed } from '../src/CAPdocument';
+import { fetchAndParseLatestEvents, parseAtomFeed } from '../src/AtomFeed';
 import * as utils from '../src/utils';
+import * as CapDocument from '../src/CAPDocument';
 import { getValidAtomFeed } from './mockData';
 import type { Entry } from '../src/types';
 
@@ -114,8 +115,16 @@ describe('fetchAndParseLatestEvents', () => {
     const mockCAPAlert = readXML();
     const fetchXMLDocumentSpy = sinon.spy(utils, 'fetchXMLDocument');
     const handleErrorSpy = sinon.spy(utils, 'handleError');
+    const handleAlertSpy = sinon.spy(CapDocument, 'handleAlert');
 
-    it("calls `fetchXMLDocument` with the entry's capXMLURL", () => {
+    beforeEach(() => {
+      fetchXMLDocumentSpy.resetHistory();
+      handleErrorSpy.resetHistory();
+      handleAlertSpy.resetHistory();
+      mockAxios.reset();
+    });
+
+    it("calls `fetchXMLDocument` with the entry's capXMLURL", async () => {
       const mockAtomFeedResponse: Partial<AxiosResponse> = {
         status: 200,
         data: validAtomFeed,
@@ -128,9 +137,19 @@ describe('fetchAndParseLatestEvents', () => {
       mockAxios.get.mockResolvedValueOnce(mockAtomFeedResponse);
       mockAxios.get.mockResolvedValueOnce(mockCAPXMLResponse);
 
-      testFetchAndParseLatestEvents();
+      const { err } = await testFetchAndParseLatestEvents();
+      expect(err).toBeUndefined();
+
       expect(handleErrorSpy.called).toBe(false);
-      expect(fetchXMLDocumentSpy.getCalls()?.[0]?.args?.[0]).toBe('https://www.tsunami.gov/events/xml/PAAQAtom.xml');
+
+      const fetchedXMLCalls = fetchXMLDocumentSpy.getCalls();
+      expect(fetchedXMLCalls.length).toBe(2);
+      expect(fetchedXMLCalls?.[0]?.args?.[0]).toBe('https://www.tsunami.gov/events/xml/PAAQAtom.xml');
+      expect(fetchedXMLCalls?.[1]?.args?.[0]).toBe(
+        'http://ntwc.arh.noaa.gov/events/PAAQ/2022/07/15/rf32nv/1/WEAK53/PAAQCAP.xml'
+      );
+
+      expect(handleAlertSpy.getCalls()).toHaveLength(1);
     });
   });
 });
