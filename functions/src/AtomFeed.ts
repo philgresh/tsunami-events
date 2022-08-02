@@ -48,8 +48,7 @@ export const parseAtomFeed = async (xmlStr: string): Promise<ParsedAtomFeed> => 
 /**
  * `fetchAndParseLatestEvents` attempts to fetch and parse the NTWC Tsunami Atom Feed XML document and do the following:
  *  - [TODO] Check to see if we have already seen each entry in the current feed event.
- *  - If we  the associated CAP XML document if we have not already seen an entry.
- *  - Handle the CAP XML document
+ *  - Handle the associated CAP XML document if we have not already seen an entry.
  */
 export const fetchAndParseLatestEvents = async (): Promise<any> => {
   let parsedAtomFeed: ParsedAtomFeed;

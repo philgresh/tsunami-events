@@ -14,7 +14,7 @@ export type Entry = {
   /** `capXMLURL` is the parsed link for the CAP XML document */
   capXMLURL: string;
   /** `links` is the array of parsed links */
-  link?: Array<XMLLink>;
+  link?: XMLLink[];
 };
 
 export type FeedEvent = {
@@ -22,7 +22,7 @@ export type FeedEvent = {
   title?: string;
   updated?: string;
   link?: XMLLink;
-  entry?: Array<Entry>;
+  entry?: Entry[];
 };
 
 export type AtomFeed = {
@@ -37,5 +37,5 @@ export type ErrorResp = {
 
 export type ParsedAtomFeed = {
   feedID: string;
-  entries: Array<Entry>;
+  entries: Entry[];
 };
