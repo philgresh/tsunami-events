@@ -1,4 +1,5 @@
 import * as functions from 'firebase-functions';
+import { CRON_FREQUENCY } from './constants';
 import * as CAPDocument from './AtomFeed';
 
 export const fetchAndParseLatestEvents = functions.https.onRequest((_, resp) => {
@@ -11,7 +12,7 @@ export const fetchAndParseLatestEvents = functions.https.onRequest((_, resp) => 
     });
 });
 
-export const scheduledFetchAndParseLatestEvents = functions.pubsub.schedule('every 1 minutes').onRun((context) => {
-  console.log('This will be run every 1 minutes!', { context });
+export const scheduledFetchAndParseLatestEvents = functions.pubsub.schedule(CRON_FREQUENCY).onRun((context) => {
+  functions.logger.log(`scheduledFetchAndParseLatestEvents runs ${CRON_FREQUENCY}`, context);
   return CAPDocument.fetchAndParseLatestEvents();
 });
