@@ -1,4 +1,7 @@
+import 'dotenv/config';
 import { AxiosResponse } from 'axios';
+import admin from 'firebase-admin';
+import * as functions from 'firebase-functions';
 import fs from 'fs';
 import mockAxios from 'jest-mock-axios';
 import path from 'path';
@@ -9,11 +12,23 @@ import * as CapDocument from '../src/CAPDocument';
 import { getValidAtomFeed } from './mockData';
 import type { Entry } from '../src/types';
 
+// Initialize the firebase-functions-test SDK using environment variables.
+// These variables are automatically set by firebase emulators:exec
+//
+// This configuration will be used to initialize the Firebase Admin SDK, so
+// when we use the Admin SDK in the tests below we can be confident it will
+// communicate with the emulators, not production.
+const test = require('firebase-functions-test')({
+  projectId: process.env.GCLOUD_PROJECT,
+});
+
+admin.initializeApp(functions.config().firebase);
+
 const mockXMLPath = path.resolve(__dirname, './mockCAPAlert.xml');
 const readXML = () => fs.readFileSync(mockXMLPath, { encoding: 'utf-8' });
 
 const defaultEntry: Entry = {
-  id: 'urn:uuid:7d3dea95-b739-4cb3-a688-92422cb8b942',
+  id: '7d3dea95-b739-4cb3-a688-92422cb8b942',
   title: '180 miles SE of Kodiak City, Alaska',
   updated: '2022-07-15T22:37:07Z',
   capXMLURL: 'http://ntwc.arh.noaa.gov/events/PAAQ/2022/07/15/rf32nv/1/WEAK53/PAAQCAP.xml',
@@ -51,7 +66,7 @@ describe('parseAtomFeed', () => {
     expect(parsedAtomFeed?.entries?.[0]?.capXMLURL).toBe(
       'http://ntwc.arh.noaa.gov/events/PAAQ/2022/07/15/rf32nv/1/WEAK53/PAAQCAP.xml'
     );
-    expect(parsedAtomFeed?.feedID).toBe('urn:uuid:7d3dea95-b739-4cb3-a688-92422cb8b942');
+    expect(parsedAtomFeed?.feedID).toBe('7d3dea95-b739-4cb3-a688-92422cb8b942');
   });
 
   it('handles and returns multiple Atom feed entries', async () => {
@@ -73,7 +88,7 @@ describe('fetchAndParseLatestEvents', () => {
 
   /** `testFetchAndParseLatestEvents` is a test-only helper that returns an object rather than a Promise. */
   const testFetchAndParseLatestEvents = async () =>
-    fetchAndParseLatestEvents()
+    fetchAndParseLatestEvents(admin.database())
       .then(({ alert }) => ({
         alert,
         err: undefined,

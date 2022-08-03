@@ -21,6 +21,7 @@
   "dependencies": {
     "axios": "^0.27.2",
     "cap-ts": "git+https://github.com/philgresh/cap-ts#5850b89",
+    "dotenv": "^16.0.1",
     "eslint-config-prettier": "^8.5.0",
     "fast-xml-parser": "^4.0.9",
     "firebase-admin": "^10.0.2",
