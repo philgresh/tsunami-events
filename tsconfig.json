@@ -22,5 +22,5 @@
   },
   "include": [
     "src"
-  ]
+, "functions/src/models/Event.ts"  ]
 }

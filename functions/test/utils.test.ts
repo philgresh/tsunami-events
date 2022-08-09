@@ -1,16 +1,10 @@
 import { AxiosResponse } from 'axios';
 import * as functions from 'firebase-functions';
-import fs from 'fs';
 import mockAxios from 'jest-mock-axios';
-import path from 'path';
-import sinon from 'sinon';
 import { fetchXMLDocument, getLinkForCapDocument, handleError } from '../src/utils';
 import { NTWC_TSUNAMI_FEED_URL } from '../src/constants';
 import { getValidAtomFeed } from './mockData';
 import type { Entry, ErrorResp } from '../src/types';
-
-const mockXMLPath = path.resolve(__dirname, './mockCAPAlert.xml');
-const readXML = () => fs.readFileSync(mockXMLPath, { encoding: 'utf-8' });
 
 const defaultEntry: Entry = {
   id: 'urn:uuid:7d3dea95-b739-4cb3-a688-92422cb8b942',

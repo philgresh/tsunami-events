@@ -1,5 +1,4 @@
 import type { https } from 'firebase-functions';
-import type { Alert as CAP_Alert } from 'cap-ts/dist/node/CAP-1-2';
 
 type XMLLink = {
   '@_type': string;
@@ -39,21 +38,4 @@ export type ErrorResp = {
 export type ParsedAtomFeed = {
   feedID: string;
   entries: Entry[];
-};
-
-/**
- * Data models
- */
-
-export type Alert = CAP_Alert & {
-  jsonURL: string;
-};
-
-export type Event = {
-  id: string;
-  textBulletinURL: string;
-  geoLat: number;
-  geoLon: number;
-  /** `alerts` contains IDs of Alerts saved at the DB's highest level */
-  alerts: Array<string>;
 };

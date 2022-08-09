@@ -10,6 +10,6 @@
     "resolveJsonModule": true
   },
   "compileOnSave": true,
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "../src/models/Event.ts"],
   "exclude": ["test/"]
 }
