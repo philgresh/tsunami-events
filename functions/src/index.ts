@@ -12,14 +12,12 @@ let options: admin.AppOptions = {
   credential: admin.credential.cert(serviceAccount),
   databaseURL: `https://${process.env.GCLOUD_PROJECT}-default-rtdb.firebaseio.com`,
 };
-let app: admin.app.App;
 
 // Initialize the app with a service account, granting admin privileges
 if (process.env.env === 'LOCAL') {
-  app = admin.initializeApp(functions.config().firebase);
-} else {
-  app = admin.initializeApp(options);
+  options = functions.config().firebase;
 }
+const app = admin.initializeApp(options);
 functions.logger.log('App initialized', options, app);
 
 export const updateEvent = functions.https.onRequest(async (_, resp) => {
