@@ -1,9 +1,10 @@
 import { XMLParser } from 'fast-xml-parser';
 import * as functions from 'firebase-functions';
-import { handleAlert } from './CAPDocument';
 import { FEED_PARSER_OPTIONS, NTWC_TSUNAMI_FEED_URL } from './constants';
+import { Event } from './models';
 import { fetchXMLDocument, getLinkForCapDocument, handleError } from './utils';
 import type { AtomFeed, Entry, ParsedAtomFeed } from './types';
+import Alert from './models/Alert';
 
 const feedParser = new XMLParser(FEED_PARSER_OPTIONS);
 
@@ -31,15 +32,19 @@ export const parseAtomFeed = async (xmlStr: string): Promise<ParsedAtomFeed> => 
 
   const feedEvent = atomFeed.feed;
   const parsedAtomFeed: ParsedAtomFeed = {
-    feedID: feedEvent?.id,
+    feedID: (feedEvent?.id ?? '').replace('urn:uuid:', ''),
     entries: [],
   };
 
   (feedEvent?.entry ?? []).forEach((entry) => {
-    const entryCopy: Entry = { ...entry, capXMLURL: getLinkForCapDocument(entry) };
+    const entryCopy: Entry = {
+      ...entry,
+      capXMLURL: getLinkForCapDocument(entry),
+      id: (entry?.id ?? '').replace('urn:uuid:', ''),
+    };
 
     parsedAtomFeed.entries.push(entryCopy);
-    functions.logger.log(`Successfully parsed entry for feed ID:'${parsedAtomFeed.feedID}'`, { entry: entryCopy });
+    functions.logger.log(`Successfully parsed entry for feed ID:'${parsedAtomFeed.feedID}'`);
   });
 
   return Promise.resolve(parsedAtomFeed);
@@ -63,19 +68,25 @@ export const fetchAndParseLatestEvents = async (): Promise<any> => {
     });
   }
 
-  functions.logger.log('parsedAtomFeed', parsedAtomFeed);
+  const event = new Event(parsedAtomFeed.feedID);
 
-  // Note: Use a Map to take advantage of built-in de-duping
-  const alertDocuments = new Map<string, string>();
+  await event.create().catch((err) => {
+    return handleError({
+      message: `Unable to add Event entry to database: ${err}`,
+      statusCode: 'internal',
+      data: { event, err },
+    });
+  });
 
   // Use `allSettled` instead of `all` to not block on network errors, etc.
-  await Promise.all(
+  const createdAlerts = await Promise.all(
     parsedAtomFeed.entries.map((entry) =>
       fetchXMLDocument(entry.capXMLURL)
-        .then((alertDoc) => alertDocuments.set(entry.capXMLURL, alertDoc))
+        .then((alertDoc) => Alert.parseFromXML(alertDoc, event.id))
+        .then((alert) => alert.create())
         .catch((err) => {
           return handleError({
-            message: `Unable to fetch NTWC Tsunami Atom feed: unable to fetch XML document for url \'entry.capXMLURL\': ${err?.message}`,
+            message: `Error on fetchAndParseLatestEvents with capXMLURL '${entry.capXMLURL}': ${err}`,
             statusCode: 'internal',
             data: err,
           });
@@ -83,19 +94,20 @@ export const fetchAndParseLatestEvents = async (): Promise<any> => {
     )
   );
 
-  const handleAlertsPromises = [];
-
-  for (const [capXMLURL, alertDoc] of alertDocuments) {
-    handleAlertsPromises.push(
-      handleAlert(alertDoc).catch((err) => {
-        return handleError({
-          message: `Unable to handle alert for url '${capXMLURL}': ${err?.message}`,
-          statusCode: 'internal',
-          data: err,
-        });
+  event.alertIDs = createdAlerts.map((alert) => alert.identifier);
+  return event
+    .updateAlerts()
+    .then((updatedEvent) =>
+      Promise.resolve({
+        ...updatedEvent.toDB(),
+        alerts: createdAlerts.map((alert) => alert.toDB()),
       })
-    );
-  }
-
-  return Promise.all(handleAlertsPromises);
+    )
+    .catch((err) => {
+      return handleError({
+        message: `Unable to add Event entry to database: ${err}`,
+        statusCode: 'internal',
+        data: { event, err },
+      });
+    });
 };

@@ -1,6 +1,31 @@
+import 'dotenv/config';
+import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { CRON_FREQUENCY } from './constants';
+import { Event } from './models';
 import * as AtomFeed from './AtomFeed';
+
+// Initialize the app with a service account, granting admin privileges
+if (process.env.env === 'LOCAL') {
+  admin.initializeApp(functions.config().firebase);
+} else {
+  // Fetch the service account key JSON file contents
+  const serviceAccount = require('../.serviceAccountKey.json');
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: `https://${process.env.GCLOUD_PROJECT}-default-rtdb.firebaseio.com`,
+  });
+}
+
+export const updateEvent = functions.https.onRequest(async (_, resp) => {
+  const event = new Event('08a0a942-ff4d-4790-99a5-151071c2ac36');
+  event.alertIDs = ['abcd-5435'];
+  try {
+    event.updateAlerts().then((res) => resp.send(res));
+  } catch (e) {
+    resp.status(500).send(e);
+  }
+});
 
 export const fetchAndParseLatestEvents = functions.https.onRequest((_, resp) => {
   AtomFeed.fetchAndParseLatestEvents()
@@ -8,7 +33,7 @@ export const fetchAndParseLatestEvents = functions.https.onRequest((_, resp) => 
       resp.send(res);
     })
     .catch((err) => {
-      resp.send(err);
+      resp.status(err?.status ?? 500).send(err);
     });
 });
 
