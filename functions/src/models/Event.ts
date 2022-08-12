@@ -71,7 +71,14 @@ export default class Event {
     }
 
     // Only update the DB if the local version differs
-    if (this.alertIDs.every((alertID) => dbAlerts.has(alertID))) return Promise.resolve(this);
+    functions.logger.log('Comparing existing/new Alert IDs', {
+      newIDs: this.alertIDs,
+      existingIDs: Array.from(dbAlerts),
+    });
+    if (this.alertIDs.every((alertID) => dbAlerts.has(alertID))) {
+      functions.logger.log(`Confirmed Alerts are same on Event '${this.id}'`);
+      return Promise.resolve(this);
+    }
 
     // De-dupe local version of AlertIDs and resolve
     this.alertIDs.forEach((alertID) => dbAlerts.add(alertID));
