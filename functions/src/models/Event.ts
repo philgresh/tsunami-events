@@ -16,6 +16,9 @@ export default class Event {
     this.alertIDs = alertIDs ?? [];
   }
 
+  /** `fromDB` converts a DBEvent to an Event instance */
+  static fromDB = (dbEvent: DBEvent) => new Event(dbEvent.id, dbEvent.alerts);
+
   /**
    * `findOrCreate` returns an existing Event or creates it.
    */
@@ -28,7 +31,7 @@ export default class Event {
         if (!snapshot.exists()) return new Event(id).create();
         const existingEvent = snapshot.val() as DBEvent;
         functions.logger.log(`Successfully found Event '${id}'`);
-        return new Event(existingEvent.id, existingEvent.alerts);
+        return Event.fromDB(existingEvent);
       })
       .catch((err) => Promise.reject(new Error(`unable to find Event '${id}': ${err}`)));
 
