@@ -5,17 +5,20 @@ import { CRON_FREQUENCY } from './constants';
 import { Event } from './models';
 import * as AtomFeed from './AtomFeed';
 
+// Fetch the service account key JSON file contents
+const serviceAccount = require('../.serviceAccountKey.json');
+
+let options: admin.AppOptions = {
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: `https://${process.env.GCLOUD_PROJECT}-default-rtdb.firebaseio.com`,
+};
+
 // Initialize the app with a service account, granting admin privileges
 if (process.env.env === 'LOCAL') {
-  admin.initializeApp(functions.config().firebase);
-} else {
-  // Fetch the service account key JSON file contents
-  const serviceAccount = require('../.serviceAccountKey.json');
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: `https://${process.env.GCLOUD_PROJECT}-default-rtdb.firebaseio.com`,
-  });
+  options = functions.config().firebase;
 }
+const app = admin.initializeApp(options);
+functions.logger.log('App initialized', options, app);
 
 export const updateEvent = functions.https.onRequest(async (_, resp) => {
   const event = new Event('08a0a942-ff4d-4790-99a5-151071c2ac36');
