@@ -1,4 +1,5 @@
 {
+  "target": "ESNext",
   "compilerOptions": {
     "module": "commonjs",
     "noImplicitReturns": true,

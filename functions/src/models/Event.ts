@@ -72,7 +72,7 @@ export default class Event {
 
     // De-dupe local version of AlertIDs and resolve
     this.alertIDs.forEach((alertID) => dbAlerts.add(alertID));
-    this.alertIDs = [...dbAlerts];
+    this.alertIDs = Array.from(dbAlerts);
 
     return admin
       .database()
