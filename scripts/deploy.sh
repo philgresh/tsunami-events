@@ -25,6 +25,6 @@ gh release create $release_tag --generate-notes
 git fetch --tags origin
 
 echo "Successfully created release, starting deploy"
-firebase deploy -m "Deploying $release_tag: https://github.com/philgresh/tsunami-alert-gcp/releases/tag/$release_tag"
+firebase deploy -m "$release_tag: https://github.com/philgresh/tsunami-alert-gcp/releases/tag/$release_tag"
 
 exit 0
