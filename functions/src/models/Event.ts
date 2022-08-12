@@ -16,6 +16,9 @@ export default class Event {
     this.alertIDs = alertIDs ?? [];
   }
 
+  /** `fromDB` converts a DBEvent to an Event instance */
+  static fromDB = (dbEvent: DBEvent) => new Event(dbEvent.id, dbEvent.alerts);
+
   /**
    * `findOrCreate` returns an existing Event or creates it.
    */
@@ -28,7 +31,7 @@ export default class Event {
         if (!snapshot.exists()) return new Event(id).create();
         const existingEvent = snapshot.val() as DBEvent;
         functions.logger.log(`Successfully found Event '${id}'`);
-        return new Event(existingEvent.id, existingEvent.alerts);
+        return Event.fromDB(existingEvent);
       })
       .catch((err) => Promise.reject(new Error(`unable to find Event '${id}': ${err}`)));
 
@@ -68,7 +71,14 @@ export default class Event {
     }
 
     // Only update the DB if the local version differs
-    if (this.alertIDs.every((alertID) => dbAlerts.has(alertID))) return Promise.resolve(this);
+    functions.logger.log('Comparing existing/new Alert IDs', {
+      newIDs: this.alertIDs,
+      existingIDs: Array.from(dbAlerts),
+    });
+    if (this.alertIDs.every((alertID) => dbAlerts.has(alertID))) {
+      functions.logger.log(`Confirmed Alerts are same on Event '${this.id}'`);
+      return Promise.resolve(this);
+    }
 
     // De-dupe local version of AlertIDs and resolve
     this.alertIDs.forEach((alertID) => dbAlerts.add(alertID));
