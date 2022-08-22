@@ -23,7 +23,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "emulators:start": "export env='LOCAL' && firebase emulators:start --import=\"./local_data\" --export-on-exit"
+    "emulators:start": "export env='LOCAL' && firebase emulators:start --import=\"./local_data\"",
+    "emulators:start:export": "export env='LOCAL' && firebase emulators:start --import=\"./local_data\" --export-on-exit"
   },
   "eslintConfig": {
     "extends": [
