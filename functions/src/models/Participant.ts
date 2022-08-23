@@ -58,6 +58,40 @@ export default class Participant {
       })
       .catch((err) => Promise.reject(err));
 
+  /**
+   * `findOrCreate` returns an existing Participant or creates it.
+   */
+  static findOrCreate = async (id: string): Promise<Participant> =>
+    admin
+      .database()
+      .ref(`participants/${id}`)
+      .once('value')
+      .then((snapshot) => {
+        if (!snapshot.exists())
+          return new Participant({
+            id,
+            phone: String(process.env.MY_PHONE_NUMBER),
+            active: true,
+          }).create();
+        const existingParticipant = snapshot.val() as DBParticipant;
+        functions.logger.log(`Successfully found Participant '${id}'`);
+        return Participant.fromDB(existingParticipant);
+      })
+      .catch((err) => Promise.reject(new Error(`unable to find Participant '${id}': ${err}`)));
+
+  static getAllActive = async () => {
+    const activeParticipants: Participant[] = [];
+    await admin
+      .database()
+      .ref('participants')
+      .orderByChild('active')
+      .once('value')
+      .then((snapshot) => {
+        if (snapshot.val()?.active) activeParticipants.push(Participant.fromDB(snapshot.val()));
+      });
+    return Promise.resolve(activeParticipants);
+  };
+
   /** `toDB` converts an Participant to a DBParticipant POJO. */
   toDB = (): DBParticipant => {
     const dbParticipant: DBParticipant = {

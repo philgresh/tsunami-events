@@ -1,10 +1,17 @@
 {
   "rules": {
     "alerts": {
-      ".read": true
+      ".read": true,
+      ".indexOn": ["eventID", "sent", "status"]
     },
     "events": {
       ".read": true
+    },
+    "participants": {
+      "$user_id": {
+        ".write": "auth != null && $user_id === auth.uid || auth.token.admin === true",
+        ".read": "auth != null && $user_id === auth.uid || auth.token.admin === true"
+      }
     }
   }
 }

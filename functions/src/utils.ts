@@ -67,3 +67,28 @@ export const fetchXMLDocument = async (url: string): Promise<string> => {
     });
   }
 };
+
+/**
+ * `retryOperation` is a recursive function that attempts to complete a given `operation`.
+ * If it's not resolved, we retry the `operation` up to `maxRetries` times with a given `delayMs`.
+ * @link https://codesandbox.io/s/l4jq4?file=/src/index.ts
+ */
+export const retryOperation = <T>(
+  operation: () => Promise<T>,
+  delayMs: number,
+  maxRetries: number,
+  currentRetry = 0
+): Promise<T> => {
+  return new Promise((resolve, reject) => {
+    operation()
+      .then((success) => resolve(success))
+      .catch(() => {
+        setTimeout(() => {
+          if (currentRetry === maxRetries) {
+            return reject('maximum retries exceeded');
+          }
+          retryOperation(operation, delayMs, maxRetries, ++currentRetry).then((success) => resolve(success));
+        }, delayMs);
+      });
+  });
+};

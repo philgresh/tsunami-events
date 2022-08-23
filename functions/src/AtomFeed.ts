@@ -1,10 +1,10 @@
 import { XMLParser } from 'fast-xml-parser';
 import * as functions from 'firebase-functions';
 import { FEED_PARSER_OPTIONS, NTWC_TSUNAMI_FEED_URL } from './constants';
-import { Event } from './models';
+import { Alert, Event, Participant } from './models';
 import { fetchXMLDocument, getLinkForCapDocument, handleError } from './utils';
+import TwilioClient from './Twilio';
 import type { AtomFeed, Entry, ParsedAtomFeed } from './types';
-import Alert from './models/Alert';
 
 const feedParser = new XMLParser(FEED_PARSER_OPTIONS);
 
@@ -52,7 +52,7 @@ export const parseAtomFeed = async (xmlStr: string): Promise<ParsedAtomFeed> => 
 
 /**
  * `fetchAndParseLatestEvents` attempts to fetch and parse the NTWC Tsunami Atom Feed XML document and do the following:
- *  - [TODO] Check to see if we have already seen each entry in the current feed event.
+ *  - Check to see if we have already seen each entry in the current feed event.
  *  - Handle the associated CAP XML document if we have not already seen an entry.
  */
 export const fetchAndParseLatestEvents = async (): Promise<any> => {
@@ -103,6 +103,17 @@ export const fetchAndParseLatestEvents = async (): Promise<any> => {
         alerts: createdAlerts.map((alert) => alert.toDB()),
       })
     )
+    .then(async (updatedEvent) => {
+      const allActiveParticipants = await Participant.getAllActive();
+      return Promise.all(
+        allActiveParticipants.map((participant) => {
+          TwilioClient.smsParticipant(
+            participant,
+            JSON.stringify(updatedEvent.alerts?.[updatedEvent.alerts.length - 1].info_list)
+          );
+        })
+      );
+    })
     .catch((err) => {
       return handleError({
         message: `Unable to add Event entry to database: ${err}`,
