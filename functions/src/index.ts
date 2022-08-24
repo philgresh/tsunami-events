@@ -27,18 +27,6 @@ export const scheduledFetchAndParseLatestEvents = functions.pubsub.schedule(CRON
   return AtomFeed.fetchAndParseLatestEvents();
 });
 
-export const smsParticipant = functions.https.onRequest(async (req, resp) => {
-  const participant = await Participant.findOrCreate({ id: String(req.query['id']) ?? '' });
-  const message = decodeURI(String(req.query['message'])) ?? 'Hello there. https://gresham.dev';
-  return TwilioClient.smsParticipant(participant, message)
-    .then((res) => {
-      resp.send(res);
-    })
-    .catch((err) => {
-      resp.status(err.status ?? 500).send(err);
-    });
-});
-
 export const createParticipantOnRegisterUser = functions.auth.user().onCreate(async (user) => {
   if (!user) return;
   const { email, displayName, uid } = user;
