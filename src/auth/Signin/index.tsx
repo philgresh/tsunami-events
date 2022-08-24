@@ -40,7 +40,7 @@ const Login = () => {
     signInSuccessUrl: NavPath.Profile,
     siteName: 'Tsunami Events',
     callbacks: {
-      signInSuccessWithAuthResult: function (_authResult, _redirectUrl) {
+      signInSuccessWithAuthResult: (_authResult, _redirectUrl) => {
         // User successfully signed in.
         // Return type determines whether we continue the redirect automatically
         // or whether we leave that to developer to handle.
