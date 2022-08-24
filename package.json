@@ -25,8 +25,6 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-    "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx .",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "emulators:start": "export env='LOCAL' && firebase emulators:start --import=\"./local_data\" --export-on-exit"
