@@ -1,9 +1,8 @@
 import { XMLParser } from 'fast-xml-parser';
 import * as functions from 'firebase-functions';
 import { FEED_PARSER_OPTIONS, NTWC_TSUNAMI_FEED_URL } from './constants';
-import { Alert, Event, Participant } from './models';
+import { Alert, Event } from './models';
 import { fetchXMLDocument, getLinkForCapDocument, handleError } from './utils';
-import TwilioClient from './Twilio';
 import type { AtomFeed, Entry, ParsedAtomFeed } from './types';
 
 const feedParser = new XMLParser(FEED_PARSER_OPTIONS);

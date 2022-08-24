@@ -4,7 +4,6 @@ import * as functions from 'firebase-functions';
 import { CRON_FREQUENCY } from './constants';
 import * as AtomFeed from './AtomFeed';
 import { Participant } from './models';
-import TwilioClient from './Twilio';
 import type { ParticipantArgs } from './models';
 
 // Fetch the service account key JSON file contents
