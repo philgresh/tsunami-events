@@ -4,16 +4,18 @@ import { v4 as uuidv4 } from 'uuid';
 
 type DBParticipant = {
   id: string;
-  phone: string;
   active: boolean;
+  phone?: string;
   email?: string;
+  displayName?: string;
 };
 
 export type ParticipantArgs = {
-  phone: string;
+  phone?: string;
   id?: string;
   active?: boolean;
   email?: string;
+  displayName?: string;
 };
 
 export default class Participant {
@@ -21,11 +23,13 @@ export default class Participant {
   phone: string;
   active: boolean;
   email: string;
+  displayName: string;
 
   constructor(args: ParticipantArgs) {
     this.id = args.id ?? uuidv4();
-    this.phone = args.phone;
+    this.phone = args.phone ?? '';
     this.email = args.email ?? '';
+    this.displayName = args.displayName ?? '';
     this.active = args.active ?? false;
   }
 
@@ -33,7 +37,9 @@ export default class Participant {
   static fromDB = (dbParticipant: DBParticipant) =>
     new Participant({
       ...dbParticipant,
+      phone: dbParticipant?.phone ?? '',
       email: dbParticipant?.email ?? '',
+      displayName: dbParticipant?.displayName ?? '',
     });
 
   /**
@@ -61,23 +67,18 @@ export default class Participant {
   /**
    * `findOrCreate` returns an existing Participant or creates it.
    */
-  static findOrCreate = async (id: string): Promise<Participant> =>
+  static findOrCreate = async (args: ParticipantArgs): Promise<Participant> =>
     admin
       .database()
-      .ref(`participants/${id}`)
+      .ref(`participants/${args.id}`)
       .once('value')
       .then((snapshot) => {
-        if (!snapshot.exists())
-          return new Participant({
-            id,
-            phone: String(process.env.MY_PHONE_NUMBER),
-            active: true,
-          }).create();
+        if (!snapshot.exists()) return new Participant(args).create();
         const existingParticipant = snapshot.val() as DBParticipant;
-        functions.logger.log(`Successfully found Participant '${id}'`);
+        functions.logger.log(`Successfully found Participant '${existingParticipant.id}'`);
         return Participant.fromDB(existingParticipant);
       })
-      .catch((err) => Promise.reject(new Error(`unable to find Participant '${id}': ${err}`)));
+      .catch((err) => Promise.reject(new Error(`unable to find Participant '${args.id}': ${err}`)));
 
   static getAllActive = async () => {
     const activeParticipants: Participant[] = [];
@@ -96,10 +97,11 @@ export default class Participant {
   toDB = (): DBParticipant => {
     const dbParticipant: DBParticipant = {
       id: this.id,
-      phone: this.phone,
       active: this.active,
     };
+    if (this.phone) dbParticipant.phone = this.phone;
     if (this.email) dbParticipant.email = this.email;
+    if (this.displayName) dbParticipant.displayName = this.displayName;
     return dbParticipant;
   };
 }

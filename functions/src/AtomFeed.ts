@@ -103,17 +103,6 @@ export const fetchAndParseLatestEvents = async (): Promise<any> => {
         alerts: createdAlerts.map((alert) => alert.toDB()),
       })
     )
-    .then(async (updatedEvent) => {
-      const allActiveParticipants = await Participant.getAllActive();
-      return Promise.all(
-        allActiveParticipants.map((participant) => {
-          TwilioClient.smsParticipant(
-            participant,
-            JSON.stringify(updatedEvent.alerts?.[updatedEvent.alerts.length - 1].info_list)
-          );
-        })
-      );
-    })
     .catch((err) => {
       return handleError({
         message: `Unable to add Event entry to database: ${err}`,

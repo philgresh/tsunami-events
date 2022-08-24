@@ -3,17 +3,17 @@ import { Participant } from '../src/models';
 import type { ParticipantArgs } from '../src/models';
 
 describe('Participant', () => {
-  const defaultArgs: ParticipantArgs = {
-    phone: '415-867-5309',
-  };
+  const defaultArgs: ParticipantArgs = {};
   const defaultParticipant = new Participant(defaultArgs);
   const fullArgs: ParticipantArgs = {
-    ...defaultArgs,
     id: 'abcd-1234',
+    phone: '415-867-5309',
     email: 'phil@gresham.dev',
+    displayName: 'Phil',
     active: true,
   };
   const fullParticipant = new Participant(fullArgs);
+
   describe('constructor', () => {
     it('assigns a UUID as the ID if none is given', () => {
       expect(validate(defaultParticipant.id)).toBe(true);
@@ -36,6 +36,7 @@ describe('Participant', () => {
         id: 'abcd-1234',
         phone: '415-867-5309',
         email: 'phil@gresham.dev',
+        displayName: 'Phil',
         active: true,
       });
       expect(fromDB.id).toBe(fullParticipant.id);

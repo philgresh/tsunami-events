@@ -5,6 +5,7 @@ import { CRON_FREQUENCY } from './constants';
 import * as AtomFeed from './AtomFeed';
 import { Participant } from './models';
 import TwilioClient from './Twilio';
+import type { ParticipantArgs } from './models';
 
 // Fetch the service account key JSON file contents
 const serviceAccount = require('../.serviceAccountKey.json');
@@ -27,7 +28,7 @@ export const scheduledFetchAndParseLatestEvents = functions.pubsub.schedule(CRON
 });
 
 export const smsParticipant = functions.https.onRequest(async (req, resp) => {
-  const participant = await Participant.findOrCreate(String(req.query['id']) ?? '');
+  const participant = await Participant.findOrCreate({ id: String(req.query['id']) ?? '' });
   const message = decodeURI(String(req.query['message'])) ?? 'Hello there. https://gresham.dev';
   return TwilioClient.smsParticipant(participant, message)
     .then((res) => {
@@ -35,5 +36,22 @@ export const smsParticipant = functions.https.onRequest(async (req, resp) => {
     })
     .catch((err) => {
       resp.status(err.status ?? 500).send(err);
+    });
+});
+
+export const createParticipantOnRegisterUser = functions.auth.user().onCreate(async (user) => {
+  if (!user) return;
+  const { email, displayName, uid } = user;
+  const participantArgs: ParticipantArgs = {
+    id: uid,
+    displayName,
+    email,
+  };
+  return Participant.findOrCreate(participantArgs)
+    .then((part) => {
+      functions.logger.log('Successfully created Participant from new registered user', part.toDB());
+    })
+    .catch((err) => {
+      functions.logger.log('Failed to creat Participant from new registered user', err);
     });
 });
