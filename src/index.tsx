@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './firebase'; // Keep as one of the first imports since the app is initialized here
-import './css/index.css';
 import Router from './Router';
 import reportWebVitals from './reportWebVitals';
 
