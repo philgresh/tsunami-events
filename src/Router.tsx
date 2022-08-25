@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter, Navigate, Outlet, Routes, Route } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import Events from './Events';
 import Home from './Home';
 import Nav from './Nav';
-import Signin from './auth/Signin';
 import { NavPath } from './constants';
+
+const Signin = React.lazy(() => import('./auth/Signin'));
 
 const ProtectedRoute = React.memo(
   ({
@@ -43,7 +44,14 @@ const Router = () => {
           }
         />
         <Route path={NavPath.Events} element={<Events />} />
-        <Route path={NavPath.SignIn} element={<Signin />} />
+        <Route
+          path={NavPath.SignIn}
+          element={
+            <Suspense fallback={<div>Loading...</div>}>
+              <Signin />
+            </Suspense>
+          }
+        />
         <Route
           path="*"
           element={
