@@ -7,6 +7,7 @@
     "serve": "npm run build && npm run build:watch & firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
+    "predeploy": "npm ci && npm run build",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
     "mocha": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/**/*.ts'",
@@ -20,12 +21,13 @@
   "main": "lib/index.js",
   "dependencies": {
     "axios": "^0.27.2",
-    "cap-ts": "git+https://github.com/philgresh/cap-ts#e47baac",
+    "cap-ts": "git+https://github.com/philgresh/cap-ts#bc599f9",
     "dotenv": "^16.0.1",
     "fast-xml-parser": "^4.0.9",
     "firebase-admin": "^10.0.2",
     "firebase-functions": "^3.22.0",
     "lodash": "^4.17.21",
+    "tslib": "^2.4.0",
     "twilio": "^3.80.1",
     "uuid": "^8.3.2"
   },
