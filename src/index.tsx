@@ -1,13 +1,29 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import './firebase'; // Keep as one of the first imports since the app is initialized here
 import Router from './Router';
 import reportWebVitals from './reportWebVitals';
+import { createTheme } from './material';
+
+const App = () => {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+
+  const theme = React.useMemo(() => createTheme(prefersDarkMode), [prefersDarkMode]);
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline enableColorScheme />
+      <Router />
+    </ThemeProvider>
+  );
+};
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
   <React.StrictMode>
-    <Router />
+    <App />
   </React.StrictMode>
 );
 

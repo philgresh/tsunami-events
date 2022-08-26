@@ -4,7 +4,7 @@ import { getAuth } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import Events from './Events';
 import Home from './Home';
-import Nav from './Nav';
+import Navbar from './Nav/Navbar';
 import { NavPath } from './constants';
 
 const Signin = React.lazy(() => import('./auth/Signin'));
@@ -32,7 +32,7 @@ const Router = () => {
   const [user] = useAuthState(getAuth());
   return (
     <BrowserRouter>
-      <Nav />
+      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route
