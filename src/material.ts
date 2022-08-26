@@ -23,4 +23,10 @@ export const createTheme = (prefersDarkMode: boolean) =>
       //   },
       // },
     },
+    typography: {
+      /** Use h5 for site title */
+      h5: {
+        fontFamily: ['Poppins', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'].join(','),
+      },
+    },
   });

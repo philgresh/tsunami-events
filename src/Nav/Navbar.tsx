@@ -40,12 +40,27 @@ export default function DrawerAppBar(props: Props) {
     setMobileOpen(!mobileOpen);
   };
 
-  const drawer = (
+  const SiteTitle = () => (
+    <Typography
+      variant="h5"
+      noWrap
+      component="a"
+      href=""
+      sx={{
+        mr: 2,
+        display: { xs: 'flex', md: 'none' },
+        flexGrow: 1,
+        fontWeight: 700,
+        color: 'inherit',
+        textDecoration: 'none',
+      }}
+    >
+      Tsunami Events
+    </Typography>
+  );
+
+  const renderDrawer = () => (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
-        Tsunami Events
-      </Typography>
-      <Divider />
       <List>
         {navItems.map((item) => (
           <ListItem key={item.title} disablePadding>
@@ -71,9 +86,7 @@ export default function DrawerAppBar(props: Props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}>
-            Tsunami Events
-          </Typography>
+          <SiteTitle />
           <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             {navItems.map((item) => (
               <Button key={item.title}>{item.title}</Button>
@@ -94,7 +107,7 @@ export default function DrawerAppBar(props: Props) {
             '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
           }}
         >
-          {drawer}
+          {renderDrawer()}
         </Drawer>
       </Box>
     </Box>
