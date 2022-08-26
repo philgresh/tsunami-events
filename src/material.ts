@@ -1,27 +1,17 @@
 import { createTheme as MuiCreateTheme } from '@mui/material/styles';
+import cyan from '@mui/material/colors/cyan';
+import deepPurple from '@mui/material/colors/deepPurple';
 
 export const createTheme = (prefersDarkMode: boolean) =>
   MuiCreateTheme({
     palette: {
       mode: prefersDarkMode ? 'dark' : 'light',
       primary: {
-        main: '#26c6da',
+        main: cyan[400],
       },
       secondary: {
-        main: '#7e57c2',
+        main: deepPurple[400],
       },
-    },
-    components: {
-      // MuiLink: {
-      //   defaultProps: {
-      //     component: LinkBehavior,
-      //   } as LinkProps,
-      // },
-      // MuiButtonBase: {
-      //   defaultProps: {
-      //     LinkComponent: LinkBehavior,
-      //   },
-      // },
     },
     typography: {
       /** Use h5 for site title */

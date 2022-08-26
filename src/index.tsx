@@ -10,11 +10,11 @@ import { createTheme } from './material';
 
 const App = () => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-
-  const theme = React.useMemo(() => createTheme(prefersDarkMode), [prefersDarkMode]);
+  // TODO: Fix issues with light mode, e.g. active Tab in Navbar disappearing into background
+  const theme = React.useMemo(() => createTheme(true), []);
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline enableColorScheme />
+      <CssBaseline enableColorScheme={prefersDarkMode} />
       <Router />
     </ThemeProvider>
   );

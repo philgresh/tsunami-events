@@ -3,8 +3,6 @@ import { BrowserRouter, Navigate, Outlet, Routes, Route } from 'react-router-dom
 import { getAuth } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import Container from '@mui/material/Container';
-import Events from './Events';
-import Home from './Home';
 import Navbar from './Nav/Navbar';
 import { NavPath, NAVBAR_HEIGHT } from './constants';
 
@@ -34,10 +32,10 @@ const Router = () => {
   return (
     <BrowserRouter>
       <Navbar />
-      <Container maxWidth="md" sx={{ display: 'fixed', top: NAVBAR_HEIGHT }} component="main">
+      <Container maxWidth="md" sx={{ position: 'fixed', top: NAVBAR_HEIGHT }} component="main">
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path={NavPath.Events} element={<Events />} />
+          <Route path="/" element={<div>Home</div>} />
+          <Route path={NavPath.Events} element={<div>Events</div>} />
           <Route
             path={NavPath.Profile}
             element={

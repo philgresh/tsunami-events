@@ -103,7 +103,7 @@ export default function DrawerAppBar(props: Props) {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <AppBar component="nav" sx={{ height: NAVBAR_HEIGHT }}>
+      <AppBar component="nav" sx={{ height: NAVBAR_HEIGHT }} color="secondary">
         <Toolbar>
           <IconButton
             color="inherit"
