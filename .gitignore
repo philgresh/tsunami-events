@@ -27,6 +27,9 @@ node_modules
 # testing
 coverage
 
+# Lighthouse reports
+*.report.html
+
 # production
 build
 .serviceAccountKey.json
