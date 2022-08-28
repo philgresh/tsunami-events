@@ -1,6 +1,11 @@
 {
-  "name": "frontend",
+  "name": "tsunami-alert-gcp",
   "version": "0.1.0",
+  "author": "Phil Gresham",
+  "bugs": {
+    "email": "phil@gresham.dev",
+    "url": "https://github.com/philgresh/tsunami-alert-gcp/issues"
+  },
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.0",
