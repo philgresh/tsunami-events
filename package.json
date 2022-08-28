@@ -10,6 +10,7 @@
     "dot-env": "^0.0.1",
     "firebase": "^9.9.3",
     "firebaseui": "^6.0.1",
+    "lodash": "^4.17.21",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-firebase-hooks": "^5.0.3",
@@ -20,11 +21,11 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "deploy": "react-scripts build && cd ./functions && npm run build",
+    "start": "export BROWSER='firefox' && react-app-rewired start",
+    "build": "react-app-rewired build",
+    "deploy": "npm run build && cd ./functions && npm run build",
     "postdeploy": "./scripts/deploy.sh $1",
-    "test": "react-scripts test",
+    "test": "react-app-rewired test",
     "eject": "react-scripts eject",
     "emulators:start": "export env='LOCAL' && firebase emulators:start --import=\"./local_data\"",
     "emulators:start:export": "export env='LOCAL' && firebase emulators:start --import=\"./local_data\" --export-on-exit"
@@ -52,9 +53,13 @@
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
+    "@types/lodash": "^4.14.184",
     "@types/node": "^16.11.38",
     "@types/react": "^18.0.12",
     "@types/react-dom": "^18.0.5",
-    "@types/styled-components": "^5.1.26"
+    "@types/styled-components": "^5.1.26",
+    "babel-plugin-import": "^1.13.5",
+    "customize-cra": "^1.0.0",
+    "react-app-rewired": "^2.2.1"
   }
 }
