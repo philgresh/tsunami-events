@@ -1,22 +1,22 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, lazy, memo } from 'react';
 import { BrowserRouter, Navigate, Outlet, Routes, Route } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import Events from './Events';
-import Home from './Home';
-import Nav from './Nav';
-import { NavPath } from './constants';
+import Container from '@mui/material/Container';
+import Navbar from './Nav';
+import { NavPath, NAVBAR_HEIGHT } from './constants';
+import type { ReactNode } from 'react';
 
-const Signin = React.lazy(() => import('./auth/Signin'));
+const Signin = lazy(() => import('./auth/Signin'));
 
-const ProtectedRoute = React.memo(
+const ProtectedRoute = memo(
   ({
     isAllowed,
     redirectPath = NavPath.Landing,
     children,
   }: {
     isAllowed: boolean;
-    children?: React.ReactNode;
+    children?: ReactNode;
     redirectPath?: string;
   }) => {
     if (!isAllowed) {
@@ -32,35 +32,37 @@ const Router = () => {
   const [user] = useAuthState(getAuth());
   return (
     <BrowserRouter>
-      <Nav />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route
-          path={NavPath.Profile}
-          element={
-            <ProtectedRoute isAllowed={!!user}>
-              <div>Profile</div>
-            </ProtectedRoute>
-          }
-        />
-        <Route path={NavPath.Events} element={<Events />} />
-        <Route
-          path={NavPath.SignIn}
-          element={
-            <Suspense fallback={<div>Loading...</div>}>
-              <Signin />
-            </Suspense>
-          }
-        />
-        <Route
-          path="*"
-          element={
-            <main style={{ padding: '1rem' }}>
-              <p>There's nothing here!</p>
-            </main>
-          }
-        />
-      </Routes>
+      <Navbar />
+      <Container maxWidth="md" sx={{ position: 'fixed', top: NAVBAR_HEIGHT }} component="main">
+        <Routes>
+          <Route path="/" element={<div>Home</div>} />
+          <Route path={NavPath.Events} element={<div>Events</div>} />
+          <Route
+            path={NavPath.Account}
+            element={
+              <ProtectedRoute isAllowed={!!user} redirectPath={NavPath.SignIn}>
+                <div>Account</div>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={NavPath.SignIn}
+            element={
+              <Suspense fallback={<div>Loading...</div>}>
+                <Signin />
+              </Suspense>
+            }
+          />
+          <Route
+            path="*"
+            element={
+              <main style={{ padding: '1rem' }}>
+                <p>There's nothing here!</p>
+              </main>
+            }
+          />
+        </Routes>
+      </Container>
     </BrowserRouter>
   );
 };
