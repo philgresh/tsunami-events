@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import * as firebaseui from 'firebaseui';
 import { getAuth, EmailAuthProvider, GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -7,6 +6,7 @@ import styled from 'styled-components';
 import StyledFirebaseAuth from '../StyledFirebaseUI';
 import 'firebaseui/dist/firebaseui.css';
 import { NavPath } from '../../constants';
+import type * as firebaseui from 'firebaseui';
 
 const StyledContainer = styled.div`
   position: fixed;
@@ -31,13 +31,13 @@ const Login = () => {
     if (loading) {
       return;
     }
-    if (user) navigate(NavPath.Profile);
+    if (user) navigate(NavPath.Account);
   }, [navigate, user, loading]);
 
   const config: firebaseui.auth.Config = {
     signInFlow: 'popup',
     signInOptions: [EmailAuthProvider.PROVIDER_ID, GoogleAuthProvider.PROVIDER_ID, GithubAuthProvider.PROVIDER_ID],
-    signInSuccessUrl: NavPath.Profile,
+    signInSuccessUrl: NavPath.Account,
     siteName: 'Tsunami Events',
     callbacks: {
       signInSuccessWithAuthResult: (_authResult, _redirectUrl) => {

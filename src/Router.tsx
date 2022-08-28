@@ -37,10 +37,10 @@ const Router = () => {
           <Route path="/" element={<div>Home</div>} />
           <Route path={NavPath.Events} element={<div>Events</div>} />
           <Route
-            path={NavPath.Profile}
+            path={NavPath.Account}
             element={
               <ProtectedRoute isAllowed={!!user} redirectPath={NavPath.SignIn}>
-                <div>Profile</div>
+                <div>Account</div>
               </ProtectedRoute>
             }
           />

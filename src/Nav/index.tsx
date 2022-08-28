@@ -33,7 +33,7 @@ const Nav = () => {
       <Link to={NavPath.Events}>Events</Link>
       {user ? (
         <>
-          <Link to={NavPath.Profile}>Profile</Link>
+          <Link to={NavPath.Account}>Account</Link>
           <StyledSignoutButton onClick={handleSignOut}>Sign Out</StyledSignoutButton>
         </>
       ) : (
