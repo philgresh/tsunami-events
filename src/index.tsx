@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { ThemeProvider } from '@mui/material/styles';
@@ -11,7 +11,7 @@ import { createTheme } from './material';
 const App = () => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   // TODO: Fix issues with light mode, e.g. active Tab in Navbar disappearing into background
-  const theme = React.useMemo(() => createTheme(true), []);
+  const theme = useMemo(() => createTheme(true), []);
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline enableColorScheme={prefersDarkMode} />
@@ -22,9 +22,9 @@ const App = () => {
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
-  <React.StrictMode>
+  <StrictMode>
     <App />
-  </React.StrictMode>
+  </StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

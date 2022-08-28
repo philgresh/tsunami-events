@@ -1,21 +1,22 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, lazy, memo } from 'react';
 import { BrowserRouter, Navigate, Outlet, Routes, Route } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import Container from '@mui/material/Container';
-import Navbar from './Nav/Navbar';
+import Navbar from './Nav';
 import { NavPath, NAVBAR_HEIGHT } from './constants';
+import type { ReactNode } from 'react';
 
-const Signin = React.lazy(() => import('./auth/Signin'));
+const Signin = lazy(() => import('./auth/Signin'));
 
-const ProtectedRoute = React.memo(
+const ProtectedRoute = memo(
   ({
     isAllowed,
     redirectPath = NavPath.Landing,
     children,
   }: {
     isAllowed: boolean;
-    children?: React.ReactNode;
+    children?: ReactNode;
     redirectPath?: string;
   }) => {
     if (!isAllowed) {

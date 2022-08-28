@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { getAuth } from 'firebase/auth';
 import { Link as RouterLink } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
@@ -10,11 +10,12 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { NavPath } from '../constants';
 import { stringAvatar } from './utils';
+import type { MouseEvent } from 'react';
 import type { NavItem } from './types';
 
 type Props = {
   anchorElUser: HTMLElement | null;
-  handleOpen: (event: React.MouseEvent<HTMLElement>) => void;
+  handleOpen: (event: MouseEvent<HTMLElement>) => void;
   handleClose: () => void;
   currentPath?: string;
 };

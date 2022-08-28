@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -18,10 +18,11 @@ import UserMenu from './UserMenu';
 import { DRAWER_WIDTH, NAV_ITEMS } from './constants';
 import { useRouteMatch } from './utils';
 import { getAuth } from 'firebase/auth';
+import type { MouseEvent } from 'react';
 
 export default function DrawerAppBar() {
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   // You need to provide the routes in descendant order.
   // This means that if you have nested routes like:
   // users, users/new, users/edit.
@@ -36,7 +37,7 @@ export default function DrawerAppBar() {
     setMobileOpen(!mobileOpen);
   };
 
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+  const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
 
