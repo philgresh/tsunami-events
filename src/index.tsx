@@ -11,7 +11,7 @@ import { createTheme } from './material';
 const App = () => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   // TODO: Fix issues with light mode, e.g. active Tab in Navbar disappearing into background
-  const theme = useMemo(() => createTheme(true), []);
+  const theme = useMemo(() => createTheme(prefersDarkMode), [prefersDarkMode]);
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline enableColorScheme={prefersDarkMode} />

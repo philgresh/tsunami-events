@@ -1,13 +1,7 @@
 import React from 'react';
 import { getAuth } from 'firebase/auth';
 import { Link as RouterLink } from 'react-router-dom';
-import Avatar from '@mui/material/Avatar';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
+import { Avatar, Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
 import { NavPath } from '../constants';
 import { stringAvatar } from './utils';
 import type { MouseEvent } from 'react';

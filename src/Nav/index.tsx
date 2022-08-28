@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import MenuIcon from '@mui/icons-material/Menu';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
+import {
+  AppBar,
+  Box,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Tab,
+  Tabs,
+  Toolbar,
+  Typography,
+} from '@mui/material';
+import { Menu as MenuIcon } from '@mui/icons-material';
 import { NavPath, NAVBAR_HEIGHT } from '../constants';
 import UserMenu from './UserMenu';
 import { DRAWER_WIDTH, NAV_ITEMS } from './constants';
@@ -20,7 +22,35 @@ import { useRouteMatch } from './utils';
 import { getAuth } from 'firebase/auth';
 import type { MouseEvent } from 'react';
 
-export default function DrawerAppBar() {
+/** `NavTabs` renders routing buttons on desktop nav bar.
+ * @link https://mui.com/material-ui/guides/routing/#button
+ */
+const NavTabs = React.memo(
+  ({ hasUser, currentPath }: { hasUser: boolean; currentPath: string | undefined }) => {
+    let navItems = NAV_ITEMS;
+    if (!hasUser)
+      navItems = [
+        ...NAV_ITEMS,
+        {
+          title: 'Sign In',
+          path: NavPath.SignIn,
+          matchingPaths: new Set([NavPath.SignIn]),
+        },
+      ];
+    // Give `Tabs` a value of a matching `currentPath` OR false to avoid console errors
+    const value = navItems.some((navItem) => navItem.matchingPaths.has(currentPath ?? '')) && (currentPath ?? false);
+    return (
+      <Tabs value={value} sx={{ display: { xs: 'none', sm: 'block' } }} aria-label="Site navigation">
+        {navItems.map(({ title, path }) => (
+          <Tab key={title} label={title} value={path} to={path} component={RouterLink} />
+        ))}
+      </Tabs>
+    );
+  },
+  (prevProps, nextProps) => prevProps === nextProps
+);
+
+const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   // You need to provide the routes in descendant order.
@@ -47,7 +77,7 @@ export default function DrawerAppBar() {
 
   const SiteTitle = () => (
     <Typography
-      variant="h5" // Overriden within theme'../material.ts'
+      variant="h5" // Overriden within theme at '../material.ts'
       noWrap
       component={RouterLink}
       to="/"
@@ -63,22 +93,6 @@ export default function DrawerAppBar() {
       Tsunami Events
     </Typography>
   );
-
-  /** `MyTabs` renders routing buttons on desktop nav bar.
-   * @link https://mui.com/material-ui/guides/routing/#button
-   */
-  const renderTabs = () => {
-    return (
-      <Tabs value={currentPath} sx={{ display: { xs: 'none', sm: 'block' } }}>
-        <Tab value={'undefined'} sx={{ display: 'none' }} />
-        <Tab value={'/'} sx={{ display: 'none' }} />
-        {NAV_ITEMS.map(({ title, path }) => (
-          <Tab key={title} label={title} value={path} to={path} component={RouterLink} />
-        ))}
-        {!user && <Tab label="Sign In" value={NavPath.SignIn} to={NavPath.SignIn} component={RouterLink} />}
-      </Tabs>
-    );
-  };
 
   const renderDrawer = () => (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
@@ -113,7 +127,7 @@ export default function DrawerAppBar() {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <AppBar component="nav" sx={{ height: NAVBAR_HEIGHT }} color="secondary">
+      <AppBar component="nav" sx={{ height: NAVBAR_HEIGHT }}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -125,7 +139,7 @@ export default function DrawerAppBar() {
             <MenuIcon />
           </IconButton>
           <SiteTitle />
-          {renderTabs()}
+          <NavTabs hasUser={!!user} currentPath={currentPath} />
           <UserMenu
             anchorElUser={anchorElUser}
             handleOpen={handleOpenUserMenu}
@@ -152,4 +166,6 @@ export default function DrawerAppBar() {
       </Box>
     </Box>
   );
-}
+};
+
+export default Navbar;
