@@ -27,7 +27,7 @@
   },
   "scripts": {
     "start": "export BROWSER='firefox' && react-app-rewired start",
-    "build": "react-app-rewired build",
+    "build": "mkdir -p build && react-app-rewired build",
     "deploy": "npm run build && cd ./functions && npm run build",
     "postdeploy": "./scripts/deploy.sh $1",
     "test": "react-app-rewired test",

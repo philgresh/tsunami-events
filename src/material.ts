@@ -3,6 +3,10 @@ import { cyan, purple } from '@mui/material/colors';
 import { deepmerge } from '@mui/utils';
 import type { ThemeOptions } from '@mui/material/styles';
 
+/**
+ * `createTheme` creates a theme based on whether or not the user prefers dark mode.
+ * @link https://material.io/resources/color/#!/?view.left=1&view.right=0&primary.color=26C6DA&secondary.color=6A1B9A
+ */
 export const createTheme = (prefersDarkMode: boolean) => {
   const theme: ThemeOptions = {
     palette: {
