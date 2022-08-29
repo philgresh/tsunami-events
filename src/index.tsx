@@ -16,6 +16,10 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <Helmet titleTemplate="Tsunami.Events - %s">
         <html lang="en" />
+        <meta
+          name="description"
+          content="Tsunami.Events displays recent tsunami alerts and sends SMS updates to participants"
+        />
       </Helmet>
       <CssBaseline enableColorScheme={prefersDarkMode} />
       <Router />
