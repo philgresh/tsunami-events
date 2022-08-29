@@ -1,29 +1,14 @@
-import 'dotenv/config';
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
-import { CRON_FREQUENCY } from './constants';
+import './firebase'; // Keep near top, initializes Firebase app
+import { CRON_FREQUENCY, NTWC_TSUNAMI_FEED_URL } from './constants';
 import * as AtomFeed from './AtomFeed';
 import { Participant } from './models';
 import type { ParticipantArgs } from './models';
-
-// Fetch the service account key JSON file contents
-const serviceAccount = require('../.serviceAccountKey.json');
-
-let options: admin.AppOptions = {
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: `https://${process.env.GCLOUD_PROJECT}-default-rtdb.firebaseio.com`,
-};
-
-// Initialize the app with a service account, granting admin privileges
-if (process.env.env === 'LOCAL') {
-  options = functions.config().firebase;
-}
-admin.initializeApp(options);
-functions.logger.log('App initialized');
+import type { FetchAndParseEventResult } from './AtomFeed';
 
 export const scheduledFetchAndParseLatestEvents = functions.pubsub.schedule(CRON_FREQUENCY).onRun((context) => {
   functions.logger.log(`scheduledFetchAndParseLatestEvents runs ${CRON_FREQUENCY}`, context);
-  return AtomFeed.fetchAndParseLatestEvents();
+  return AtomFeed.fetchAndParseEvent(NTWC_TSUNAMI_FEED_URL, 'NTWC Tsunami Atom Feed');
 });
 
 export const createParticipantOnRegisterUser = functions.auth.user().onCreate(async (user) => {
