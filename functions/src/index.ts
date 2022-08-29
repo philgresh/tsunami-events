@@ -27,3 +27,61 @@ export const createParticipantOnRegisterUser = functions.auth.user().onCreate(as
       functions.logger.log('Failed to creat Participant from new registered user', err);
     });
 });
+
+export const manuallyAddEvent = functions.https.onRequest(async (req, res) => {
+  if (!req?.body?.['eventURLs']?.length) {
+    res.status(400).send('A request body is required');
+    return Promise.reject();
+  }
+
+  const eventURLs: string[] = req.body.eventURLs;
+
+  functions.logger.log('Received event URLs:', eventURLs);
+
+  const fetchAndParseEventPromises: Promise<FetchAndParseEventResult>[] = [];
+
+  for (const eventURL of eventURLs) {
+    try {
+      // Validate each eventURL before trying to fetchAndParseEvent using it
+      const url = new URL(eventURL);
+      fetchAndParseEventPromises.push(AtomFeed.fetchAndParseEvent(url.toString(), 'manually added event'));
+    } catch (e: any) {
+      const errMessage = `Unable to manually add event: '${eventURL}'`;
+      functions.logger.error('Unable to manually add event', { eventURL, error: `${e}` });
+      res.status(400).send(errMessage);
+      return Promise.reject(errMessage);
+    }
+  }
+
+  return Promise.allSettled(fetchAndParseEventPromises)
+    .then((results) => {
+      const successfulEvents: {
+        eventID: string;
+        eventURL: string;
+      }[] = [];
+      const unsuccessfulEvents: {
+        eventURL: string;
+      }[] = [];
+      results.forEach((result, i) => {
+        const eventURL = eventURLs[i];
+        if (result.status === 'fulfilled') {
+          successfulEvents.push({
+            eventURL,
+            eventID: result.value.id,
+          });
+        } else {
+          unsuccessfulEvents.push({ eventURL });
+        }
+      });
+
+      const resp = { successfulEvents, unsuccessfulEvents };
+
+      functions.logger.log('Manually added events', resp);
+      res.status(200).send(resp);
+    })
+    .catch((err) => {
+      const errMsg = `Error manually adding events: ${err}`;
+      functions.logger.error(errMsg);
+      res.status(500).send(errMsg);
+    });
+});
