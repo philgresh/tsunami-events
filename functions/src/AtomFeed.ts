@@ -81,6 +81,12 @@ export const fetchAndParseEvent = async (url: string, urlTitle: string): Promise
     });
   }
 
+  if (!parsedAtomFeed.feedID)
+    return handleError({
+      message: `Error on fetchAndParseEvent: given Atom feed was not parsed correctly`,
+      statusCode: 'invalid-argument',
+      data: { url, parsedAtomFeed },
+    });
   const event = new Event(parsedAtomFeed.feedID);
 
   await event.create().catch((err) => {
@@ -91,11 +97,11 @@ export const fetchAndParseEvent = async (url: string, urlTitle: string): Promise
     });
   });
 
-  // Use `allSettled` instead of `all` to not block on network errors, etc.
+  // TODO: Use `allSettled` instead of `all` to not block on network errors, etc.
   const createdAlerts = await Promise.all(
     parsedAtomFeed.entries.map((entry) =>
       fetchXMLDocument(entry.capXMLURL)
-        .then((alertDoc) => Alert.parseFromXML(alertDoc, event.id))
+        .then((alertDoc) => Alert.parseFromXML(alertDoc, event.id, entry.capXMLURL))
         .then((alert) => alert.create())
         .catch((err) => {
           return handleError({

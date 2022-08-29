@@ -24,6 +24,7 @@ export type DBAlert = {
   incidents: string | undefined;
   restriction: string | undefined;
   note: string | undefined;
+  url: string | undefined;
 };
 
 /**
@@ -47,8 +48,9 @@ export default class Alert {
   incidents: string | undefined;
   restriction: string | undefined;
   note: string | undefined;
+  url: string | undefined;
 
-  constructor(capAlert: CAP_1_2.Alert, eventID?: string) {
+  constructor(capAlert: CAP_1_2.Alert, eventID?: string, url?: string) {
     const capAlertJSON = capAlert.toJSON();
     this.identifier = capAlertJSON.identifier;
     this.sender = capAlertJSON.sender;
@@ -66,15 +68,16 @@ export default class Alert {
     this.restriction = capAlertJSON.restriction;
     this.note = capAlertJSON.note;
     this.eventID = eventID;
+    this.url = url;
   }
 
   /** `parseFromXML` attempts to parse a CAP_Alert from a provided XML document and returns a
    * new Alert if successful.
    */
-  static parseFromXML = async (alertDoc: string, eventID?: string): Promise<Alert> => {
+  static parseFromXML = async (alertDoc: string, eventID?: string, url?: string): Promise<Alert> => {
     try {
       const capAlert = CAP_1_2.Alert.fromXML(alertDoc);
-      const alert = new Alert(capAlert, eventID);
+      const alert = new Alert(capAlert, eventID, url);
       functions.logger.log(`Alert successfully parsed`, alert.toDB());
 
       return Promise.resolve(alert);
@@ -99,6 +102,10 @@ export default class Alert {
    */
   create = async (): Promise<Alert> => {
     const strippedValue = this.toDB();
+    if (!this.identifier) {
+      functions.logger.error('Unable to create Alert with empty identifier', this.toDB());
+      return Promise.reject('Unable to create Alert with empty identifier');
+    }
     functions.logger.log(`Creating Alert '${this.identifier}'`, strippedValue);
     return admin
       .database()
@@ -106,7 +113,7 @@ export default class Alert {
       .child(`alerts/${this.identifier}`)
       .set(strippedValue, (err) => {
         if (err) {
-          const errMsg = `Unable to add new Event with ID '${this.identifier}': ${err}`;
+          const errMsg = `Unable to add new Alert with ID '${this.identifier}': ${err}`;
           functions.logger.error(errMsg, err);
           return Promise.reject(errMsg);
         }
@@ -143,6 +150,7 @@ export default class Alert {
         restriction: this.restriction ?? '',
         note: this.note ?? '',
         eventID: this.eventID ?? '',
+        url: this.url,
       }),
       (_, val) => {
         if (isNil(val)) return;

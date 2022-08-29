@@ -38,8 +38,9 @@ export default class Event {
   /**
    * `create` sets an Event on the `events` child of the DB.
    */
-  create = async (): Promise<Event> =>
-    admin
+  create = async (): Promise<Event> => {
+    if (!this.id) return Promise.reject('Unable to create Event: ID is empty');
+    return admin
       .database()
       .ref()
       .child(`events/${this.id}`)
@@ -56,6 +57,7 @@ export default class Event {
         return Promise.resolve(this);
       })
       .catch((err) => Promise.reject(err));
+  };
 
   /** `updateAlerts` updates the `alerts` array of strings on the DB to match the local version. */
   updateAlerts = async (): Promise<Event> => {

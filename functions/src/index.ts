@@ -2,9 +2,9 @@ import * as functions from 'firebase-functions';
 import './firebase'; // Keep near top, initializes Firebase app
 import { CRON_FREQUENCY, NTWC_TSUNAMI_FEED_URL } from './constants';
 import * as AtomFeed from './AtomFeed';
-import { Participant } from './models';
+import { Alert, Participant } from './models';
+import { fetchXMLDocument } from './utils';
 import type { ParticipantArgs } from './models';
-import type { FetchAndParseEventResult } from './AtomFeed';
 
 export const scheduledFetchAndParseLatestEvents = functions.pubsub.schedule(CRON_FREQUENCY).onRun((context) => {
   functions.logger.log(`scheduledFetchAndParseLatestEvents runs ${CRON_FREQUENCY}`, context);
@@ -28,59 +28,77 @@ export const createParticipantOnRegisterUser = functions.auth.user().onCreate(as
     });
 });
 
-export const manuallyAddEvent = functions.https.onRequest(async (req, res) => {
-  if (!req?.body?.['eventURLs']?.length) {
+/**
+ * `manuallyAddAlert` allows admin to manually add Alerts from a URL.
+ * Usage: POST /manuallyAddAlert
+ * @body `{ "alertURLs": string[] }`
+ * @returns `
+ * {
+ *    successfulAlerts: {
+ *      alertID: string;
+ *      alertURL: string;
+ *    }[],
+ *    unsuccessfulAlerts: {
+ *       alertURL: string;
+ *       reason: string;
+ *    }[]
+ * }
+ * `
+ */
+export const manuallyAddAlert = functions.https.onRequest(async (req, res) => {
+  if (!req?.body?.['alertURLs']?.length) {
     res.status(400).send('A request body is required');
     return Promise.reject();
   }
 
-  const eventURLs: string[] = req.body.eventURLs;
+  const alertURLs: string[] = req.body.alertURLs;
 
-  functions.logger.log('Received event URLs:', eventURLs);
+  functions.logger.log('Received alert URLs', alertURLs);
 
-  const fetchAndParseEventPromises: Promise<FetchAndParseEventResult>[] = [];
+  const alertPromises: Promise<Alert>[] = [];
 
-  for (const eventURL of eventURLs) {
+  for (const alertURL of alertURLs) {
     try {
-      // Validate each eventURL before trying to fetchAndParseEvent using it
-      const url = new URL(eventURL);
-      fetchAndParseEventPromises.push(AtomFeed.fetchAndParseEvent(url.toString(), 'manually added event'));
+      // Validate each alertURL before trying to use it
+      const url = new URL(alertURL);
+      const alertXML = await fetchXMLDocument(url.toString());
+      const alert = await Alert.parseFromXML(alertXML, undefined, url.toString());
+      alertPromises.push(alert.create());
     } catch (e: any) {
-      const errMessage = `Unable to manually add event: '${eventURL}'`;
-      functions.logger.error('Unable to manually add event', { eventURL, error: `${e}` });
-      res.status(400).send(errMessage);
-      return Promise.reject(errMessage);
+      const errMessage = `Unable to manually add alert '${alertURL}': ${e?.message ?? e}`;
+      alertPromises.push(Promise.reject(errMessage));
     }
   }
 
-  return Promise.allSettled(fetchAndParseEventPromises)
+  return Promise.allSettled(alertPromises)
     .then((results) => {
-      const successfulEvents: {
-        eventID: string;
-        eventURL: string;
+      const successfulAlerts: {
+        alertID: string;
+        alertURL: string;
       }[] = [];
-      const unsuccessfulEvents: {
-        eventURL: string;
+      const unsuccessfulAlerts: {
+        alertURL: string;
+        reason: string;
       }[] = [];
       results.forEach((result, i) => {
-        const eventURL = eventURLs[i];
+        const alertURL = alertURLs[i];
         if (result.status === 'fulfilled') {
-          successfulEvents.push({
-            eventURL,
-            eventID: result.value.id,
+          successfulAlerts.push({
+            alertURL,
+            alertID: result.value.identifier,
           });
         } else {
-          unsuccessfulEvents.push({ eventURL });
+          unsuccessfulAlerts.push({ alertURL, reason: `${result.reason}` });
         }
       });
 
-      const resp = { successfulEvents, unsuccessfulEvents };
+      const resp = { successfulAlerts, unsuccessfulAlerts };
 
-      functions.logger.log('Manually added events', resp);
+      functions.logger.log('Manually added alerts', resp);
       res.status(200).send(resp);
     })
     .catch((err) => {
-      const errMsg = `Error manually adding events: ${err}`;
+      const errMsg = `Error manually adding alerts: ${err}`;
       functions.logger.error(errMsg);
       res.status(500).send(errMsg);
     });
