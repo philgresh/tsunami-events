@@ -1,9 +1,10 @@
 import React, { useMemo, StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
+import Helmet from 'react-helmet';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import './firebase'; // Keep as one of the first imports since the app is initialized here
+import './firebase'; // Keep as one of the first imports since the FIrebase app is initialized here
 import Router from './Router';
 import reportWebVitals from './reportWebVitals';
 import { createTheme } from './material';
@@ -13,6 +14,9 @@ const App = () => {
   const theme = useMemo(() => createTheme(prefersDarkMode), [prefersDarkMode]);
   return (
     <ThemeProvider theme={theme}>
+      <Helmet titleTemplate="Tsunami.Events - %s">
+        <html lang="en" />
+      </Helmet>
       <CssBaseline enableColorScheme={prefersDarkMode} />
       <Router />
     </ThemeProvider>
