@@ -7,7 +7,7 @@ import { CAP_1_2 } from 'cap-ts';
  * `DBAlert` represents the shape of an Alert on the database.
  * Note: Realtime Database does not allow `undefined` values so we strip those via the `toDB` method.
  */
-type DBAlert = {
+export type DBAlert = {
   eventID: string | undefined;
   identifier: string;
   sender: string;

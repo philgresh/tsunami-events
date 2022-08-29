@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 
-type DBEvent = {
+export type DBEvent = {
   id: string;
   alerts: string[];
 };
