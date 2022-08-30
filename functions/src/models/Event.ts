@@ -4,20 +4,41 @@ import * as functions from 'firebase-functions';
 export type DBEvent = {
   id: string;
   alerts: string[];
+  /** Unix millis, when we created this Event. */
+  createdAt: number;
+  /** Unix millis, matches the `updated` timestamp on the feed. */
+  updated: number;
+};
+
+export type EventArgs = {
+  id: string;
+  alertIDs?: string[];
+  updated?: Date;
+  createdAt?: Date;
 };
 
 export default class Event {
   id: string;
   /** `alertIDs` contains IDs of Alerts saved at the DB's highest level */
   alertIDs: string[];
+  updated: Date;
+  createdAt: Date;
 
-  constructor(id: string, alertIDs?: string[]) {
-    this.id = id;
-    this.alertIDs = alertIDs ?? [];
+  constructor(args: EventArgs) {
+    this.id = args.id;
+    this.alertIDs = args.alertIDs ?? [];
+    this.updated = args.updated ?? new Date();
+    this.createdAt = new Date();
   }
 
   /** `fromDB` converts a DBEvent to an Event instance */
-  static fromDB = (dbEvent: DBEvent) => new Event(dbEvent.id, dbEvent.alerts);
+  static fromDB = (dbEvent: DBEvent) =>
+    new Event({
+      id: dbEvent.id,
+      alertIDs: dbEvent.alerts,
+      updated: new Date(dbEvent.updated),
+      createdAt: new Date(dbEvent.createdAt),
+    });
 
   /**
    * `findOrCreate` returns an existing Event or creates it.
@@ -28,7 +49,7 @@ export default class Event {
       .ref(`events/${id}`)
       .once('value')
       .then((snapshot) => {
-        if (!snapshot.exists()) return new Event(id).create();
+        if (!snapshot.exists()) return new Event({ id }).create();
         const existingEvent = snapshot.val() as DBEvent;
         functions.logger.log(`Successfully found Event '${id}'`);
         return Event.fromDB(existingEvent);
@@ -101,5 +122,10 @@ export default class Event {
   };
 
   /** `toDB` converts an Event to a DBEvent POJO. */
-  toDB = (): DBEvent => ({ id: this.id ?? 'no-id', alerts: this.alertIDs });
+  toDB = (): DBEvent => ({
+    id: this.id ?? 'no-id',
+    alerts: this.alertIDs,
+    updated: this.updated.valueOf(),
+    createdAt: this.createdAt.valueOf(),
+  });
 }

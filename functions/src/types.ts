@@ -38,4 +38,5 @@ export type ErrorResp = {
 export type ParsedAtomFeed = {
   feedID: string;
   entries: Entry[];
+  updated: Date;
 };

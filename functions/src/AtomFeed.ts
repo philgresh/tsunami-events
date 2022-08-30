@@ -34,6 +34,7 @@ export const parseAtomFeed = async (xmlStr: string): Promise<ParsedAtomFeed> => 
   const parsedAtomFeed: ParsedAtomFeed = {
     feedID: (feedEvent?.id ?? '').replace('urn:uuid:', ''),
     entries: [],
+    updated: feedEvent.updated ? new Date(feedEvent.updated) : new Date(),
   };
 
   (feedEvent?.entry ?? []).forEach((entry) => {
@@ -87,7 +88,7 @@ export const fetchAndParseEvent = async (url: string, urlTitle: string): Promise
       statusCode: 'invalid-argument',
       data: { url, parsedAtomFeed },
     });
-  const event = new Event(parsedAtomFeed.feedID);
+  const event = new Event({ id: parsedAtomFeed.feedID, updated: parsedAtomFeed.updated });
 
   await event.create().catch((err) => {
     return handleError({
