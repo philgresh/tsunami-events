@@ -3,14 +3,12 @@ import path from 'path';
 import 'dotenv/config';
 import { AxiosResponse } from 'axios';
 import mockAxios from 'jest-mock-axios';
-import sinon from 'sinon';
-import { fetchAndParseLatestEvents, parseAtomFeed } from '../src/AtomFeed';
-import * as utils from '../src/utils';
-import * as CapDocument from '../src/CAPDocument';
+import { fetchAndParseEvent, parseAtomFeed } from '../src/AtomFeed';
+import { NTWC_TSUNAMI_FEED_URL } from '../src/constants';
 import { getValidAtomFeed } from './mockData';
 
-const mockXMLPath = path.resolve(__dirname, './mockCAPAlert.xml');
-const readXML = () => fs.readFileSync(mockXMLPath, { encoding: 'utf-8' });
+const mockAlertXMLPath = path.resolve(__dirname, './mockCAPAlert.xml');
+const readAlertXML = () => fs.readFileSync(mockAlertXMLPath, { encoding: 'utf-8' });
 
 describe('parseAtomFeed', () => {
   /** `testParseAtomFeed` is a test-only helper that returns an object rather than a Promise. */
@@ -57,36 +55,36 @@ describe('parseAtomFeed', () => {
   });
 });
 
-describe('fetchAndParseLatestEvents', () => {
-  const validAtomFeed = getValidAtomFeed();
+describe('fetchAndParseEvent', () => {
+  const defaultURL = NTWC_TSUNAMI_FEED_URL;
+  const defaultURLTitle = 'NTWC Tsunami Atom Feed';
 
   afterEach(() => {
     mockAxios.reset();
   });
 
-  /** `testFetchAndParseLatestEvents` is a test-only helper that returns an object rather than a Promise. */
-  const testFetchAndParseLatestEvents = async () =>
-    fetchAndParseLatestEvents()
-      .then(({ alert }) => ({
-        alert,
-        err: undefined,
-      }))
-      .catch((err) => ({
-        alert: undefined,
-        err,
-      }));
+  it('validates inputs', async () => {
+    expect(fetchAndParseEvent('', defaultURLTitle)).rejects.toThrowError(
+      "Unable to fetch and parse event 'NTWC Tsunami Atom Feed': no URL given"
+    );
+  });
 
   it('catches errors within `fetchXMLDocument`', async () => {
     const mockResp: Partial<AxiosResponse> = {
-      status: 404,
-      statusText: 'Not found',
+      status: 400,
+      statusText: 'Bad Argument',
+      data: getValidAtomFeed(),
     };
     mockAxios.get.mockResolvedValueOnce(mockResp);
 
-    const { alert, err } = await testFetchAndParseLatestEvents();
-    expect(alert).toBeUndefined();
+    let err: Error | undefined;
+    try {
+      await fetchAndParseEvent(defaultURL, defaultURLTitle);
+    } catch (e) {
+      err = e;
+    }
     expect(err?.message).toBe(
-      "Unable to parse NTWC Tsunami Atom feed: unable to fetch XML document: received status '404' (Not found)"
+      "Unable to parse NTWC Tsunami Atom Feed: unable to fetch XML document: received status '400' (Bad Argument)"
     );
   });
 
@@ -97,10 +95,33 @@ describe('fetchAndParseLatestEvents', () => {
     };
     mockAxios.get.mockResolvedValueOnce(mockResp);
 
-    const { alert, err } = await testFetchAndParseLatestEvents();
-    expect(alert).toBeUndefined();
+    let err: Error | undefined;
+    try {
+      await fetchAndParseEvent(defaultURL, defaultURLTitle);
+    } catch (e) {
+      err = e;
+    }
     expect(err?.message).toBe(
-      "Unable to parse NTWC Tsunami Atom feed: unable to parse feed XML document: char 'n' is not expected.:1:1"
+      "Unable to parse NTWC Tsunami Atom Feed: unable to parse feed XML document: char 'n' is not expected.:1:1"
     );
+  });
+
+  it('throws an error when the ID is missing from the `parsedAtomFeed`', async () => {
+    const idRegExp = new RegExp(/\<id\>.*<\/id\>/i);
+
+    const mockResp: Partial<AxiosResponse> = {
+      status: 200,
+      // Remove the ID entirely
+      data: getValidAtomFeed().replace(idRegExp, ''),
+    };
+    mockAxios.get.mockResolvedValueOnce(mockResp);
+
+    let err: Error | undefined;
+    try {
+      await fetchAndParseEvent(defaultURL, defaultURLTitle);
+    } catch (e) {
+      err = e;
+    }
+    expect(err?.message).toBe('Error on fetchAndParseEvent: given Atom feed was not parsed correctly');
   });
 });

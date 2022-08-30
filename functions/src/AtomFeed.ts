@@ -61,7 +61,7 @@ export type FetchAndParseEventResult = {
  *  - Check to see if we have already seen each entry in the current feed event.
  *  - Handle the associated CAP XML document if we have not already seen an entry.
  */
-export const fetchAndParseEvent = async (url: string, urlTitle: string): Promise<FetchAndParseEventResult> => {
+export const fetchAndParseEvent = async (url: string, urlTitle?: string): Promise<FetchAndParseEventResult> => {
   if (!url) {
     return handleError({
       message: `Unable to fetch and parse event '${urlTitle}': no URL given`,
