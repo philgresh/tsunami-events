@@ -1,10 +1,14 @@
 import { DateTime } from 'luxon';
+
+export const ALL = 'ALL';
 const EXP_REGEXP = new RegExp(/(\d{2})(\d{2})(\d{2})\-/i);
 const STATE_REGEXP = new RegExp(/(?:([A-Z]{2})(?:[CZ])(?:ALL|\d{3})[\-\>]{1}(?:ALL|\d{3}[\-\>])*)/g);
 
 type UGCArgs = {
   /** `state` represents a territory or marine area of a US state or a Canadian province */
   state: string;
+  /** `region` represents a particular region within the `state`, or 'ALL' to cover all applicable regions */
+  region: string | typeof ALL;
   expiration?: Date;
 };
 
@@ -16,10 +20,12 @@ type UGCArgs = {
  */
 export class UGC {
   readonly state: string;
+  readonly region: string | typeof ALL;
   expiration: Date | undefined;
 
   constructor(args: UGCArgs) {
     this.state = args.state;
+    this.region = args.region;
     this.expiration = args.expiration;
   }
 
@@ -32,26 +38,29 @@ export class UGC {
     if (!startDate) return Promise.reject(new Error('Unable to parse UGC: start date required'));
     if (!inputStr) return Promise.reject(new Error('Unable to parse UGC: input string required'));
 
-    const invalidReason = UGC.validateString(inputStr);
-    if (invalidReason !== undefined) return Promise.reject(invalidReason);
+    try {
+      await UGC.validateString(inputStr);
+    } catch (e: any) {
+      return Promise.reject(new Error(`Unable to parse UGC from input string: ${e?.message}`));
+    }
 
     const ugcs: UGC[] = [];
 
     const [codesStr, ...expParts] = inputStr.split(EXP_REGEXP);
-    const [day, hours, mins] = expParts;
+    const [day, hours, mins] = expParts.map((part) => Number.parseInt(part));
+    const expiration = UGC.getExpirationDate(startDate, day, hours, mins);
 
-    // TODO: Split state/province sections from `codesStr`
-
-    // TODO: Split each state section into individual UGCs
-
-    ugcs.forEach((ugc, i) => {
-      if (i === 0) {
-        // All expirations will be the same so only do the calculation on the first
-        ugc.setExpirationDate(startDate, Number.parseInt(day), Number.parseInt(hours), Number.parseInt(mins));
-        return;
-      }
-      if (ugcs[0].expiration) ugc.expiration = ugcs[0].expiration;
-    });
+    for (const { state } of splitIntoRegions(codesStr)) {
+      // For now, assume ALL on each listed state/province/marina area
+      // TODO: Split each state section into individual UGCs
+      ugcs.push(
+        new UGC({
+          state,
+          expiration,
+          region: ALL,
+        })
+      );
+    }
 
     return Promise.resolve(ugcs);
   }
@@ -66,23 +75,20 @@ export class UGC {
    * @link Marine areas of responsibility: https://www.nws.noaa.gov/directives/010/archive/pd01003002m.pdf
    */
   static async validateString(inputStr: string): Promise<void> {
-    const upperInputStr = inputStr?.toUpperCase();
-    if (!upperInputStr) return Promise.reject(new Error('input string is required'));
+    if (!inputStr) return Promise.reject(new Error('input string is required'));
 
-    const singlecode = new RegExp(/([A-Z]{2})([CZ])(ALL|\d{3})/);
-
-    if (!singlecode.test(upperInputStr)) return Promise.reject(new Error("invalid format 'SSFNNN'"));
-    if (!EXP_REGEXP.test(upperInputStr)) return Promise.reject(new Error("invalid format 'DDHHMM'"));
+    if (!new RegExp(EXP_REGEXP, 'i').test(inputStr)) return Promise.reject(new Error("invalid format 'DDHHMM'"));
+    if (!new RegExp(STATE_REGEXP, 'i').test(inputStr)) return Promise.reject(new Error("invalid format for 'SSFNNN'"));
 
     return Promise.resolve();
   }
 
   /**
-   * `setExpirationDate` adds to the given `startDate` datetime information encoded in the UGC input string.
+   * `getExpirationDate` adds to the given `startDate` datetime information encoded in the UGC input string.
    * All times should assume UTC.
    * @example setExpirationDate(new Date("2022-09-01T15:00:00-00:00"), 1, 22, 15).toISOString(); // "2022-09-01T22:15:00.000Z"
    */
-  setExpirationDate = (startDate: Date, day: number, hours: number, mins: number): Date => {
+  static getExpirationDate = (startDate: Date, day: number, hours: number, mins: number): Date => {
     let additionalDays = 0;
     if (startDate.getUTCDate() > day) {
       // E.g. `startDate` is "2022-08-31" and `day` is "01", we can infer that the expiration is tomorrow
@@ -94,19 +100,18 @@ export class UGC {
       .plus({ days: additionalDays })
       .set({ hour: hours, minute: mins });
 
-    this.expiration = new Date(datetime.toISO());
-    return this.expiration;
+    return new Date(datetime.toISO());
   };
 }
 
 /**
- * `splitIntoStates` splits an `inputStr` (with the expiration date already extracted) into
+ * `splitIntoRegions` splits an `inputStr` (with the expiration date already extracted) into
  * a series of objects representing the state-specific UGC info. `state` here is abstract and may represent
  * a US state, a Canadian province, or a "Marine Area" (e.g. PZ === "Eastern North Pacific Ocean and
  * along U.S. West Coast from Canadian border to Mexican border").
- * Further processing will be needed to extract UGCs from the `stateStr` output.
+ * TODO: Further processing will be needed to extract UGCs from the `stateStr` output.
  */
-export function splitIntoStates(inputStr: string) {
+export function splitIntoRegions(inputStr: string) {
   const output: Array<{ state: string; stateStr: string }> = [];
 
   const split = inputStr.matchAll(STATE_REGEXP);
