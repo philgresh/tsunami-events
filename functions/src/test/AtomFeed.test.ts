@@ -3,8 +3,8 @@ import path from 'path';
 import 'dotenv/config';
 import { AxiosResponse } from 'axios';
 import mockAxios from 'jest-mock-axios';
-import { fetchAndParseEvent, parseAtomFeed } from '../src/AtomFeed';
-import { NTWC_TSUNAMI_FEED_URL } from '../src/constants';
+import { fetchAndParseEvent, parseAtomFeed } from '../AtomFeed';
+import { NTWC_TSUNAMI_FEED_URL } from '../constants';
 import { getValidAtomFeed } from './mockData';
 
 const mockAlertXMLPath = path.resolve(__dirname, './mockCAPAlert.xml');

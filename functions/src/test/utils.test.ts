@@ -1,10 +1,10 @@
 import { AxiosResponse } from 'axios';
 import * as functions from 'firebase-functions';
 import mockAxios from 'jest-mock-axios';
-import { fetchXMLDocument, getLinkForCapDocument, handleError } from '../src/utils';
-import { NTWC_TSUNAMI_FEED_URL } from '../src/constants';
+import { fetchXMLDocument, getLinkForCapDocument, handleError } from '../utils';
+import { NTWC_TSUNAMI_FEED_URL } from '../constants';
 import { getValidAtomFeed } from './mockData';
-import type { Entry, ErrorResp } from '../src/types';
+import type { Entry, ErrorResp } from '../types';
 
 const defaultEntry: Entry = {
   id: 'urn:uuid:7d3dea95-b739-4cb3-a688-92422cb8b942',
@@ -72,7 +72,7 @@ describe('handleError', () => {
         ...defaultErrorResp,
         ...errorRespOverride,
       });
-    } catch (e) {
+    } catch (e: any) {
       return e;
     }
     return undefined;

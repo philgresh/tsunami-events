@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { CAP_1_2 } from 'cap-ts';
-import { Alert } from '../src/models';
+import { Alert } from '../models';
 
 const mockXMLPath = path.resolve(__dirname, './mockCAPAlert.xml');
 const readXML = () => fs.readFileSync(mockXMLPath, { encoding: 'utf-8' });
