@@ -47,7 +47,7 @@ export class UGC {
     const ugcs: UGC[] = [];
 
     const [codesStr, ...expParts] = inputStr.split(EXP_REGEXP);
-    const [day, hours, mins] = expParts.map((part) => Number.parseInt(part));
+    const [day, hours, mins] = expParts.map((part) => Number.parseInt(part, 10));
     const expiration = UGC.getExpirationDate(startDate, day, hours, mins);
 
     for (const { state } of splitIntoRegions(codesStr)) {
@@ -112,7 +112,7 @@ export class UGC {
  * TODO: Further processing will be needed to extract UGCs from the `stateStr` output.
  */
 export function splitIntoRegions(inputStr: string) {
-  const output: Array<{ state: string; stateStr: string }> = [];
+  const output: { state: string; stateStr: string }[] = [];
 
   const split = inputStr.matchAll(STATE_REGEXP);
   for (const regExpMatch of split) {
