@@ -27,6 +27,7 @@
     "firebase-admin": "^10.0.2",
     "firebase-functions": "^3.22.0",
     "lodash": "^4.17.21",
+    "luxon": "^3.0.3",
     "tslib": "^2.4.0",
     "twilio": "^3.80.1",
     "uuid": "^8.3.2"
@@ -37,6 +38,7 @@
     "@babel/preset-typescript": "^7.17.12",
     "@firebase/testing": "^0.20.11",
     "@types/jest": "^28.1.8",
+    "@types/luxon": "^3.0.1",
     "@types/sinon": "^10.0.13",
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.12.0",
