@@ -1,6 +1,6 @@
 import { validate } from 'uuid';
-import { Participant } from '../src/models';
-import type { ParticipantArgs } from '../src/models';
+import { Participant } from '../models';
+import type { ParticipantArgs } from '../models';
 
 describe('Participant', () => {
   const defaultArgs: ParticipantArgs = {};

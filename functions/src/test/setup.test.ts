@@ -1,5 +1,5 @@
 import admin from 'firebase-admin';
-const serviceAccount = require('../.serviceAccountKey.json');
+const serviceAccount = require('../../.serviceAccountKey.json');
 
 export const test = require('firebase-functions-test')({
   databaseURL: `https://${process.env.GCLOUD_PROJECT}-default-rtdb.firebaseio.com`,
