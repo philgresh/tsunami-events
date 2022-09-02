@@ -3,12 +3,12 @@ import { BrowserRouter, Navigate, Outlet, Routes, Route } from 'react-router-dom
 import { getAuth } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import Container from '@mui/material/Container';
-import Navbar from './Nav';
+import Navbar, { Loading } from './Nav';
 import { NavPath, NAVBAR_HEIGHT } from './constants';
 import type { ReactNode } from 'react';
 
 const Signin = lazy(() => import('./auth/Signin'));
-const Account = lazy(() => import('./Account'));
+const Phone = lazy(() => import('./Account/Phone'));
 
 const ProtectedRoute = memo(
   ({
@@ -39,11 +39,11 @@ const Router = () => {
           <Route path="/" element={<div>Home</div>} />
           <Route path={NavPath.Events} element={<div>Events</div>} />
           <Route
-            path={NavPath.Account}
+            path={NavPath.Phone}
             element={
               <ProtectedRoute isAllowed={!!user} redirectPath={NavPath.SignIn}>
-                <Suspense fallback={<div>Loading...</div>}>
-                  <Account />
+                <Suspense fallback={<Loading />}>
+                  <Phone />
                 </Suspense>
               </ProtectedRoute>
             }
@@ -51,7 +51,7 @@ const Router = () => {
           <Route
             path={NavPath.SignIn}
             element={
-              <Suspense fallback={<div>Loading...</div>}>
+              <Suspense fallback={<Loading />}>
                 <Signin />
               </Suspense>
             }

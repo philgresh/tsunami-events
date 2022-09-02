@@ -15,11 +15,12 @@ import {
   Typography,
 } from '@mui/material';
 import { Menu as MenuIcon } from '@mui/icons-material';
+import { getAuth } from 'firebase/auth';
 import { NavPath, NAVBAR_HEIGHT } from '../constants';
 import UserMenu from './UserMenu';
 import { DRAWER_WIDTH, NAV_ITEMS } from './constants';
 import { useRouteMatch } from './utils';
-import { getAuth } from 'firebase/auth';
+import Loading from './Loading';
 import type { MouseEvent } from 'react';
 
 /** `NavTabs` renders routing buttons on desktop nav bar.
@@ -169,3 +170,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+export { Loading };
