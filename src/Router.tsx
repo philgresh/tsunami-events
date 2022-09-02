@@ -8,7 +8,7 @@ import { NavPath, NAVBAR_HEIGHT } from './constants';
 import type { ReactNode } from 'react';
 
 const Signin = lazy(() => import('./auth/Signin'));
-const Phone = lazy(() => import('./Account/Phone'));
+const Account = lazy(() => import('./Account'));
 
 const ProtectedRoute = memo(
   ({
@@ -39,11 +39,11 @@ const Router = () => {
           <Route path="/" element={<div>Home</div>} />
           <Route path={NavPath.Events} element={<div>Events</div>} />
           <Route
-            path={NavPath.Phone}
+            path={NavPath.Account}
             element={
               <ProtectedRoute isAllowed={!!user} redirectPath={NavPath.SignIn}>
                 <Suspense fallback={<Loading />}>
-                  <Phone />
+                  <Account />
                 </Suspense>
               </ProtectedRoute>
             }

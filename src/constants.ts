@@ -1,6 +1,5 @@
 export namespace NavPath {
   export const Account = '/account';
-  export const Phone = '/account/phone';
   export const Events = '/events';
   export const EventsCollection = '/events/:id';
   export const Landing = '/landing';
