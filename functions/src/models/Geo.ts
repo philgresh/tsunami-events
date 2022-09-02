@@ -4,7 +4,7 @@ export const ALL = 'ALL';
 const EXP_REGEXP = new RegExp(/(\d{2})(\d{2})(\d{2})\-/i);
 const STATE_REGEXP = new RegExp(/(?:([A-Z]{2})(?:[CZ])(?:ALL|\d{3})[\-\>]{1}(?:ALL|\d{3}[\-\>])*)/g);
 
-type UGCArgs = {
+type GeoArgs = {
   /** `state` represents a territory or marine area of a US state or a Canadian province */
   state: string;
   /** `region` represents a particular region within the `state`, or 'ALL' to cover all applicable regions */
@@ -13,48 +13,48 @@ type UGCArgs = {
 };
 
 /**
- * `UGC` is a model of a the National Weather Service's Universal Geographic Code representing
+ * `Geo` is a model of a the National Weather Service's Universal Geographic Code representing
  * a FIPS region
  *
  * @link https://www.nws.noaa.gov/directives/sym/pd01017002curr.pdf
  */
-export class UGC {
+export class Geo {
   readonly state: string;
   readonly region: string | typeof ALL;
   expiration: Date | undefined;
 
-  constructor(args: UGCArgs) {
+  constructor(args: GeoArgs) {
     this.state = args.state;
     this.region = args.region;
     this.expiration = args.expiration;
   }
 
   /**
-   * `from` validates and parses an input string into an array of UGC instances. It uses the
+   * `from` validates and parses an input string into an array of Geo instances. It uses the
    * `startDate` arg plus the time encoded in the parsed expiration (format: DDHHMM) to form the `expiration`
-   * info of the UGC.
+   * info of the Geo.
    */
-  static async from(inputStr: string, startDate: Date): Promise<UGC[]> {
-    if (!startDate) return Promise.reject(new Error('Unable to parse UGC: start date required'));
-    if (!inputStr) return Promise.reject(new Error('Unable to parse UGC: input string required'));
+  static async from(inputStr: string, startDate: Date): Promise<Geo[]> {
+    if (!startDate) return Promise.reject(new Error('Unable to parse Geo: start date required'));
+    if (!inputStr) return Promise.reject(new Error('Unable to parse Geo: input string required'));
 
     try {
-      await UGC.validateString(inputStr);
+      await Geo.validateString(inputStr);
     } catch (e: any) {
-      return Promise.reject(new Error(`Unable to parse UGC from input string: ${e?.message}`));
+      return Promise.reject(new Error(`Unable to parse Geo from input string: ${e?.message}`));
     }
 
-    const ugcs: UGC[] = [];
+    const geos: Geo[] = [];
 
     const [codesStr, ...expParts] = inputStr.split(EXP_REGEXP);
     const [day, hours, mins] = expParts.map((part) => Number.parseInt(part, 10));
-    const expiration = UGC.getExpirationDate(startDate, day, hours, mins);
+    const expiration = Geo.getExpirationDate(startDate, day, hours, mins);
 
     for (const { state } of splitIntoRegions(codesStr)) {
       // For now, assume ALL on each listed state/province/marina area
-      // TODO: Split each state section into individual UGCs
-      ugcs.push(
-        new UGC({
+      // TODO: Split each state section into individual Geos
+      geos.push(
+        new Geo({
           state,
           expiration,
           region: ALL,
@@ -62,11 +62,11 @@ export class UGC {
       );
     }
 
-    return Promise.resolve(ugcs);
+    return Promise.resolve(geos);
   }
 
   /**
-   * `validateString` _loosely_ validates a given UGC string.
+   * `validateString` _loosely_ validates a given Geo string.
    * If valid, it returns a resolved Promise, otherwise it returns an Error with a reason for being invalid.
    * TODO: At the moment, this only tests for the start and end of the input string. Test for multiple zones
    * within a state as well as multiple states.
@@ -84,7 +84,7 @@ export class UGC {
   }
 
   /**
-   * `getExpirationDate` adds to the given `startDate` datetime information encoded in the UGC input string.
+   * `getExpirationDate` adds to the given `startDate` datetime information encoded in the Geo input string.
    * All times should assume UTC.
    * @example setExpirationDate(new Date("2022-09-01T15:00:00-00:00"), 1, 22, 15).toISOString(); // "2022-09-01T22:15:00.000Z"
    */
@@ -106,10 +106,10 @@ export class UGC {
 
 /**
  * `splitIntoRegions` splits an `inputStr` (with the expiration date already extracted) into
- * a series of objects representing the state-specific UGC info. `state` here is abstract and may represent
+ * a series of objects representing the state-specific Geo info. `state` here is abstract and may represent
  * a US state, a Canadian province, or a "Marine Area" (e.g. PZ === "Eastern North Pacific Ocean and
  * along U.S. West Coast from Canadian border to Mexican border").
- * TODO: Further processing will be needed to extract UGCs from the `stateStr` output.
+ * TODO: Further processing will be needed to extract Geos from the `stateStr` output.
  */
 export function splitIntoRegions(inputStr: string) {
   const output: { state: string; stateStr: string }[] = [];
@@ -126,4 +126,4 @@ export function splitIntoRegions(inputStr: string) {
   return output;
 }
 
-export default UGC;
+export default Geo;
