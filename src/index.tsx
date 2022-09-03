@@ -1,13 +1,17 @@
 import React, { useMemo, StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import Helmet from 'react-helmet';
+import { Routes } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import './firebase'; // Keep as one of the first imports since the FIrebase app is initialized here
+import Sentry from './sentry';
 import Router from './Router';
 import reportWebVitals from './reportWebVitals';
 import { createTheme } from './material';
+
+const SentryRoutes = Sentry.withSentryReactRouterV6Routing(Routes);
 
 const App = () => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -22,7 +26,9 @@ const App = () => {
         />
       </Helmet>
       <CssBaseline enableColorScheme={prefersDarkMode} />
-      <Router />
+      <SentryRoutes>
+        <Router />
+      </SentryRoutes>
     </ThemeProvider>
   );
 };
