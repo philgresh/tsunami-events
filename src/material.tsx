@@ -19,6 +19,10 @@ export const createTheme = (prefersDarkMode: boolean) => {
         main: purple[800],
       },
       contrastThreshold: 4,
+      common: {
+        black: '#444',
+        white: '#eee',
+      },
     },
     typography: {
       /** Use h5 for site title */
