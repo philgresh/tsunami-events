@@ -2,9 +2,10 @@ import * as functions from 'firebase-functions';
 import './firebase'; // Keep near top, initializes Firebase app
 import { CRON_FREQUENCY, NTWC_TSUNAMI_FEED_URL } from './constants';
 import * as AtomFeed from './AtomFeed';
-import { Alert, Participant } from './models';
+import { Alert, Participant, Phone } from './models';
 import { fetchXMLDocument } from './utils';
 import type { ParticipantArgs } from './models';
+import Twilio from './Twilio';
 
 export const scheduledFetchAndParseLatestEvents = functions.pubsub.schedule(CRON_FREQUENCY).onRun((context) => {
   functions.logger.log(`scheduledFetchAndParseLatestEvents runs ${CRON_FREQUENCY}`, context);
@@ -101,5 +102,49 @@ export const manuallyAddAlert = functions.https.onRequest(async (req, res) => {
       const errMsg = `Error manually adding alerts: ${err}`;
       functions.logger.error(errMsg);
       res.status(500).send(errMsg);
+    });
+});
+
+export const sendVerificationCodeOnPhoneCreate = functions.database
+  .ref('/participants/{id}/phone')
+  .onCreate(async (snapshot, context) => {
+    const phone = Phone.fromDB(snapshot.val(), context.params.id);
+    await Twilio.sendVerificationCode(phone)
+      .then(() => phone.update())
+      .then(() => {
+        functions.logger.log(`Successfully sent verification code to phone`, phone.toDB());
+      })
+      .catch((err) => {
+        functions.logger.log(`Unable to send verification code to phone '${phone.number}': ${err}`);
+      });
+  });
+
+export const attemptVerifyPhone = functions.https.onCall(async (data: { code: string }, context) => {
+  if (!context.auth?.uid) return Promise.reject('Must be signed in to do that.');
+  if (!data.code) return Promise.reject("Must include a 'code' argument in the body");
+  if (!Number.parseInt(data.code, 10)) return Promise.reject("'code' argument must be a valid number");
+
+  const participant = await Participant.find(context.auth.uid);
+  if (!participant.phone) return Promise.reject('Must have a phone on record to verify it');
+  const phone = participant.phone;
+
+  return Twilio.verifyPhone(phone, data.code)
+    .then(() =>
+      phone
+        .update()
+        .then(() => {
+          functions.logger.log(`Successfully verified phone`, phone.toDB());
+          return Promise.resolve('Successfully verified phone!');
+        })
+        .catch((err) => {
+          const errMsg = `Unable to verify phone: ${err}`;
+          functions.logger.log(errMsg, phone.toDB());
+          return Promise.reject(errMsg);
+        })
+    )
+    .catch((err) => {
+      const errMsg = `Unable to verify phone: ${err}`;
+      functions.logger.log(errMsg, phone.toDB());
+      return Promise.reject(errMsg);
     });
 });
