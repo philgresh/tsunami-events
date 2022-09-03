@@ -1,18 +1,20 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { v4 as uuidv4 } from 'uuid';
+import Phone from './Phone';
+import type { DBPhone } from './Phone';
 
 type DBParticipant = {
   id: string;
   active: boolean;
-  phone?: string;
+  phone?: DBPhone;
   email?: string;
   displayName?: string;
 };
 
 export type ParticipantArgs = {
-  phone?: string;
   id?: string;
+  phone?: Phone;
   active?: boolean;
   email?: string;
   displayName?: string;
@@ -20,14 +22,14 @@ export type ParticipantArgs = {
 
 export default class Participant {
   id: string;
-  phone: string;
   active: boolean;
   email: string;
   displayName: string;
+  phone: Phone | undefined;
 
   constructor(args: ParticipantArgs) {
     this.id = args.id ?? uuidv4();
-    this.phone = args.phone ?? '';
+    this.phone = args.phone;
     this.email = args.email ?? '';
     this.displayName = args.displayName ?? '';
     this.active = args.active ?? false;
@@ -37,7 +39,7 @@ export default class Participant {
   static fromDB = (dbParticipant: DBParticipant) =>
     new Participant({
       ...dbParticipant,
-      phone: dbParticipant?.phone ?? '',
+      phone: dbParticipant?.phone ? Phone.fromDB(dbParticipant.phone) : undefined,
       email: dbParticipant?.email ?? '',
       displayName: dbParticipant?.displayName ?? '',
     });
@@ -99,7 +101,7 @@ export default class Participant {
       id: this.id,
       active: this.active,
     };
-    if (this.phone) dbParticipant.phone = this.phone;
+    if (this.phone) dbParticipant.phone = this.phone.toDB();
     if (this.email) dbParticipant.email = this.email;
     if (this.displayName) dbParticipant.displayName = this.displayName;
     return dbParticipant;
