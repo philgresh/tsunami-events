@@ -3,9 +3,11 @@ import Phone from './Phone';
 import { Container, Paper, Stack, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
-type Props = {};
+type AccountProps = {
+  children: React.ReactNode;
+};
 
-const AccountItem = ({ title, children }: { title: string; children: React.ReactNode }) => {
+export const AccountItem = ({ title, children }: { title: string; children: React.ReactNode }) => {
   const theme = useTheme();
   const spacing = theme.spacing(2);
 
@@ -19,7 +21,7 @@ const AccountItem = ({ title, children }: { title: string; children: React.React
   );
 };
 
-const Account = (props: Props) => {
+export const AccountItems = (props: AccountProps) => {
   const theme = useTheme();
   const spacing = theme.spacing(2);
   return (
@@ -28,12 +30,17 @@ const Account = (props: Props) => {
         <Typography variant="h6" sx={{ marginX: spacing }} gutterBottom>
           Manage Account
         </Typography>
-        <AccountItem title="Phone Numbers">
-          <Phone />
-        </AccountItem>
+        {props.children}
       </Container>
     </Stack>
   );
 };
 
+const Account = () => (
+  <AccountItems>
+    <AccountItem title="Phone Numbers">
+      <Phone />
+    </AccountItem>
+  </AccountItems>
+);
 export default Account;
