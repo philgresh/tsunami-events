@@ -12,8 +12,6 @@
     "@emotion/styled": "^11.10.0",
     "@mui/icons-material": "^5.10.2",
     "@mui/material": "^5.10.2",
-    "@sentry/react": "^7.12.1",
-    "@sentry/tracing": "^7.12.1",
     "dot-env": "^0.0.1",
     "firebase": "^9.9.3",
     "firebaseui": "^6.0.1",
