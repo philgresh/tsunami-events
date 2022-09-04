@@ -1,10 +1,11 @@
 import Alert from './Alert';
 import Event from './Event';
 import Participant from './Participant';
+import Phone from './Phone';
 import Geo from './Geo';
-import type { DBAlert } from './Alert';
-import type { DBEvent } from './Event';
-import type { ParticipantArgs } from './Participant';
+export type { DBAlert } from './Alert';
+export type { DBEvent } from './Event';
+export type { ParticipantArgs } from './Participant';
+export type { VerificationStatus } from './Phone';
 
-export { Alert, Event, Participant, Geo };
-export type { DBAlert, DBEvent, ParticipantArgs };
+export { Alert, Event, Geo, Participant, Phone };

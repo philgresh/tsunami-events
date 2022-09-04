@@ -1,14 +1,24 @@
+import * as _ from 'lodash';
 import * as functions from 'firebase-functions';
 import * as twilio from 'twilio';
 import { retryOperation } from './utils';
 import type { Twilio } from 'twilio';
+import type { VerificationInstance } from 'twilio/lib/rest/verify/v2/service/verification';
+import type { VerificationCheckInstance } from 'twilio/lib/rest/verify/v2/service/verificationCheck';
 import type { MessageInstance, MessageListInstanceCreateOptions } from 'twilio/lib/rest/api/v2010/account/message';
-import type { Participant } from './models';
 
 const TWILIO_LOG_LEVEL = process.env.TWILIO_LOG_LEVEL;
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
+const TWILIO_VERIFICATION_SERVICE_SID = process.env.TWILIO_VERIFICATION_SERVICE_SID;
 const TWILIO_SID = process.env.TWILIO_SID;
 const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
+
+export type { VerificationInstance, VerificationCheckInstance };
+export type SendCodeAttempt = {
+  time: string;
+  channel: string;
+  attempt_sid: string;
+};
 
 /**
  * `TwilioClient` abstracts away actions such as sending an SMS to a Participant.
@@ -21,12 +31,67 @@ export class TwilioClient {
     this.client = twilio(TWILIO_SID, TWILIO_AUTH_TOKEN, options);
   }
 
-  /** `smsParticipant` attempts to send an SMS message to a given Participant */
-  smsParticipant = async (participant: Participant, message: string) => {
-    if (!participant.active) return Promise.resolve();
+  /** `sendVerificationCode` sends an SMS with a verification code  */
+  sendVerificationCode = async (phoneNumber: string) => {
+    const handleError = async (err: Error) => {
+      const errMsg = `unable to send verification code: ${err}`;
+      functions.logger.error(errMsg);
+      return Promise.reject(new Error(errMsg));
+    };
+
+    const SID = TWILIO_VERIFICATION_SERVICE_SID ?? '';
+    if (!this.client || !SID) return handleError(new Error('Twilio SID not initialized'));
+    if (!phoneNumber) return handleError(new Error('phoneNumber is required'));
+
+    functions.logger.log(`Attempting to send verification code to phone '${phoneNumber}'`);
+
+    return this.client.verify.v2
+      .services(SID)
+      .verifications.create({ to: phoneNumber, channel: 'sms' })
+      .then((verification) => {
+        functions.logger.log(`Successfully sent verification code to phone`);
+        return verification;
+      })
+      .catch((err) => handleError(new Error(err)));
+  };
+
+  /**
+   * `verifyPhone` checks with Twilio on the verification of a phone number,
+   * given a code generated from above `sendVerificationCode`
+   */
+  verifyPhone = async (phoneNumber: string, code: string) => {
+    const handleError = async (err: Error) => {
+      const errMsg = `unable to verify phone with phone number '${phoneNumber}': ${err}`;
+      functions.logger.error(errMsg);
+      return Promise.reject(new Error(errMsg));
+    };
+
+    const SID = TWILIO_VERIFICATION_SERVICE_SID ?? '';
+    if (!this.client || !SID) return handleError(new Error('Twilio SID not initialized'));
+    if (!phoneNumber) return handleError(new Error('phone number is required'));
+    if (!code) return handleError(new Error('code is required'));
+
+    return this.client.verify.v2
+      .services(SID)
+      .verificationChecks.create({ to: phoneNumber, code })
+      .then((verificationCheck) => verificationCheck)
+      .catch((err) => handleError(new Error(err)));
+  };
+
+  /** `sendSMS` attempts to send an SMS message to a given phone number */
+  sendSMS = async (phoneNumber: string, message: string) => {
+    const handleError = async (err: Error) => {
+      const errMsg = `unable to send SMS message with phone number '${phoneNumber}': ${err}`;
+      functions.logger.error(errMsg);
+      return Promise.reject(new Error(errMsg));
+    };
+
+    if (!phoneNumber) return handleError(new Error('phone number is required'));
+    if (!message) return handleError(new Error('message is required'));
+
     const msgOptions: MessageListInstanceCreateOptions = {
       from: TWILIO_PHONE_NUMBER,
-      to: participant.phone,
+      to: phoneNumber,
       body: message,
     };
     const makeMsgPromise = () => this.client.messages.create(msgOptions);
@@ -35,9 +100,7 @@ export class TwilioClient {
         functions.logger.log('Successfully sent SMS', msgInstance);
         return msgInstance;
       })
-      .catch((err) => {
-        functions.logger.error(`Unable to send SMS: ${err}`);
-      });
+      .catch((err) => handleError(new Error(err)));
   };
 }
 
