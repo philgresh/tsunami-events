@@ -5,6 +5,7 @@ import Phone from './Phone';
 import type { DBPhone } from './Phone';
 
 const DB_PATH = 'participants';
+export const getParticipantRef = (id: string) => `${DB_PATH}/${id}`;
 
 type DBParticipant = {
   id: string;
@@ -132,5 +133,3 @@ export default class Participant {
     return dbParticipant;
   };
 }
-
-export const getParticipantRef = (id: string) => `${DB_PATH}/${id}`;
