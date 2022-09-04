@@ -3,6 +3,13 @@ import * as functions from 'firebase-functions';
 import { getParticipantRef } from './Participant';
 
 export type VerificationStatus = 'pending' | 'approved' | 'canceled';
+export const getVerificationStatus = (statusStr: VerificationStatus | undefined): VerificationStatus | undefined => {
+  if (!statusStr) return undefined;
+  if (new Set<VerificationStatus>(['pending', 'approved', 'canceled']).has(statusStr)) return statusStr;
+
+  return undefined;
+};
+
 export type DBPhone = {
   number: string;
   verificationStatus?: VerificationStatus;
@@ -11,7 +18,7 @@ export type DBPhone = {
 
 type PhoneArgs = DBPhone & {
   participantID: string;
-  verificationStatus: VerificationStatus | undefined;
+  verificationStatus?: VerificationStatus;
 };
 
 class Phone {
@@ -23,7 +30,7 @@ class Phone {
   constructor(args: PhoneArgs) {
     this.participantID = args.participantID;
     this.number = args.number;
-    this.verificationStatus = args.verificationStatus;
+    this.verificationStatus = getVerificationStatus(args.verificationStatus);
     this.lastVerificationAttemptTime = args.lastVerificationAttemptTime
       ? new Date(args.lastVerificationAttemptTime)
       : undefined;
@@ -64,7 +71,7 @@ class Phone {
     const dbPhone: DBPhone = {
       number: this.number,
     };
-    if (this.verificationStatus) dbPhone.verificationStatus = this.verificationStatus;
+    if (getVerificationStatus(this.verificationStatus)) dbPhone.verificationStatus = this.verificationStatus;
     if (this.lastVerificationAttemptTime)
       dbPhone.lastVerificationAttemptTime = this.lastVerificationAttemptTime.toISOString();
 
