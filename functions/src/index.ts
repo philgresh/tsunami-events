@@ -111,14 +111,20 @@ export const manuallyAddAlert = functions.https.onRequest(async (req, res) => {
 export const sendVerificationCodeOnPhoneCreate = functions.database
   .ref('/participants/{id}/phone')
   .onCreate(async (snapshot, context): Promise<DBPhone> => {
+    // Note: we assume existence since the Phone was just created
     const phone = Phone.fromDB(snapshot.val(), context.params.id);
+
+    const handleError = async (err: Error) => {
+      const errMsg = `unable to send verification code to phone '${phone.number}' ${err}`;
+      functions.logger.error(errMsg);
+      return Promise.reject(new Error(errMsg));
+    };
+
     let verification: VerificationInstance;
     try {
       verification = await Twilio.sendVerificationCode(phone.number);
     } catch (err: any) {
-      const errMsg = `Unable to send verification code to phone '${phone.number}': ${err}`;
-      functions.logger.log(errMsg);
-      return Promise.reject(errMsg);
+      return handleError(new Error(err));
     }
 
     const lastVerificationAttempt = _.last<SendCodeAttempt>(verification.sendCodeAttempts as SendCodeAttempt[]);
@@ -128,29 +134,29 @@ export const sendVerificationCodeOnPhoneCreate = functions.database
     return phone
       .update()
       .then((updatedPhone) => updatedPhone.toDB())
-      .catch((err) => {
-        const errMsg = `Unable to send verification code to phone '${phone.number}': ${err}`;
-        functions.logger.log(errMsg, phone.toDB());
-        return Promise.reject(errMsg);
-      });
+      .catch((err) => handleError(new Error(err)));
   });
 
 export const attemptVerifyPhone = functions.https.onCall(async (data: { code: string }, context): Promise<DBPhone> => {
-  if (!context.auth?.uid) return Promise.reject('Unable to verify phone: must be signed in');
-  if (!data.code) return Promise.reject("Unable to verify phone: must include a 'code' argument in the body");
-  if (!Number.parseInt(data.code, 10)) return Promise.reject("'code' argument must be a valid number");
+  const handleError = async (err: Error) => {
+    const errMsg = `unable to verify phone: ${err}`;
+    functions.logger.error(errMsg);
+    return Promise.reject(new Error(errMsg));
+  };
+
+  if (!context.auth?.uid) return handleError(new Error('must be signed in'));
+  if (!data.code) return handleError(new Error("must include a 'code' argument in the body"));
+  if (!Number.parseInt(data.code, 10)) return handleError(new Error("'code' argument must be a valid number"));
 
   const participant = await Participant.find(context.auth.uid);
-  if (!participant.phone) return Promise.reject('Unable to verify phone: must have a phone on record to verify it');
+  if (!participant.phone) return handleError(new Error('must have a phone on record to verify it'));
   const phone = participant.phone;
 
   let verificationCheck: VerificationCheckInstance;
   try {
     verificationCheck = await Twilio.verifyPhone(phone.number, data.code);
   } catch (err: any) {
-    const errMsg = `Unable to verify phone: ${err}`;
-    functions.logger.log(errMsg, phone.toDB());
-    return Promise.reject(errMsg);
+    return handleError(new Error(err));
   }
 
   phone.verificationStatus = getVerificationStatus(verificationCheck.status as VerificationStatus);
@@ -159,9 +165,5 @@ export const attemptVerifyPhone = functions.https.onCall(async (data: { code: st
   return phone
     .update()
     .then((updatedPhone) => updatedPhone.toDB())
-    .catch((err) => {
-      const errMsg = `Unable to verify phone: ${err}`;
-      functions.logger.log(errMsg, phone.toDB());
-      return Promise.reject(errMsg);
-    });
+    .catch((err) => handleError(new Error(err)));
 });

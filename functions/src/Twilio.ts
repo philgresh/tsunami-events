@@ -9,7 +9,7 @@ import type { MessageInstance, MessageListInstanceCreateOptions } from 'twilio/l
 
 const TWILIO_LOG_LEVEL = process.env.TWILIO_LOG_LEVEL;
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
-const TWILIO_SERVICE_SID = process.env.TWILIO_SERVICE_SID;
+const TWILIO_VERIFICATION_SERVICE_SID = process.env.TWILIO_VERIFICATION_SERVICE_SID;
 const TWILIO_SID = process.env.TWILIO_SID;
 const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
 
@@ -33,10 +33,16 @@ export class TwilioClient {
 
   /** `sendVerificationCode` sends an SMS with a verification code  */
   sendVerificationCode = async (phoneNumber: string) => {
-    if (!phoneNumber) return Promise.reject(new Error('unable to send verification code: phoneNumber is required'));
+    const handleError = async (err: Error) => {
+      const errMsg = `unable to send verification code: ${err}`;
+      functions.logger.error(errMsg);
+      return Promise.reject(new Error(errMsg));
+    };
 
-    const SID = TWILIO_SERVICE_SID ?? '';
-    if (!SID) return Promise.reject(new Error('unable to send verification code: Twilio SID not initialized'));
+    const SID = TWILIO_VERIFICATION_SERVICE_SID ?? '';
+    if (!this.client || !SID) return handleError(new Error('Twilio SID not initialized'));
+    if (!phoneNumber) return handleError(new Error('phoneNumber is required'));
+
     functions.logger.log(`Attempting to send verification code to phone '${phoneNumber}'`);
 
     return this.client.verify.v2
@@ -46,11 +52,7 @@ export class TwilioClient {
         functions.logger.log(`Successfully sent verification code to phone`);
         return verification;
       })
-      .catch((err) => {
-        const errMsg = `unable to send verification code to phone number '${phoneNumber}': ${err}`;
-        functions.logger.log(errMsg);
-        return Promise.reject(new Error(errMsg));
-      });
+      .catch((err) => handleError(new Error(err)));
   };
 
   /**
@@ -58,27 +60,34 @@ export class TwilioClient {
    * given a code generated from above `sendVerificationCode`
    */
   verifyPhone = async (phoneNumber: string, code: string) => {
-    if (!phoneNumber) return Promise.reject(new Error('unable to verify phone: phone number is required'));
-    if (!code) return Promise.reject(new Error('unable to verify phone: code is required'));
+    const handleError = async (err: Error) => {
+      const errMsg = `unable to verify phone with phone number '${phoneNumber}': ${err}`;
+      functions.logger.error(errMsg);
+      return Promise.reject(new Error(errMsg));
+    };
 
-    const SID = TWILIO_SERVICE_SID ?? '';
-    if (!SID) return Promise.reject(new Error('unable to verify phone: Twilio SID not initialized'));
+    const SID = TWILIO_VERIFICATION_SERVICE_SID ?? '';
+    if (!this.client || !SID) return handleError(new Error('Twilio SID not initialized'));
+    if (!phoneNumber) return handleError(new Error('phone number is required'));
+    if (!code) return handleError(new Error('code is required'));
 
     return this.client.verify.v2
       .services(SID)
       .verificationChecks.create({ to: phoneNumber, code })
       .then((verificationCheck) => verificationCheck)
-      .catch((err) => {
-        const errMsg = `unable to verify phone with phone number '${phoneNumber}': ${err}`;
-        functions.logger.log(errMsg);
-        return Promise.reject(new Error(errMsg));
-      });
+      .catch((err) => handleError(new Error(err)));
   };
 
   /** `sendSMS` attempts to send an SMS message to a given phone number */
   sendSMS = async (phoneNumber: string, message: string) => {
-    if (!phoneNumber) return Promise.reject(new Error('unable to send SMS message: phone number is required'));
-    if (!message) return Promise.reject(new Error('unable to send SMS message: message is required'));
+    const handleError = async (err: Error) => {
+      const errMsg = `unable to send SMS message with phone number '${phoneNumber}': ${err}`;
+      functions.logger.error(errMsg);
+      return Promise.reject(new Error(errMsg));
+    };
+
+    if (!phoneNumber) return handleError(new Error('phone number is required'));
+    if (!message) return handleError(new Error('message is required'));
 
     const msgOptions: MessageListInstanceCreateOptions = {
       from: TWILIO_PHONE_NUMBER,
@@ -91,9 +100,7 @@ export class TwilioClient {
         functions.logger.log('Successfully sent SMS', msgInstance);
         return msgInstance;
       })
-      .catch((err) => {
-        functions.logger.error(`Unable to send SMS: ${err}`);
-      });
+      .catch((err) => handleError(new Error(err)));
   };
 }
 
