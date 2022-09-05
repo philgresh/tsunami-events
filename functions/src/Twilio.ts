@@ -28,6 +28,8 @@ export class TwilioClient {
   constructor() {
     const options: twilio.Twilio.TwilioClientOptions = {};
     if (TWILIO_LOG_LEVEL) options.logLevel = TWILIO_LOG_LEVEL;
+    if (!TWILIO_SID) functions.logger.error('Unable to initialize Twilio client: No SID');
+    if (!TWILIO_AUTH_TOKEN) functions.logger.error('Unable to initialize Twilio client: No auth token');
     this.client = twilio(TWILIO_SID, TWILIO_AUTH_TOKEN, options);
   }
 

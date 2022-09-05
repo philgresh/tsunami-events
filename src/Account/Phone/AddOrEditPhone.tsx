@@ -1,13 +1,8 @@
 import React from 'react';
-import { getAuth } from 'firebase/auth';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { Button, Link, Stack, Switch, Typography } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import { MuiTelInput, matchIsValidTel } from 'mui-tel-input';
-import Loading from '../Nav/Loading';
+import { MuiTelInput } from 'mui-tel-input';
+import { SMS_TOS_LINK, DEFAULT_COUNTRY } from './constants';
 import type { MuiTelInputInfo } from 'mui-tel-input';
-
-const SMS_TOS_LINK = `${process.env.PUBLIC_URL}/sms_tos`;
 
 export type AddOrEditPhoneProps = {
   error?: string;
@@ -15,7 +10,8 @@ export type AddOrEditPhoneProps = {
   onChange: (phoneNumber: string) => void;
 };
 
-export const AddOrEditPhone = ({ error, phoneNumber }: AddOrEditPhoneProps) => {
+export const AddOrEditPhone = ({ error: errorProp, phoneNumber, onChange }: AddOrEditPhoneProps) => {
+  const [error, setError] = React.useState<string | undefined>(errorProp);
   const [numberValue, setNumberValue] = React.useState<string>(phoneNumber ?? '');
   const [infoValue, setInfoValue] = React.useState<MuiTelInputInfo | undefined>();
   const [agreed, setAgreed] = React.useState(false);
@@ -31,15 +27,17 @@ export const AddOrEditPhone = ({ error, phoneNumber }: AddOrEditPhoneProps) => {
       reason: "input"
     }
     **/
+    setError(undefined);
     setNumberValue(value);
     setInfoValue(info);
   };
 
   const handleAgreeChange = (_event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => setAgreed(checked);
+  const handleSubmit = () => onChange(numberValue);
 
   // Set `isChanged` based on the user's input. Note that `numberValue` includes spaces, while `phoneNumber` does not.
   const isChanged = infoValue && phoneNumber !== infoValue.numberValue;
-  const submitDisabled = !isChanged || !agreed;
+  const submitDisabled = !isChanged || !agreed || !!error;
 
   return (
     <Stack justifyContent="flex-start" alignItems="flex-start" spacing={2} direction="column">
@@ -49,6 +47,7 @@ export const AddOrEditPhone = ({ error, phoneNumber }: AddOrEditPhoneProps) => {
         preferredCountries={['US', 'CA', 'MX']}
         error={!!error}
         helperText={error && error}
+        defaultCountry={DEFAULT_COUNTRY}
       />
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
@@ -64,30 +63,11 @@ export const AddOrEditPhone = ({ error, phoneNumber }: AddOrEditPhoneProps) => {
         </Typography>
         <Switch checked={agreed} onChange={handleAgreeChange} inputProps={{ 'aria-label': 'controlled' }} />
       </Stack>
-      <Button variant="contained" disabled={submitDisabled}>
+      <Button variant="contained" disabled={submitDisabled} onClick={handleSubmit}>
         Add Phone
       </Button>
     </Stack>
   );
 };
 
-const PhoneController = () => {
-  const [user, loading, error] = useAuthState(getAuth());
-  const theme = useTheme();
-
-  if (loading) return <Loading />;
-  if (error || !user)
-    return (
-      <Typography
-        variant="body1"
-        sx={{ color: theme.palette.warning.contrastText, backgroundColor: theme.palette.warning.main }}
-      >
-        {error?.message ?? 'No user signed in!'}
-      </Typography>
-    );
-
-  const { uid } = user;
-  return <div>{uid}</div>;
-};
-
-export default PhoneController;
+export default AddOrEditPhone;

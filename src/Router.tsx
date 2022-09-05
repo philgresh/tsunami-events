@@ -43,7 +43,7 @@ const Router = () => {
             element={
               <ProtectedRoute isAllowed={!!user} redirectPath={NavPath.SignIn}>
                 <Suspense fallback={<Loading />}>
-                  <Account />
+                  <Account user={user!} />
                 </Suspense>
               </ProtectedRoute>
             }
