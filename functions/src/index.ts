@@ -108,34 +108,58 @@ export const manuallyAddAlert = functions.https.onRequest(async (req, res) => {
     });
 });
 
+const sendVerificationCodeFunction = async (data: { phoneNumber: string; uid: string }): Promise<DBPhone> => {
+  const { phoneNumber, uid } = data;
+
+  const handleError = async (err: Error) => {
+    const errMsg = `unable to send verification code to phone '${phoneNumber}' ${err}`;
+    functions.logger.error(errMsg);
+    return Promise.reject(new Error(errMsg));
+  };
+
+  if (!uid) return handleError(new Error('must be signed in to do that'));
+  if (!phoneNumber) return handleError(new Error('phone number is required'));
+
+  const phone = new Phone({ number: phoneNumber, participantID: uid });
+
+  let verification: VerificationInstance;
+  try {
+    verification = await Twilio.sendVerificationCode(phone.number);
+  } catch (err: any) {
+    return handleError(new Error(err));
+  }
+
+  const lastVerificationAttempt = _.last<SendCodeAttempt>(verification.sendCodeAttempts as SendCodeAttempt[]);
+  if (lastVerificationAttempt?.time) phone.lastVerificationAttemptTime = new Date(lastVerificationAttempt.time);
+
+  phone.verificationStatus = getVerificationStatus(verification.status as VerificationStatus);
+  return phone
+    .update()
+    .then((updatedPhone) => updatedPhone.toDB())
+    .catch((err) => handleError(new Error(err)));
+};
+
 export const sendVerificationCodeOnPhoneCreate = functions.database
   .ref('/participants/{id}/phone')
   .onCreate(async (snapshot, context): Promise<DBPhone> => {
     // Note: we assume existence since the Phone was just created
     const phone = Phone.fromDB(snapshot.val(), context.params.id);
 
+    return sendVerificationCodeFunction({ phoneNumber: phone.number, uid: phone.participantID });
+  });
+
+export const sendVerificationCode = functions.https.onCall(
+  async (data: any, context: functions.https.CallableContext): Promise<DBPhone> => {
     const handleError = async (err: Error) => {
-      const errMsg = `unable to send verification code to phone '${phone.number}' ${err}`;
+      const errMsg = `unable to send verification code to phone: ${err}`;
       functions.logger.error(errMsg);
       return Promise.reject(new Error(errMsg));
     };
 
-    let verification: VerificationInstance;
-    try {
-      verification = await Twilio.sendVerificationCode(phone.number);
-    } catch (err: any) {
-      return handleError(new Error(err));
-    }
-
-    const lastVerificationAttempt = _.last<SendCodeAttempt>(verification.sendCodeAttempts as SendCodeAttempt[]);
-    if (lastVerificationAttempt?.time) phone.lastVerificationAttemptTime = new Date(lastVerificationAttempt.time);
-
-    phone.verificationStatus = getVerificationStatus(verification.status as VerificationStatus);
-    return phone
-      .update()
-      .then((updatedPhone) => updatedPhone.toDB())
-      .catch((err) => handleError(new Error(err)));
-  });
+    if (!context.auth?.uid) return handleError(new Error('must be signed in'));
+    return sendVerificationCodeFunction({ phoneNumber: data.phoneNumber, uid: context.auth.uid });
+  }
+);
 
 export const attemptVerifyPhone = functions.https.onCall(async (data: { code: string }, context): Promise<DBPhone> => {
   const handleError = async (err: Error) => {
