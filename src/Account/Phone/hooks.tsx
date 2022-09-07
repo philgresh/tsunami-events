@@ -1,31 +1,33 @@
 import React from 'react';
-import { getFunctions, httpsCallable } from 'firebase/functions';
 import { Button } from '@mui/material';
-import type { DBPhone } from '../../models';
+import type { AttemptVerifyPhoneType } from './functions';
 
-const attemptVerifyPhone = httpsCallable<{ code: string }, DBPhone>(getFunctions(), 'attemptVerifyPhone');
-
-export const useVerifyPhone = () => {
-  const [verifyPhoneDialogOpen, setVerifyPhoneDialogOpen] = React.useState(false);
+/**
+ * `useVerifyPhone` is a custom hook storing state, actions, and components related to verifying
+ * a user's phone number.
+ */
+export const useVerifyPhone = (attemptVerifyPhone: AttemptVerifyPhoneType) => {
+  const [isOpen, setIsOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<Error | undefined>();
 
   const handleVerifyPhone = async (verificationCode: string) => {
-    setVerifyPhoneDialogOpen(false);
+    setIsOpen(false);
     setLoading(true);
-    // try {
-    //   await attemptVerifyPhone({ code: verificationCode });
-    // } catch (err: any) {
-    //   console.error(err);
-    //   setError(new Error(`Unable to verify phone number: ${err}`));
-    // }
-    setLoading(false);
+    try {
+      await attemptVerifyPhone({ code: verificationCode });
+    } catch (err: any) {
+      console.error(err);
+      setError(new Error(`Unable to verify phone number: ${err}`));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const VerifyPhoneButton = () => {
     const isDisabled = loading;
     return (
-      <Button variant="text" onClick={() => setVerifyPhoneDialogOpen(true)} disabled={isDisabled}>
+      <Button variant="text" onClick={() => setIsOpen(true)} disabled={isDisabled}>
         {loading ? 'Verifying phone number...' : 'Verify phone number'}
       </Button>
     );
@@ -34,9 +36,9 @@ export const useVerifyPhone = () => {
   return {
     error,
     loading,
-    verifyPhoneDialogOpen,
+    isOpen,
     handleVerifyPhone,
-    setVerifyPhoneDialogOpen,
+    setIsOpen,
     VerifyPhoneButton,
   };
 };

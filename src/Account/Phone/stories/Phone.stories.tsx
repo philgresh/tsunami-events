@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { AddOrEditPhone } from './AddOrEditPhone';
-import type { AddOrEditPhoneProps } from './AddOrEditPhone';
+import { AddOrEditPhone } from '../AddOrEditPhone';
+import type { AddOrEditPhoneProps } from '../AddOrEditPhone';
 
 export default {
   title: 'Account/Phone/Edit',

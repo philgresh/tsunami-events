@@ -13,10 +13,10 @@ import VerifyPhoneDialog from './VerifyPhoneDialog';
 import { DEFAULT_COUNTRY } from './constants';
 import { useVerifyPhone } from './hooks';
 import { getPhoneNumberDisplay } from './utils';
+import { attemptVerifyPhone } from './functions';
 import type { ValOptions } from 'react-firebase-hooks/database/dist/database/helpers';
-import type { DBPhone } from '../../models';
+import type { DBPhone, VerificationStatus } from '../../models';
 
-const sendVerificationCode = httpsCallable<DBPhone, ''>(getFunctions(), 'sendVerificationCode');
 const getPhoneRef = (uid: string) => ref(getDatabase(), `participants/${uid}/phone`);
 
 export type PhoneControllerProps = {
@@ -27,11 +27,11 @@ const PhoneController = ({ uid }: PhoneControllerProps) => {
   const {
     loading: verifyPhoneLoading,
     error: verifyPhoneError,
-    verifyPhoneDialogOpen,
+    isOpen: verifyPhoneDialogOpen,
     handleVerifyPhone,
-    setVerifyPhoneDialogOpen,
+    setIsOpen: setVerifyPhoneDialogOpen,
     VerifyPhoneButton,
-  } = useVerifyPhone();
+  } = useVerifyPhone(attemptVerifyPhone);
   const [addOrEditOpen, setAddOrEditOpen] = React.useState(false);
   const [addEditPhoneNumberError, setAddEditPhoneNumberError] = React.useState<string | undefined>();
   const options: ValOptions<Phone | undefined> = {
@@ -67,31 +67,31 @@ const PhoneController = ({ uid }: PhoneControllerProps) => {
       </Typography>
     );
 
-  if (phone) {
-    const status = phone.verificationStatus;
+  if (!phone) return null;
 
-    return (
-      <>
-        <Stack direction="row" spacing={{ xs: 1, sm: 2 }} justifyContent="flex-start" alignItems="center">
-          <Typography variant="body2">{getPhoneNumberDisplay(phone.number)}</Typography>
-          {status === 'approved' ? (
-            <Typography variant="overline" color={theme.palette.success.main}>
-              Verified
-            </Typography>
-          ) : (
-            <VerifyPhoneButton />
-          )}
-        </Stack>
-        <VerifyPhoneDialog
-          open={verifyPhoneDialogOpen}
-          onClose={() => setVerifyPhoneDialogOpen(false)}
-          onSubmit={handleVerifyPhone}
-        />
-      </>
-    );
-  }
+  const ExistingPhone = React.memo(({ status, phoneNumber }: { status?: VerificationStatus; phoneNumber: string }) => (
+    <Stack direction="row" spacing={{ xs: 1, sm: 2 }} justifyContent="flex-start" alignItems="center">
+      <Typography variant="body2">{phoneNumber}</Typography>
+      {status === 'approved' ? (
+        <Typography variant="overline" color={theme.palette.success.main}>
+          Verified
+        </Typography>
+      ) : (
+        <VerifyPhoneButton />
+      )}
+    </Stack>
+  ));
 
-  return null;
+  return (
+    <>
+      <ExistingPhone status={phone.verificationStatus} phoneNumber={getPhoneNumberDisplay(phone.number)} />
+      <VerifyPhoneDialog
+        open={verifyPhoneDialogOpen}
+        onClose={() => setVerifyPhoneDialogOpen(false)}
+        onSubmit={handleVerifyPhone}
+      />
+    </>
+  );
 
   // return (
   //   <div>
