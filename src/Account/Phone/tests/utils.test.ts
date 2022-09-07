@@ -1,4 +1,4 @@
-import { getPhoneNumberDisplay } from './utils';
+import { getPhoneNumberDisplay } from '../utils';
 
 describe('getPhoneNumberDisplay', () => {
   it('returns "invalid" if the number is not parsable', () => {

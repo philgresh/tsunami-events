@@ -12,8 +12,7 @@ export const getPhoneNumberDisplay = (phoneNumber: string): string => {
   const parsedPhoneNumber = parsePhoneNumber(phoneNumber, DEFAULT_COUNTRY);
   if (!parsedPhoneNumber) return 'invalid';
   const { countryCallingCode, nationalNumber } = parsedPhoneNumber;
-  const n = nationalNumber.length;
-  const redactedDigitsLength = n - EXPOSED_DIGITS_LENGTH;
+  const redactedDigitsLength = nationalNumber.length - EXPOSED_DIGITS_LENGTH;
   const replacerRegExp = new RegExp(`[0-9]{${redactedDigitsLength}}`);
   const redaction = '*'.repeat(redactedDigitsLength);
   const redactedPhoneNumber = nationalNumber.replace(replacerRegExp, (_, p1) => redaction);
