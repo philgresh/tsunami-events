@@ -1,4 +1,5 @@
 import parsePhoneNumber from 'libphonenumber-js';
+import { ref, getDatabase } from 'firebase/database';
 import { DEFAULT_COUNTRY } from './constants';
 
 const EXPOSED_DIGITS_LENGTH = 4;
@@ -19,3 +20,6 @@ export const getPhoneNumberDisplay = (phoneNumber: string): string => {
 
   return `+${countryCallingCode}${redactedPhoneNumber}`;
 };
+
+/** `getPhoneRef` returns a DB reference to a Participant's Phone */
+export const getPhoneRef = (uid: string) => ref(getDatabase(), `participants/${uid}/phone`);

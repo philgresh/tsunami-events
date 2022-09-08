@@ -1,5 +1,4 @@
 import React from 'react';
-import { Button } from '@mui/material';
 import type { AttemptVerifyPhoneType } from './functions';
 
 /**
@@ -24,21 +23,12 @@ export const useVerifyPhone = (attemptVerifyPhone: AttemptVerifyPhoneType) => {
     }
   };
 
-  const VerifyPhoneButton = () => {
-    const isDisabled = loading;
-    return (
-      <Button variant="text" onClick={() => setIsOpen(true)} disabled={isDisabled}>
-        {loading ? 'Verifying phone number...' : 'Verify phone number'}
-      </Button>
-    );
-  };
-
   return {
     error,
     loading,
     isOpen,
     handleVerifyPhone,
     setIsOpen,
-    VerifyPhoneButton,
+    setLoading,
   };
 };

@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { NAVBAR_HEIGHT } from '../constants';
+import type { CircularProgressProps } from '@mui/material';
 
-export default function CircularIndeterminate() {
+const CircularIndeterminate = (props?: CircularProgressProps) => {
   return (
     <Box
       sx={{
@@ -17,7 +18,9 @@ export default function CircularIndeterminate() {
         transform: 'translateY(-20%)',
       }}
     >
-      <CircularProgress />
+      <CircularProgress {...props} />
     </Box>
   );
-}
+};
+
+export default CircularIndeterminate;

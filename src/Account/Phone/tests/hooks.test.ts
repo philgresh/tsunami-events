@@ -1,6 +1,4 @@
-import { render, screen } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
-import userEvent from '@testing-library/user-event';
 import sinon from 'sinon';
 import * as functions from '../functions';
 import { useVerifyPhone } from '../hooks';
@@ -15,22 +13,6 @@ describe('useVerifyPhone', () => {
       loading: false,
       isOpen: false,
     });
-  });
-
-  it('returns a `VerifyPhoneButton` component that opens the dialog', async () => {
-    const user = userEvent.setup();
-    const { result } = renderHook(() => useVerifyPhone(attemptVerifyPhone));
-    const VerifyPhoneButton = result.current.VerifyPhoneButton;
-
-    render(<VerifyPhoneButton />);
-
-    expect(result.current.isOpen).toBe(false);
-
-    const button = await screen.findByText('Verify phone number');
-    expect(button).not.toBeDisabled();
-
-    await user.click(button);
-    expect(result.current.isOpen).toBe(true);
   });
 
   describe('handleVerifyPhone', () => {

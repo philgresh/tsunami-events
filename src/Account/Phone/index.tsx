@@ -1,23 +1,15 @@
 import React from 'react';
-import { ref, getDatabase, set } from 'firebase/database';
-import { getFunctions, httpsCallable } from 'firebase/functions';
 import { useObjectVal } from 'react-firebase-hooks/database';
-import { Button, Stack, Typography } from '@mui/material';
+import { CircularProgress, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { matchIsValidTel } from 'mui-tel-input';
-import parsePhoneNumber from 'libphonenumber-js';
-import Loading from '../../Nav/Loading';
 import { Phone } from '../../models';
-import AddOrEditPhone from './AddOrEditPhone';
+import AddPhone from './AddPhone';
+import ExistingPhone from './ExistingPhone';
 import VerifyPhoneDialog from './VerifyPhoneDialog';
-import { DEFAULT_COUNTRY } from './constants';
 import { useVerifyPhone } from './hooks';
-import { getPhoneNumberDisplay } from './utils';
-import { attemptVerifyPhone } from './functions';
+import { getPhoneNumberDisplay, getPhoneRef } from './utils';
+import { attemptVerifyPhone, setUserPhone } from './functions';
 import type { ValOptions } from 'react-firebase-hooks/database/dist/database/helpers';
-import type { DBPhone, VerificationStatus } from '../../models';
-
-const getPhoneRef = (uid: string) => ref(getDatabase(), `participants/${uid}/phone`);
 
 export type PhoneControllerProps = {
   uid: string;
@@ -30,33 +22,18 @@ const PhoneController = ({ uid }: PhoneControllerProps) => {
     isOpen: verifyPhoneDialogOpen,
     handleVerifyPhone,
     setIsOpen: setVerifyPhoneDialogOpen,
-    VerifyPhoneButton,
   } = useVerifyPhone(attemptVerifyPhone);
-  const [addOrEditOpen, setAddOrEditOpen] = React.useState(false);
-  const [addEditPhoneNumberError, setAddEditPhoneNumberError] = React.useState<string | undefined>();
   const options: ValOptions<Phone | undefined> = {
     transform: (value) => (value ? Phone.fromDB(value, uid) : undefined),
   };
   const phoneRef = getPhoneRef(uid);
-  const [phone, loading, error] = useObjectVal<Phone | undefined>(phoneRef, options);
+  const [phone, getPhoneLoading, getPhoneError] = useObjectVal<Phone | undefined>(phoneRef, options);
   const theme = useTheme();
 
-  const handleAddEditPhone = async (phoneNumber: string) => {
-    if (!matchIsValidTel(phoneNumber, DEFAULT_COUNTRY)) {
-      // setAddEditPhoneNumberError('Invalid phone number format');
-      return;
-    }
+  const loading = verifyPhoneLoading || getPhoneLoading;
+  const error = verifyPhoneError || getPhoneError;
 
-    const phone = new Phone({ number: phoneNumber.replace(/\s/g, ''), participantID: uid });
-
-    try {
-      await set(phoneRef, phone.toDB()).then(() => {});
-    } catch (err: any) {
-      setAddEditPhoneNumberError(err?.message ?? err);
-    }
-  };
-
-  if (loading) return <Loading />;
+  if (loading) return <CircularProgress />;
   if (error || !uid)
     return (
       <Typography
@@ -67,24 +44,16 @@ const PhoneController = ({ uid }: PhoneControllerProps) => {
       </Typography>
     );
 
-  if (!phone) return null;
-
-  const ExistingPhone = React.memo(({ status, phoneNumber }: { status?: VerificationStatus; phoneNumber: string }) => (
-    <Stack direction="row" spacing={{ xs: 1, sm: 2 }} justifyContent="flex-start" alignItems="center">
-      <Typography variant="body2">{phoneNumber}</Typography>
-      {status === 'approved' ? (
-        <Typography variant="overline" color={theme.palette.success.main}>
-          Verified
-        </Typography>
-      ) : (
-        <VerifyPhoneButton />
-      )}
-    </Stack>
-  ));
+  if (!phone) return <AddPhone uid={uid} setUserPhone={setUserPhone} />;
 
   return (
     <>
-      <ExistingPhone status={phone.verificationStatus} phoneNumber={getPhoneNumberDisplay(phone.number)} />
+      <ExistingPhone
+        status={phone.verificationStatus}
+        phoneNumber={getPhoneNumberDisplay(phone.number)}
+        loading={verifyPhoneLoading}
+        onClickVerifyButton={() => setVerifyPhoneDialogOpen(true)}
+      />
       <VerifyPhoneDialog
         open={verifyPhoneDialogOpen}
         onClose={() => setVerifyPhoneDialogOpen(false)}
@@ -92,19 +61,6 @@ const PhoneController = ({ uid }: PhoneControllerProps) => {
       />
     </>
   );
-
-  // return (
-  //   <div>
-  //     {addOrEditOpen && <AddOrEditPhone
-  //       phoneNumber={phone?.number}
-  //       onChange={async (val) => {
-  //         await handleAddEditPhone(val);
-  //       }}
-  //       error={addEditPhoneNumberError}
-  //     />}
-  //     {phone && <div>Verification status: {phone.verificationStatus}</div>}
-  //   </div>
-  // );
 };
 
 export default PhoneController;
