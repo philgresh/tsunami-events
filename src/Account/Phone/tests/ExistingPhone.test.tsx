@@ -27,19 +27,19 @@ describe('ExistingPhone', () => {
 
   it('displays a button that says "Verifying" if the status is not approved and "loading" is true', async () => {
     await renderExistingPhone({ status: 'pending', loading: true });
-    const button = await screen.findByText('Verifying phone number...');
+    const button = screen.getByRole('button', { name: /verifying/i });
     expect(button).toBeDisabled();
   });
 
   it('displays a button that says "Verify phone number" if the status is not approved and "loading" is false', async () => {
     await renderExistingPhone({ status: 'pending', loading: false });
-    const button = await screen.findByText('Verify phone number');
+    const button = screen.getByRole('button', { name: /verify phone/i });
     expect(button).not.toBeDisabled();
   });
 
   it('displays a button that is clickable', async () => {
     await renderExistingPhone({ status: 'pending', loading: false });
-    const button = await screen.findByText('Verify phone number');
+    const button = screen.getByRole('button', { name: /verify phone/i });
     await userEvent.click(button);
     expect(onClickVerifyButton).toHaveBeenCalled();
   });

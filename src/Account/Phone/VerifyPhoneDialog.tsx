@@ -15,8 +15,8 @@ export type VerifyPhoneDialogProps = {
   onClose: () => void;
 };
 
-const VerifyPhoneDialog = ({ open, onSubmit, onClose }: VerifyPhoneDialogProps) => {
-  const [codeValue, setCodeValue] = React.useState<string | undefined>();
+export const VerifyPhoneDialog = ({ open, onSubmit, onClose }: VerifyPhoneDialogProps) => {
+  const [codeValue, setCodeValue] = React.useState<string>('');
   const handleClose = () => onClose();
   const handleValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
@@ -57,4 +57,4 @@ const VerifyPhoneDialog = ({ open, onSubmit, onClose }: VerifyPhoneDialogProps) 
   );
 };
 
-export default VerifyPhoneDialog;
+export default React.memo(VerifyPhoneDialog);

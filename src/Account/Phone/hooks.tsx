@@ -16,7 +16,6 @@ export const useVerifyPhone = (attemptVerifyPhone: AttemptVerifyPhoneType) => {
     try {
       await attemptVerifyPhone({ code: verificationCode });
     } catch (err: any) {
-      console.error(err);
       setError(new Error(`Unable to verify phone number: ${err}`));
     } finally {
       setLoading(false);
