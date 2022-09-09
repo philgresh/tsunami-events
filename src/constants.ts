@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 export namespace NavPath {
   export const Account = '/account';
   export const Events = '/events';

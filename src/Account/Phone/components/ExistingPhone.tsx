@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Stack, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import type { VerificationStatus } from '../../models';
+import type { VerificationStatus } from '../../../models';
 
 export type ExistingPhoneProps = {
   phoneNumber: string;

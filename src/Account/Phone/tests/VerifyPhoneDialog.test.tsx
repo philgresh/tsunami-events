@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { VerifyPhoneDialog } from '../VerifyPhoneDialog';
-import type { VerifyPhoneDialogProps } from '../VerifyPhoneDialog';
+import { VerifyPhoneDialog } from '../components/VerifyPhoneDialog';
+import type { VerifyPhoneDialogProps } from '../components/VerifyPhoneDialog';
 
 describe('VerifyPhoneDialog', () => {
   const onSubmit = jest.fn();

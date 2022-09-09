@@ -5,6 +5,7 @@ import type { HttpsCallable } from 'firebase/functions';
 import type { Phone, DBPhone } from '../../models';
 
 export type AttemptVerifyPhoneType = HttpsCallable<{ code: string }, DBPhone>;
+export type SetUserPhoneType = (phone: Phone) => Promise<void>;
 
 export const attemptVerifyPhone = httpsCallable<{ code: string }, DBPhone>(getFunctions(), 'attemptVerifyPhone');
 export const sendVerificationCode = httpsCallable<DBPhone, ''>(getFunctions(), 'sendVerificationCode');

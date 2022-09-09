@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ExistingPhone } from '../ExistingPhone';
-import type { ExistingPhoneProps } from '../ExistingPhone';
+import { ExistingPhone } from '../components/ExistingPhone';
+import type { ExistingPhoneProps } from '../components/ExistingPhone';
 
 describe('ExistingPhone', () => {
   const onClickVerifyButton = jest.fn();
