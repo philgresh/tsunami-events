@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import AddPhone from './AddPhone';
 import ExistingPhone from './ExistingPhone';
 import VerifyPhoneDialog from './VerifyPhoneDialog';

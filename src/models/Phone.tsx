@@ -1,4 +1,4 @@
-import { getParticipantRef } from './Participant';
+import { getParticipantPath } from './Participant';
 
 export type VerificationStatus = 'pending' | 'approved' | 'canceled';
 export const getVerificationStatus = (statusStr: VerificationStatus | undefined): VerificationStatus | undefined => {
@@ -7,7 +7,13 @@ export const getVerificationStatus = (statusStr: VerificationStatus | undefined)
 
   return undefined;
 };
-export const getPhoneRef = (participantID: string) => `${getParticipantRef(participantID)}/phone`;
+/** `getPhonePath` returns the DB path to a Participant's Phone.
+ * If no `participantID` arg is given, it returns an empty string so as to throw an error.
+ */
+export const getPhonePath = (participantID: string) => {
+  if (!participantID) return '';
+  return `${getParticipantPath(participantID)}/phone`;
+};
 
 export type DBPhone = {
   number: string;

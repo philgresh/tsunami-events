@@ -9,6 +9,10 @@ export type SetUserPhoneType = (phone: Phone) => Promise<void>;
 
 export const attemptVerifyPhone = httpsCallable<{ code: string }, DBPhone>(getFunctions(), 'attemptVerifyPhone');
 export const sendVerificationCode = httpsCallable<DBPhone, ''>(getFunctions(), 'sendVerificationCode');
+
+/**
+ * `setUserPhone` sets the Phone on the Participant's profile in the DB.
+ */
 export const setUserPhone = async (phone: Phone) => {
   const phoneRef = getPhoneRef(phone.participantID);
   return set(phoneRef, phone.toDB());

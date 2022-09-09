@@ -1,8 +1,8 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { Phone } from '../../../models';
-import { AddPhone } from '../components/AddPhone';
-import type { AddPhoneProps } from '../components/AddPhone';
+import { Phone } from '../../models';
+import { AddPhone } from '../Phone/components/AddPhone';
+import type { AddPhoneProps } from '../Phone/components/AddPhone';
 
 export default {
   title: 'Account/Phone/AddPhone',

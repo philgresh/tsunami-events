@@ -34,7 +34,7 @@
     "deploy": "npm run build && cd ./functions && npm run build",
     "postdeploy": "./scripts/deploy.sh $1",
     "test": "react-app-rewired test",
-    "test:coverage": "npm test -- --coverage --collectCoverageFrom=src/**/* --collectCoverageFrom=!src/**/*.stories.*",
+    "test:coverage": "npm test -- --coverage --changedSince=main --collectCoverageFrom=src/**/* --collectCoverageFrom=!src/**/*.stories.*",
     "eject": "react-scripts eject",
     "lint": "eslint --ext .js,.ts,.tsx ./src",
     "emulators:start": "export env='LOCAL' && firebase emulators:start --import=\"./local_data\"",

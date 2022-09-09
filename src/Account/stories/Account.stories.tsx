@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { AccountItems, AccountItem } from '../..';
+import { AccountItems, AccountItem } from '..';
 
 export default {
   title: 'Account/AccountItems',
