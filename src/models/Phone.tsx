@@ -1,5 +1,3 @@
-import * as admin from 'firebase-admin';
-import * as functions from 'firebase-functions';
 import { getParticipantPath } from './Participant';
 
 export type VerificationStatus = 'pending' | 'approved' | 'canceled';
@@ -9,6 +7,13 @@ export const getVerificationStatus = (statusStr: VerificationStatus | undefined)
 
   return undefined;
 };
+/** `getPhonePath` returns the DB path to a Participant's Phone.
+ * If no `participantID` arg is given, it returns an empty string so as to throw an error.
+ */
+export const getPhonePath = (participantID: string) => {
+  if (!participantID) return '';
+  return `${getParticipantPath(participantID)}/phone`;
+};
 
 export type DBPhone = {
   number: string;
@@ -16,7 +21,7 @@ export type DBPhone = {
   lastVerificationAttemptTime?: string;
 };
 
-type PhoneArgs = DBPhone & {
+export type PhoneArgs = DBPhone & {
   participantID: string;
   verificationStatus?: VerificationStatus;
 };
@@ -24,8 +29,8 @@ type PhoneArgs = DBPhone & {
 class Phone {
   readonly participantID: string;
   readonly number: string;
-  verificationStatus: VerificationStatus | undefined;
-  lastVerificationAttemptTime: Date | undefined;
+  readonly verificationStatus: VerificationStatus | undefined;
+  readonly lastVerificationAttemptTime: Date | undefined;
 
   constructor(args: PhoneArgs) {
     this.participantID = args.participantID;
@@ -45,29 +50,6 @@ class Phone {
       lastVerificationAttemptTime: dbPhone?.lastVerificationAttemptTime,
     });
 
-  /** `update` updates only the Phone child of a Participant */
-  update = async (): Promise<Phone> => {
-    const phonePath = getPhonePath(this.participantID);
-    if (!phonePath) return Promise.reject(new Error('No ParticipantID set on Phone'));
-
-    return admin
-      .database()
-      .ref(phonePath)
-      .set(this.toDB(), (err) => {
-        if (err) {
-          const errMsg = `Unable to update Phone with Participant ID '${this.participantID}': ${err}`;
-          functions.logger.error(errMsg, err);
-          return Promise.reject(errMsg);
-        }
-        return Promise.resolve(this);
-      })
-      .then(() => {
-        functions.logger.log(`Successfully updated Phone with Participant ID '${this.participantID}'`, this.toDB());
-        return Promise.resolve(this);
-      })
-      .catch((err) => Promise.reject(err));
-  };
-
   /** `toDB` converts an Phone to a DBPhone POJO. */
   toDB = (): DBPhone => {
     const dbPhone: DBPhone = {
@@ -80,13 +62,5 @@ class Phone {
     return dbPhone;
   };
 }
-
-/** `getPhonePath` returns the DB path to a Participant's Phone.
- * If no `participantID` arg is given, it returns an empty string so as to throw an error.
- */
-export const getPhonePath = (participantID: string) => {
-  if (!participantID) return '';
-  return `${getParticipantPath(participantID)}/phone`;
-};
 
 export default Phone;

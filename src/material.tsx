@@ -1,7 +1,8 @@
-import { createTheme as MuiCreateTheme } from '@mui/material/styles';
+import { createTheme as MuiCreateTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { cyan, purple } from '@mui/material/colors';
 import { deepmerge } from '@mui/utils';
 import type { ThemeOptions } from '@mui/material/styles';
+import React from 'react';
 
 /**
  * `createTheme` creates a theme based on whether or not the user prefers dark mode.
@@ -18,6 +19,10 @@ export const createTheme = (prefersDarkMode: boolean) => {
         main: purple[800],
       },
       contrastThreshold: 4,
+      common: {
+        black: '#444',
+        white: '#eee',
+      },
     },
     typography: {
       /** Use h5 for site title */
@@ -54,3 +59,9 @@ export const createTheme = (prefersDarkMode: boolean) => {
 
   return MuiCreateTheme(theme);
 };
+
+const ThemeProvider = ({ prefersDarkMode, children }: { prefersDarkMode: boolean; children: React.ReactNode }) => (
+  <MuiThemeProvider theme={createTheme(prefersDarkMode)}>{children}</MuiThemeProvider>
+);
+
+export default ThemeProvider;

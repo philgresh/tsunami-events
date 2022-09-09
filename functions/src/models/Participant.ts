@@ -5,6 +5,13 @@ import Phone from './Phone';
 import type { DBPhone } from './Phone';
 
 const DB_PATH = 'participants';
+/** `getParticipantPath` returns the DB path to a Participant.
+ * If no `participantID` arg is given, it returns an empty string so as to throw an error.
+ */
+export const getParticipantPath = (participantID: string): string => {
+  if (!participantID) return '';
+  return `${DB_PATH}/${participantID}`;
+};
 
 type DBParticipant = {
   id: string;
@@ -56,7 +63,7 @@ export default class Participant {
     admin
       .database()
       .ref()
-      .child(getParticipantRef(this.id))
+      .child(getParticipantPath(this.id))
       .set(this.toDB(), (err) => {
         if (err) {
           const errMsg = `Unable to add new Participant with ID '${this.id}': ${err}`;
@@ -75,7 +82,7 @@ export default class Participant {
    * `find` attempts to find an existing Participant.
    */
   static find = async (id: string): Promise<Participant> => {
-    const ref = getParticipantRef(id ?? '');
+    const ref = getParticipantPath(id ?? '');
     functions.logger.log(`Attempting to find Participant with ID '${ref}'`);
     return admin
       .database()
@@ -96,7 +103,7 @@ export default class Participant {
   static findOrCreate = async (args: ParticipantArgs): Promise<Participant> => {
     return admin
       .database()
-      .ref(getParticipantRef(args.id ?? ''))
+      .ref(getParticipantPath(args.id ?? ''))
       .once('value')
       .then((snapshot) => {
         if (!snapshot.exists()) return new Participant(args).create();
@@ -132,5 +139,3 @@ export default class Participant {
     return dbParticipant;
   };
 }
-
-export const getParticipantRef = (id: string) => `${DB_PATH}/${id}`;

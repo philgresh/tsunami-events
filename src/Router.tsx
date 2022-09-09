@@ -3,11 +3,13 @@ import { BrowserRouter, Navigate, Outlet, Routes, Route } from 'react-router-dom
 import { getAuth } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import Container from '@mui/material/Container';
-import Navbar from './Nav';
+import Navbar, { Loading } from './Nav';
 import { NavPath, NAVBAR_HEIGHT } from './constants';
 import type { ReactNode } from 'react';
 
 const Signin = lazy(() => import('./auth/Signin'));
+const Account = lazy(() => import('./Account'));
+const SMSToS = lazy(() => import('./components/SMSToS'));
 
 const ProtectedRoute = memo(
   ({
@@ -41,15 +43,25 @@ const Router = () => {
             path={NavPath.Account}
             element={
               <ProtectedRoute isAllowed={!!user} redirectPath={NavPath.SignIn}>
-                <div>Account</div>
+                <Suspense fallback={<Loading />}>
+                  <Account user={user!} />
+                </Suspense>
               </ProtectedRoute>
             }
           />
           <Route
             path={NavPath.SignIn}
             element={
-              <Suspense fallback={<div>Loading...</div>}>
+              <Suspense fallback={<Loading />}>
                 <Signin />
+              </Suspense>
+            }
+          />
+          <Route
+            path={NavPath.SMSToS}
+            element={
+              <Suspense fallback={<Loading />}>
+                <SMSToS />
               </Suspense>
             }
           />

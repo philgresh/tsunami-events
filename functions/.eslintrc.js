@@ -11,6 +11,7 @@ module.exports = {
     'plugin:import/errors',
     'plugin:import/warnings',
     'google',
+    'plugin:jsx-a11y/recommended',
   ],
   overrides: [
     {
@@ -31,7 +32,7 @@ module.exports = {
     '/test/**/*',
     '*.ts',
   ],
-  plugins: ['import'],
+  plugins: ['import', 'jsx-a11y'],
   rules: {
     'no-underscore-dangle': 'off',
     'no-unused-vars': ['warn', { varsIgnorePattern: '^_', argsIgnorePattern: '^_' }],

@@ -15,7 +15,9 @@
     "dot-env": "^0.0.1",
     "firebase": "^9.9.3",
     "firebaseui": "^6.0.1",
+    "libphonenumber-js": "^1.10.13",
     "lodash": "^4.17.21",
+    "mui-tel-input": "^2.0.1",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-firebase-hooks": "^5.0.3",
@@ -32,14 +34,43 @@
     "deploy": "npm run build && cd ./functions && npm run build",
     "postdeploy": "./scripts/deploy.sh $1",
     "test": "react-app-rewired test",
+    "test:coverage": "npm test -- --coverage --changedSince=main --collectCoverageFrom=src/**/* --collectCoverageFrom=!src/**/*.stories.*",
     "eject": "react-scripts eject",
+    "lint": "eslint --ext .js,.ts,.tsx ./src",
     "emulators:start": "export env='LOCAL' && firebase emulators:start --import=\"./local_data\"",
-    "emulators:start:export": "export env='LOCAL' && firebase emulators:start --import=\"./local_data\" --export-on-exit"
+    "emulators:start:export": "export env='LOCAL' && firebase emulators:start --import=\"./local_data\" --export-on-exit",
+    "storybook": "start-storybook -p 6006 -s public",
+    "build-storybook": "build-storybook -s public"
   },
   "eslintConfig": {
+    "plugins": [
+      "jsx-a11y"
+    ],
     "extends": [
       "react-app",
-      "react-app/jest"
+      "react-app/jest",
+      "plugin:jsx-a11y/recommended"
+    ],
+    "rules": {
+      "jsx-a11y/no-autofocus": "off"
+    },
+    "overrides": [
+      {
+        "files": [
+          "**/*.stories.*"
+        ],
+        "rules": {
+          "import/no-anonymous-default-export": "off"
+        }
+      },
+      {
+        "files": [
+          "**/?(*.)+(spec|test).[jt]s?(x)"
+        ],
+        "extends": [
+          "plugin:testing-library/react"
+        ]
+      }
     ]
   },
   "browserslist": {
@@ -55,18 +86,39 @@
     ]
   },
   "devDependencies": {
+    "@storybook/addon-actions": "^6.5.10",
+    "@storybook/addon-essentials": "^6.5.10",
+    "@storybook/addon-interactions": "^6.5.10",
+    "@storybook/addon-links": "^6.5.10",
+    "@storybook/builder-webpack5": "^6.5.10",
+    "@storybook/manager-webpack5": "^6.5.10",
+    "@storybook/node-logger": "^6.5.10",
+    "@storybook/preset-create-react-app": "^4.1.2",
+    "@storybook/react": "^6.5.10",
+    "@storybook/testing-library": "^0.0.13",
+    "@testing-library/dom": "^8.17.1",
     "@testing-library/jest-dom": "^5.16.4",
-    "@testing-library/react": "^13.3.0",
-    "@testing-library/user-event": "^13.5.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/react-hooks": "^8.0.1",
+    "@testing-library/user-event": "^14.4.3",
     "@types/jest": "^27.5.2",
     "@types/lodash": "^4.14.184",
     "@types/node": "^16.11.38",
     "@types/react": "^18.0.12",
     "@types/react-dom": "^18.0.5",
     "@types/react-helmet": "^6.1.5",
+    "@types/sinon": "^10.0.13",
     "@types/styled-components": "^5.1.26",
     "babel-plugin-import": "^1.13.5",
+    "babel-plugin-named-exports-order": "^0.0.2",
     "customize-cra": "^1.0.0",
-    "react-app-rewired": "^2.2.1"
+    "eslint-plugin-jsx-a11y": "^6.6.1",
+    "eslint-plugin-testing-library": "^5.6.2",
+    "firebase-functions-test": "^2.3.0",
+    "prop-types": "^15.8.1",
+    "react-app-rewired": "^2.2.1",
+    "sinon": "^14.0.0",
+    "storybook-dark-mode": "^1.1.0",
+    "webpack": "^5.74.0"
   }
 }
