@@ -2,8 +2,9 @@ import React from 'react';
 import { Button, FormControlLabel, FormGroup, Link, Stack, Switch, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { MuiTelInput } from 'mui-tel-input';
+import { NavPath } from '../../../constants';
 import { Phone } from '../../../models';
-import { SMS_TOS_LINK, DEFAULT_COUNTRY } from '../constants';
+import { DEFAULT_COUNTRY } from '../constants';
 import { useAddPhone } from '../hooks';
 
 export type PhoneNumberInputProps = {
@@ -39,7 +40,7 @@ export const AddPhone = ({ uid, setUserPhone }: AddPhoneProps) => {
   const SwitchLabel = () => (
     <Typography variant="body2" sx={{ color: theme.palette.text.primary }} id="SMS TOS Agree Switch">
       I agree with the&nbsp;
-      <Link href={SMS_TOS_LINK} rel="noopener" target="_blank" aria-label="SMS TOS">
+      <Link href={NavPath.SMSToS} rel="noopener" target="_blank" aria-label="SMS TOS">
         SMS Terms of Service
       </Link>
     </Typography>

@@ -9,6 +9,7 @@ import type { ReactNode } from 'react';
 
 const Signin = lazy(() => import('./auth/Signin'));
 const Account = lazy(() => import('./Account'));
+const SMSToS = lazy(() => import('./components/SMSToS'));
 
 const ProtectedRoute = memo(
   ({
@@ -53,6 +54,14 @@ const Router = () => {
             element={
               <Suspense fallback={<Loading />}>
                 <Signin />
+              </Suspense>
+            }
+          />
+          <Route
+            path={NavPath.SMSToS}
+            element={
+              <Suspense fallback={<Loading />}>
+                <SMSToS />
               </Suspense>
             }
           />

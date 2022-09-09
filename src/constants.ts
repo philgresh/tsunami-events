@@ -6,6 +6,7 @@ export namespace NavPath {
   export const Landing = '/landing';
   export const PrivacyPolicy = '/privacy';
   export const SignIn = '/signin';
+  export const SMSToS = '/sms-tos';
   export const ToS = '/tos';
 }
 export const NAVBAR_HEIGHT = '64px';

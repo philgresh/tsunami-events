@@ -47,8 +47,7 @@ const Login = () => {
         return true;
       },
     },
-    // TODO:
-    tosUrl: NavPath.ToS,
+    tosUrl: NavPath.SMSToS,
     // TODO:
     privacyPolicyUrl: NavPath.PrivacyPolicy,
   };

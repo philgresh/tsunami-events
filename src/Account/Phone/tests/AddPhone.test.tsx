@@ -76,7 +76,7 @@ describe('AddPhone', () => {
     it('renders a label with a link to the SMS TOS', async () => {
       await renderAddPhone();
       const link = await screen.findByRole('link', { name: 'SMS TOS' });
-      expect(link.getAttribute('href')).toBe('/sms_tos');
+      expect(link.getAttribute('href')).toBe('/sms-tos');
     });
   });
 
