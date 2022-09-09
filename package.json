@@ -43,6 +43,9 @@
     "build-storybook": "build-storybook -s public"
   },
   "eslintConfig": {
+    "plugins": [
+      "jsx-a11y"
+    ],
     "extends": [
       "react-app",
       "react-app/jest",
