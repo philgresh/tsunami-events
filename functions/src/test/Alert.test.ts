@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { CAP_1_2 } from 'cap-ts';
 import { Alert } from '../models';
+import { AlertLevel } from '../models/Alert';
 
 const mockXMLPath = path.resolve(__dirname, './mockCAPAlert.xml');
 const readXML = () => fs.readFileSync(mockXMLPath, { encoding: 'utf-8' });
@@ -39,5 +40,28 @@ describe('Alert', () => {
 
     expect({ ...alert }).toMatchObject(partialJSON);
     expect(alert.eventID).toBe('abcd-1234');
+  });
+
+  describe('determineAlertLevel', () => {
+    let alert: Alert;
+    beforeEach(() => {
+      alert = new Alert(defaultCAPAlert);
+    });
+
+    it('gets set on call from constructor', () => {
+      expect(alert.alertLevel).toBe(AlertLevel.Information);
+    });
+
+    it('sets alertLevel when called as instance method', () => {
+      alert.info_list[0].event = 'Tsunami Advisory';
+      alert.determineAlertLevel();
+      expect(alert.alertLevel).toBe(AlertLevel.Advisory);
+    });
+
+    it('logs an error if we receive a bad value', () => {
+      alert.info_list[0].event = 'blah blah blah';
+      alert.determineAlertLevel();
+      expect(alert.alertLevel).toBe(AlertLevel.DO_NOT_USE);
+    });
   });
 });
