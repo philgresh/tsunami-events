@@ -1,3 +1,4 @@
+import * as functions from 'firebase-functions';
 import { Alert, Participant } from './models';
 
 /**
@@ -9,6 +10,13 @@ import { Alert, Participant } from './models';
 export const getConcernedParticipants = async (alert: Alert): Promise<Participant[]> => {
   if (!alert) return Promise.reject(new Error('unable to get concerned participants: no alert arg given'));
 
-  const activeParticipants = await Participant.getAllActiveAndVerified();
+  let activeParticipants: Participant[] = [];
+  try {
+    activeParticipants = await Participant.getAllActiveAndVerified();
+  } catch (err: any) {
+    const errMsg = new Error(`unable to get concerned participants: ${err?.message ?? err}`);
+    functions.logger.error('SendAlert:getConcernedParticipants', errMsg);
+    return Promise.reject(errMsg);
+  }
   return Promise.resolve(activeParticipants);
 };

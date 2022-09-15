@@ -1,11 +1,7 @@
-import fs from 'fs';
-import path from 'path';
 import { CAP_1_2 } from 'cap-ts';
-import { Alert } from '../models';
-import { AlertLevel } from '../models/Alert';
-
-const mockXMLPath = path.resolve(__dirname, './mockCAPAlert.xml');
-const readXML = () => fs.readFileSync(mockXMLPath, { encoding: 'utf-8' });
+import { Alert } from '../../models';
+import { AlertLevel } from '../../models/Alert';
+import { readXML } from '../test_utils';
 
 const defaultCAPAlert = CAP_1_2.Alert.fromXML(readXML());
 

@@ -140,7 +140,7 @@ export default class Participant {
         return participants;
       })
       .catch((err: any) => {
-        const errMsg = `Unable to get all active participants: ${err}`;
+        const errMsg = `Unable to get all active participants: ${err?.message ?? err}`;
         functions.logger.error(errMsg);
         return Promise.reject(errMsg);
       });

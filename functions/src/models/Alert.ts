@@ -135,7 +135,6 @@ export default class Alert {
     try {
       const capAlert = CAP_1_2.Alert.fromXML(alertDoc);
       const alert = Alert.fromCAPAlert(capAlert, eventID, url);
-      functions.logger.log(`Alert successfully parsed`, alert.toDB());
 
       return Promise.resolve(alert);
     } catch (err: any) {
@@ -202,7 +201,6 @@ export default class Alert {
     this.info_list?.forEach((info, infoListIndex) => {
       let alertLevel: AlertLevel;
       alertLevel = getAlertLevel(info.event);
-      console.log({ alertLevel });
       if (alertLevel === AlertLevel.DO_NOT_USE)
         functions.logger.error(
           `Unable to determine alert level of event '${info.event}' on infoListIndex ${infoListIndex}`
