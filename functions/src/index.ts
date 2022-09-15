@@ -1,9 +1,11 @@
 import * as _ from 'lodash';
+import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import './firebase'; // Keep near top, initializes Firebase app
 import { CRON_FREQUENCY, NTWC_TSUNAMI_FEED_URL } from './constants';
 import * as AtomFeed from './AtomFeed';
-import { Alert, Participant, Phone } from './models';
+import * as SendAlert from './SendAlert';
+import { Alert, DBAlert, Participant, Phone } from './models';
 import Twilio from './Twilio';
 import { fetchXMLDocument } from './utils';
 import type { ParticipantArgs, VerificationStatus } from './models';
@@ -66,7 +68,7 @@ export const manuallyAddAlert = functions.https.onRequest(async (req, res) => {
       // Validate each alertURL before trying to use it
       const url = new URL(alertURL);
       const alertXML = await fetchXMLDocument(url.toString());
-      const alert = await Alert.parseFromXML(alertXML, undefined, url.toString());
+      const alert = await Alert.fromXML(alertXML, undefined, url.toString());
       alertPromises.push(alert.create());
     } catch (e: any) {
       const errMessage = `Unable to manually add alert '${alertURL}': ${e?.message ?? e}`;
@@ -111,8 +113,9 @@ export const manuallyAddAlert = functions.https.onRequest(async (req, res) => {
 export const sendVerificationCodeOnPhoneCreate = functions.database
   .ref('/participants/{id}/phone')
   .onCreate(async (snapshot, context): Promise<DBPhone> => {
-    // Note: we assume existence since the Phone was just created
-    const phone = Phone.fromDB(snapshot.val(), context.params.id);
+    const val = snapshot.val();
+    if (!val?.phone?.number) return Promise.reject('No phone or phone number');
+    const phone = Phone.fromDB(val, context.params.id);
 
     const handleError = async (err: Error) => {
       const errMsg = `unable to send verification code to phone '${phone.number}' ${err}`;
@@ -166,4 +169,32 @@ export const attemptVerifyPhone = functions.https.onCall(async (data: { code: st
     .update()
     .then((updatedPhone) => updatedPhone.toDB())
     .catch((err) => handleError(new Error(err)));
+});
+
+export const sendAlert = functions.https.onRequest(async (req, res) => {
+  try {
+    const alert = await admin
+      .database()
+      .ref('alerts/PAAQ-1-rcz9ap')
+      .once('value')
+      .then((snapshot) => {
+        if (!snapshot.exists()) {
+          functions.logger.log('Alert does not fucking exist you fucking idiot');
+          return undefined;
+        }
+        const val = snapshot.val() as DBAlert;
+        return new Alert(val, val?.eventID ?? undefined, val?.url ?? undefined);
+      })
+      .catch((err) => err);
+    if (!alert) throw new Error('FUCK YOU');
+    const participants = await SendAlert.getConcernedParticipants(alert);
+    res.status(200).send({ participants });
+    functions.logger.log({ participants });
+    return Promise.resolve();
+  } catch (e: any) {
+    const errMsg = `Unable to send alert: ${e}`;
+    res.status(500).send(new Error(errMsg));
+    functions.logger.error(errMsg);
+    return Promise.reject(errMsg);
+  }
 });

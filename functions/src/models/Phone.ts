@@ -45,6 +45,9 @@ class Phone {
       lastVerificationAttemptTime: dbPhone?.lastVerificationAttemptTime,
     });
 
+  /** `isVerified` returns true if the phone number is already verified */
+  isVerified = () => this?.verificationStatus === 'approved';
+
   /** `update` updates only the Phone child of a Participant */
   update = async (): Promise<Phone> => {
     const phonePath = getPhonePath(this.participantID);

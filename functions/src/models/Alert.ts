@@ -101,8 +101,7 @@ export default class Alert {
   url: string | undefined;
   alertLevel: AlertLevel | undefined;
 
-  constructor(capAlert: CAP_1_2.Alert, eventID?: string, url?: string) {
-    const capAlertJSON = capAlert.toJSON();
+  constructor(capAlertJSON: CAP_1_2.Alert_toJSON_type, eventID?: string, url?: string) {
     this.identifier = capAlertJSON.identifier;
     this.sender = capAlertJSON.sender;
     this.sent = capAlertJSON.sent;
@@ -123,13 +122,19 @@ export default class Alert {
     this.determineAlertLevel();
   }
 
-  /** `parseFromXML` attempts to parse a CAP_Alert from a provided XML document and returns a
+  /**
+   * `fromCAPAlert` constructs an instance of Alert from an instance of CAP_1_2.Alert.
+   */
+  static fromCAPAlert = (capAlert: CAP_1_2.Alert, eventID?: string, url?: string): Alert =>
+    new Alert(capAlert.toJSON(), eventID, url);
+
+  /** `fromXML` attempts to parse a CAP_Alert from a provided XML document and returns a
    * new Alert if successful.
    */
-  static parseFromXML = async (alertDoc: string, eventID?: string, url?: string): Promise<Alert> => {
+  static fromXML = async (alertDoc: string, eventID?: string, url?: string): Promise<Alert> => {
     try {
       const capAlert = CAP_1_2.Alert.fromXML(alertDoc);
-      const alert = new Alert(capAlert, eventID, url);
+      const alert = Alert.fromCAPAlert(capAlert, eventID, url);
       functions.logger.log(`Alert successfully parsed`, alert.toDB());
 
       return Promise.resolve(alert);

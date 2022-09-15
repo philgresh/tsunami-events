@@ -27,25 +27,72 @@ describe('Alert', () => {
     restriction: '',
     note: '',
   };
+  const url = 'https://tsunami.gov/events/PAAQ/2022/06/04/rcz9ap/1/WEAK53/PAAQCAP.xml';
 
-  it('constructs correctly without an `eventID` argument', () => {
-    const alert = new Alert(defaultCAPAlert);
+  describe('constructor', () => {
+    it('constructs correctly without an `eventID` argument', () => {
+      const alert = new Alert(defaultCAPAlert.toJSON());
 
-    expect({ ...alert }).toMatchObject(partialJSON);
-    expect(alert.eventID).toBeUndefined();
+      expect({ ...alert }).toMatchObject(partialJSON);
+      expect(alert.eventID).toBeUndefined();
+    });
+
+    it('constructs correctly with an `eventID` argument', () => {
+      const alert = new Alert(defaultCAPAlert.toJSON(), 'abcd-1234');
+
+      expect({ ...alert }).toMatchObject(partialJSON);
+      expect(alert.eventID).toBe('abcd-1234');
+    });
+
+    it('constructs correctly with an `url` argument', () => {
+      const alert = new Alert(defaultCAPAlert.toJSON(), 'abcd-1234', url);
+
+      expect({ ...alert }).toMatchObject(partialJSON);
+      expect(alert.url).toBe(url);
+    });
+
+    it('calls determineAlertLevel', () => {
+      const alert = new Alert(defaultCAPAlert.toJSON(), 'abcd-1234', url);
+
+      expect({ ...alert }).toMatchObject(partialJSON);
+      expect(alert.alertLevel).toBe(AlertLevel.Information);
+    });
   });
 
-  it('constructs correctly with an `eventID` argument', () => {
-    const alert = new Alert(defaultCAPAlert, 'abcd-1234');
+  describe('fromCAPAlert', () => {
+    it('constructs correctly without an `eventID` argument', () => {
+      const alert = Alert.fromCAPAlert(defaultCAPAlert);
 
-    expect({ ...alert }).toMatchObject(partialJSON);
-    expect(alert.eventID).toBe('abcd-1234');
+      expect({ ...alert }).toMatchObject(partialJSON);
+      expect(alert.eventID).toBeUndefined();
+    });
+
+    it('constructs correctly with an `eventID` argument', () => {
+      const alert = Alert.fromCAPAlert(defaultCAPAlert, 'abcd-1234');
+
+      expect({ ...alert }).toMatchObject(partialJSON);
+      expect(alert.eventID).toBe('abcd-1234');
+    });
+
+    it('constructs correctly with an `url` argument', () => {
+      const alert = Alert.fromCAPAlert(defaultCAPAlert, 'abcd-1234', url);
+
+      expect({ ...alert }).toMatchObject(partialJSON);
+      expect(alert.url).toBe(url);
+    });
+
+    it('calls determineAlertLevel', () => {
+      const alert = Alert.fromCAPAlert(defaultCAPAlert, 'abcd-1234', url);
+
+      expect({ ...alert }).toMatchObject(partialJSON);
+      expect(alert.alertLevel).toBe(AlertLevel.Information);
+    });
   });
 
   describe('determineAlertLevel', () => {
     let alert: Alert;
     beforeEach(() => {
-      alert = new Alert(defaultCAPAlert);
+      alert = new Alert(defaultCAPAlert.toJSON());
     });
 
     it('gets set on call from constructor', () => {
