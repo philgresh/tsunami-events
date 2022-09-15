@@ -4,7 +4,7 @@ import * as functions from 'firebase-functions';
 import './firebase'; // Keep near top, initializes Firebase app
 import { CRON_FREQUENCY, NTWC_TSUNAMI_FEED_URL } from './constants';
 import * as AtomFeed from './AtomFeed';
-import * as SendAlert from './SendAlert';
+import SendAlert from './SendAlert';
 import { Alert, DBAlert, Participant, Phone } from './models';
 import Twilio from './Twilio';
 import { fetchXMLDocument } from './utils';
@@ -186,8 +186,7 @@ export const sendAlert = functions.https.onRequest(async (req, res) => {
         return new Alert(val, val?.eventID ?? undefined, val?.url ?? undefined);
       })
       .catch((err) => err);
-    if (!alert) throw new Error('FUCK YOU');
-    const participants = await SendAlert.getConcernedParticipants(alert);
+    const participants = await new SendAlert(alert).getConcernedParticipants();
     res.status(200).send({ participants });
     functions.logger.log({ participants });
     return Promise.resolve();
