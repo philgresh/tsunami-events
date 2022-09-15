@@ -8,6 +8,7 @@
       ".read": true
     },
     "participants": {
+      ".indexOn": ["active"],
       "$user_id": {
         ".write": "auth != null && $user_id === auth.uid || auth.token.admin === true",
         ".read": "auth != null && $user_id === auth.uid || auth.token.admin === true"
