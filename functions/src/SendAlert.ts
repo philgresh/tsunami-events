@@ -25,7 +25,7 @@ export default class SendAlert {
       activeParticipants = await Participant.getAllActiveAndVerified();
     } catch (err: any) {
       const errMsg = new Error(`unable to get concerned participants: ${err?.message ?? err}`);
-      functions.logger.error('SendAlert:getConcernedParticipants', { errorStack: errMsg.stack });
+      functions.logger.error('SendAlert.getConcernedParticipants', { errorStack: errMsg.stack });
       return Promise.reject(errMsg);
     }
     return Promise.resolve(activeParticipants);
@@ -61,7 +61,7 @@ export default class SendAlert {
       participants = await this.getConcernedParticipants();
     } catch (err: any) {
       const errMsg = new Error(`unable to send alert to participants: ${err?.message ?? err}`);
-      functions.logger.error('SendAlert:sendAlertToParticipants:error', { errorStack: errMsg.stack });
+      functions.logger.error('SendAlert.sendAlertToParticipants:error', { errorStack: errMsg.stack });
       return Promise.reject(errMsg);
     }
 
@@ -91,7 +91,7 @@ export default class SendAlert {
 
     const handleError = (err: any) => {
       const errMsg = new Error(`unable to send alert to participants: ${err?.message ?? err}`);
-      functions.logger.error('SendAlert:sendAlertToParticipants:error', { errorStack: errMsg.stack });
+      functions.logger.error('SendAlert.sendAlertToParticipants:error', { errorStack: errMsg.stack });
       return Promise.reject(errMsg);
     };
 
@@ -111,7 +111,7 @@ export default class SendAlert {
         allSettledResult.forEach((result, index) => {
           if (result.status === 'rejected') {
             // Log this error, move along
-            functions.logger.error(`SendAlert:sendAlertToParticipants:error: unable to deliver SMS: ${result.reason}`, {
+            functions.logger.error(`SendAlert.sendAlertToParticipants:error: unable to deliver SMS: ${result.reason}`, {
               phone: retryPromises[index].participant.phone?.number,
               message: retryPromises[index].message,
             });
