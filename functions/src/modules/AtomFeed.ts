@@ -1,10 +1,10 @@
 import { XMLParser } from 'fast-xml-parser';
 import * as functions from 'firebase-functions';
-import { FEED_PARSER_OPTIONS } from './constants';
-import { Alert, Event } from './models';
-import { fetchXMLDocument, getLinkForCapDocument, handleError } from './utils';
-import type { DBAlert } from './models';
-import type { AtomFeed, Entry, ParsedAtomFeed } from './types';
+import { FEED_PARSER_OPTIONS } from '../constants';
+import { Alert, Event } from '../models';
+import { fetchXMLDocument, getLinkForCapDocument, handleError } from '../utils';
+import type { DBAlert } from '../models';
+import type { AtomFeed, Entry, ParsedAtomFeed } from '../types';
 
 const feedParser = new XMLParser(FEED_PARSER_OPTIONS);
 

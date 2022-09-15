@@ -2,13 +2,13 @@ import './firebase'; // Keep as top, initializes Firebase app
 import * as _ from 'lodash';
 import * as functions from 'firebase-functions';
 import { CRON_FREQUENCY, NTWC_TSUNAMI_FEED_URL } from './constants';
-import * as AtomFeed from './AtomFeed';
-import SendAlert from './SendAlert';
+import * as AtomFeed from './modules/AtomFeed';
+import SendAlert from './modules/SendAlert';
 import { Alert, Participant, Phone } from './models';
-import Twilio from './Twilio';
+import Twilio from './modules/Twilio';
 import { fetchXMLDocument } from './utils';
 import type { ParticipantArgs, VerificationStatus } from './models';
-import type { SendCodeAttempt, VerificationInstance, VerificationCheckInstance } from './Twilio';
+import type { SendCodeAttempt, VerificationInstance, VerificationCheckInstance } from './modules/Twilio';
 import { DBPhone, getVerificationStatus } from './models/Phone';
 
 export const scheduledFetchAndParseLatestEvents = functions.pubsub.schedule(CRON_FREQUENCY).onRun((context) => {
