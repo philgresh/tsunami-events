@@ -4,13 +4,13 @@ import { v4 as uuidv4 } from 'uuid';
 import Phone from './Phone';
 import type { DBPhone } from './Phone';
 
-const DB_PATH = 'participants';
+const PARTICIPANTS_COLLECTION = 'participants';
 /** `getParticipantPath` returns the DB path to a Participant.
  * If no `participantID` arg is given, it returns an empty string so as to throw an error.
  */
 export const getParticipantPath = (participantID: string): string => {
   if (!participantID) return '';
-  return `${DB_PATH}/${participantID}`;
+  return `${PARTICIPANTS_COLLECTION}/${participantID}`;
 };
 
 type DBParticipant = {
@@ -41,20 +41,23 @@ export default class Participant {
     this.phone = args.phone;
     this.email = args.email ?? '';
     this.displayName = args.displayName ?? '';
-    this.active = args.active ?? false;
+    this.active = !!args.active;
   }
 
   /** `fromDB` converts a DBParticipant to an Participant instance */
-  static fromDB = (dbParticipant: DBParticipant) =>
-    new Participant({
-      ...dbParticipant,
-      phone:
-        Object.values(dbParticipant?.phone ?? {})?.length > 0
-          ? Phone.fromDB(dbParticipant.phone as DBPhone, dbParticipant.id)
-          : undefined,
+  static fromDB = (dbParticipant: DBParticipant) => {
+    const participantArgs: Partial<ParticipantArgs> = {
+      id: dbParticipant.id,
+      active: !!dbParticipant.active,
       email: dbParticipant?.email ?? '',
       displayName: dbParticipant?.displayName ?? '',
-    });
+    };
+
+    if (Object.values(dbParticipant?.phone ?? {})?.length > 0)
+      participantArgs.phone = Phone.fromDB(dbParticipant.phone as DBPhone, dbParticipant.id);
+
+    return new Participant(participantArgs);
+  };
 
   /**
    * `create` sets an Participant on the `participants` child of the DB.
@@ -114,18 +117,33 @@ export default class Participant {
       .catch((err) => Promise.reject(new Error(`unable to find Participant '${args.id}': ${err}`)));
   };
 
-  static getAllActive = async () => {
-    const activeParticipants: Participant[] = [];
-    await admin
+  /**
+   * `getAllActiveAndVerified` returns all active Participants from the DB who have verified phone numbers.
+   * No further filtering or sorting takes place.
+   */
+  static getAllActiveAndVerified = async (): Promise<Participant[]> =>
+    admin
       .database()
-      .ref(DB_PATH)
+      .ref(PARTICIPANTS_COLLECTION)
       .orderByChild('active')
+      .equalTo(true)
       .once('value')
       .then((snapshot) => {
-        if (snapshot.val()?.active) activeParticipants.push(Participant.fromDB(snapshot.val()));
+        if (!snapshot.hasChildren()) return [];
+
+        const participants: Participant[] = [];
+        snapshot.forEach((childSnapshot) => {
+          const val = childSnapshot.val() as DBParticipant;
+          const activeParticipant = Participant.fromDB(val);
+          if (activeParticipant?.phone?.isVerified()) participants.push(activeParticipant);
+        });
+        return participants;
+      })
+      .catch((err: any) => {
+        const errMsg = `Unable to get all active participants: ${err?.message ?? err}`;
+        functions.logger.error(errMsg);
+        return Promise.reject(errMsg);
       });
-    return Promise.resolve(activeParticipants);
-  };
 
   /** `toDB` converts an Participant to a DBParticipant POJO. */
   toDB = (): DBParticipant => {

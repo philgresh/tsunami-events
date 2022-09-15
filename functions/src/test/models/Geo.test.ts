@@ -1,4 +1,4 @@
-import Geo, { splitIntoRegions } from '../models/Geo';
+import Geo, { splitIntoRegions } from '../../models/Geo';
 
 describe('Geo', () => {
   describe('constructor', () => {

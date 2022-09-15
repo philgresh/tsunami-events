@@ -99,7 +99,6 @@ export class TwilioClient {
     const makeMsgPromise = () => this.client.messages.create(msgOptions);
     return retryOperation<MessageInstance>(makeMsgPromise, Math.random() * 1000, 3)
       .then((msgInstance) => {
-        functions.logger.log('Successfully sent SMS', msgInstance);
         return msgInstance;
       })
       .catch((err) => handleError(new Error(err)));

@@ -102,7 +102,7 @@ export const fetchAndParseEvent = async (url: string, urlTitle?: string): Promis
   const createdAlerts = await Promise.all(
     parsedAtomFeed.entries.map((entry) =>
       fetchXMLDocument(entry.capXMLURL)
-        .then((alertDoc) => Alert.parseFromXML(alertDoc, event.id, entry.capXMLURL))
+        .then((alertDoc) => Alert.fromXML(alertDoc, event.id, entry.capXMLURL))
         .then((alert) => alert.create())
         .catch((err) => {
           return handleError({
