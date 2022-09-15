@@ -142,7 +142,11 @@ export const sendVerificationCodeOnPhoneCreate = functions.database
 export const sendAlertToParticipantsOnAlertCreate = functions.database
   .ref('/alerts/{identifier}')
   .onCreate(async (snapshot) => {
-    if (!snapshot.val()) return Promise.reject();
+    if (!snapshot.val()) {
+      functions.logger.error('functions.sendAlertToParticipants:error', { errorStack: 'Alert does not exist' });
+      return Promise.reject('Alert does not exist.');
+    }
+
     let alert: Alert;
     try {
       alert = new Alert(snapshot.val());

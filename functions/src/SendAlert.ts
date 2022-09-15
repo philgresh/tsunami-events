@@ -87,8 +87,6 @@ export default class SendAlert {
       }
     }
 
-    const retryPromises: PromisesArrayEntryType[] = [];
-
     const handleError = (err: any) => {
       const errMsg = new Error(`unable to send alert to participants: ${err?.message ?? err}`);
       functions.logger.error('SendAlert.sendAlertToParticipants:error', { errorStack: errMsg.stack });
@@ -99,21 +97,10 @@ export default class SendAlert {
       .then((allSettledResult) => {
         allSettledResult.forEach((result, index) => {
           if (result.status === 'rejected') {
-            // Retry
-            retryPromises.push(smsPromises[index]);
-          }
-        });
-      })
-      .catch(handleError);
-
-    await Promise.allSettled(retryPromises.map(({ promise }) => promise))
-      .then((allSettledResult) => {
-        allSettledResult.forEach((result, index) => {
-          if (result.status === 'rejected') {
-            // Log this error, move along
+            // Twilio promise already includes retrying
             functions.logger.error(`SendAlert.sendAlertToParticipants:error: unable to deliver SMS: ${result.reason}`, {
-              phone: retryPromises[index].participant.phone?.number,
-              message: retryPromises[index].message,
+              phone: smsPromises[index].participant.phone?.number,
+              message: smsPromises[index].message,
             });
           }
         });
