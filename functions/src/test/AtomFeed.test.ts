@@ -3,7 +3,7 @@ import path from 'path';
 import 'dotenv/config';
 import { AxiosResponse } from 'axios';
 import mockAxios from 'jest-mock-axios';
-import { fetchAndParseEvent, parseAtomFeed } from '../AtomFeed';
+import { fetchAndParseEvent, parseAtomFeed } from '../modules/AtomFeed';
 import { NTWC_TSUNAMI_FEED_URL } from '../constants';
 import { getValidAtomFeed } from './mockData';
 

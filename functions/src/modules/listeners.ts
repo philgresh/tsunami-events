@@ -1,11 +1,15 @@
 import last from 'lodash/last';
+import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
+import { Role } from '../constants';
+import { Alert, DBAlert, Participant, Phone } from '../models';
+import { DBPhone, VerificationStatus, getVerificationStatus } from '../models/Phone';
 import SendAlert from './SendAlert';
-import { Alert, Participant, Phone } from '../models';
 import Twilio from './Twilio';
 import type { ParticipantArgs } from '../models/Participant';
 import type { SendCodeAttempt, VerificationInstance } from './Twilio';
-import { DBPhone, VerificationStatus, getVerificationStatus } from '../models/Phone';
+
+const AUTHORS_EMAILS = new Set(String(process.env.AUTHORS_EMAILS).split(','));
 
 /**
  * `createParticipantOnRegisterUser` creates a Participant upon a new user registering.
@@ -18,12 +22,23 @@ export const createParticipantOnRegisterUser = functions.auth.user().onCreate(as
     displayName,
     email,
   };
+
+  // Add `admin` role to authors
+  if (email && AUTHORS_EMAILS.has(email)) {
+    try {
+      await admin.auth().setCustomUserClaims(uid, { role: Role.Admin });
+      functions.logger.log('Successfully applied admin role to user', { user });
+    } catch (e: any) {
+      functions.logger.error('Failed to apply admin role to user', { error: e, user });
+    }
+  }
+
   return Participant.findOrCreate(participantArgs)
     .then((part) => {
       functions.logger.log('Successfully created Participant from new registered user', part.toDB());
     })
     .catch((err) => {
-      functions.logger.log('Failed to creat Participant from new registered user', err);
+      functions.logger.error('Failed to create Participant from new registered user', err);
     });
 });
 
@@ -76,11 +91,15 @@ export const sendAlertToParticipantsOnAlertCreate = functions.database
 
     let alert: Alert;
     try {
-      alert = new Alert(snapshot.val());
+      const alertJSON = snapshot.val() as DBAlert;
+      alert = new Alert({ ...alertJSON, alertJSON });
     } catch (err: any) {
       functions.logger.error('functions.sendAlertToParticipants:error', { errorStack: err?.stack ?? err });
       return Promise.reject();
     }
+
+    // Do not send an SMS for manually-added Alerts
+    if (alert.manuallyAdded) return Promise.resolve();
 
     const sendAlert = new SendAlert(alert);
     return sendAlert.sendAlertToParticipants();
