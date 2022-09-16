@@ -59,7 +59,6 @@ export type DBAlert = {
   note: string | undefined;
   url: string | undefined;
   alertLevel: AlertLevel | undefined;
-  manuallyAdded: boolean | undefined;
 };
 
 /**
@@ -76,13 +75,6 @@ const getAlertLevel = (str: string): AlertLevel => {
   if (str.toLowerCase().includes('cancellation')) return AlertLevel.Cancellation;
 
   return AlertLevel.DO_NOT_USE;
-};
-
-export type AlertArgs = {
-  alertJSON: CAP_1_2.Alert_toJSON_type;
-  eventID?: string;
-  url?: string;
-  manuallyAdded?: boolean;
 };
 
 /**
@@ -108,44 +100,41 @@ export default class Alert {
   note: string | undefined;
   url: string | undefined;
   alertLevel: AlertLevel | undefined;
-  manuallyAdded: boolean | undefined;
 
-  constructor(args: AlertArgs) {
-    const { alertJSON, eventID, url, manuallyAdded } = args;
-    this.identifier = alertJSON.identifier;
-    this.sender = alertJSON.sender;
-    this.sent = alertJSON.sent;
-    this.status = alertJSON.status;
-    this.msgType = alertJSON.msgType;
-    this.scope = alertJSON.scope;
-    this.code_list = alertJSON.code_list;
-    this.info_list = alertJSON.info_list;
-    this.elem_list = alertJSON.elem_list;
-    this.addresses = alertJSON.addresses;
-    this.references = alertJSON.references;
-    this.source = alertJSON.source;
-    this.incidents = alertJSON.incidents;
-    this.restriction = alertJSON.restriction;
-    this.note = alertJSON.note;
+  constructor(capAlertJSON: CAP_1_2.Alert_toJSON_type, eventID?: string, url?: string) {
+    this.identifier = capAlertJSON.identifier;
+    this.sender = capAlertJSON.sender;
+    this.sent = capAlertJSON.sent;
+    this.status = capAlertJSON.status;
+    this.msgType = capAlertJSON.msgType;
+    this.scope = capAlertJSON.scope;
+    this.code_list = capAlertJSON.code_list;
+    this.info_list = capAlertJSON.info_list;
+    this.elem_list = capAlertJSON.elem_list;
+    this.addresses = capAlertJSON.addresses;
+    this.references = capAlertJSON.references;
+    this.source = capAlertJSON.source;
+    this.incidents = capAlertJSON.incidents;
+    this.restriction = capAlertJSON.restriction;
+    this.note = capAlertJSON.note;
     this.eventID = eventID;
     this.url = url;
-    this.manuallyAdded = manuallyAdded;
     this.determineAlertLevel();
   }
 
   /**
    * `fromCAPAlert` constructs an instance of Alert from an instance of CAP_1_2.Alert.
    */
-  static fromCAPAlert = (capAlert: CAP_1_2.Alert, alertArgs?: Omit<AlertArgs, 'alertJSON'>): Alert =>
-    new Alert({ ...alertArgs, alertJSON: capAlert.toJSON() });
+  static fromCAPAlert = (capAlert: CAP_1_2.Alert, eventID?: string, url?: string): Alert =>
+    new Alert(capAlert.toJSON(), eventID, url);
 
   /** `fromXML` attempts to parse a CAP_Alert from a provided XML document and returns a
    * new Alert if successful.
    */
-  static fromXML = async (alertDoc: string, alertArgs?: Omit<AlertArgs, 'alertJSON'>): Promise<Alert> => {
+  static fromXML = async (alertDoc: string, eventID?: string, url?: string): Promise<Alert> => {
     try {
       const capAlert = CAP_1_2.Alert.fromXML(alertDoc);
-      const alert = Alert.fromCAPAlert(capAlert, alertArgs);
+      const alert = Alert.fromCAPAlert(capAlert, eventID, url);
 
       return Promise.resolve(alert);
     } catch (err: any) {

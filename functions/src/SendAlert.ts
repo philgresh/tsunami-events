@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import { CAP_1_2 } from 'cap-ts';
-import { Alert, Participant } from '../models';
+import { Alert, Participant } from './models';
 import Twilio from './Twilio';
 import type { MessageInstance } from 'twilio/lib/rest/api/v2010/account/message';
 
