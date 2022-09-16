@@ -4,15 +4,7 @@ module.exports = {
     es6: true,
     node: true,
   },
-  extends: [
-    'eslint-config-airbnb-base',
-    'prettier',
-    'eslint:recommended',
-    'plugin:import/errors',
-    'plugin:import/warnings',
-    'google',
-    'plugin:jsx-a11y/recommended',
-  ],
+  extends: ['eslint-config-airbnb-base', 'prettier', 'eslint:recommended', 'plugin:import/recommended', 'google'],
   overrides: [
     {
       files: ['*.ts', '*.tsx'],
@@ -57,5 +49,23 @@ module.exports = {
     'valid-jsdoc': 0,
     'prefer-promise-reject-errors': 0,
     curly: 0,
+    'import/order': [
+      'error',
+      {
+        groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object', 'type'],
+        pathGroups: [
+          {
+            pattern: 'firebase',
+            group: 'external',
+            position: 'before',
+          },
+        ],
+        pathGroupsExcludedImportTypes: ['firebase'],
+        alphabetize: {
+          order: 'asc',
+          caseInsensitive: true,
+        },
+      },
+    ],
   },
 };
