@@ -27,28 +27,28 @@ describe('Alert', () => {
 
   describe('constructor', () => {
     it('constructs correctly without an `eventID` argument', () => {
-      const alert = new Alert(defaultCAPAlert.toJSON());
+      const alert = new Alert({ alertJSON: defaultCAPAlert.toJSON() });
 
       expect({ ...alert }).toMatchObject(partialJSON);
       expect(alert.eventID).toBeUndefined();
     });
 
     it('constructs correctly with an `eventID` argument', () => {
-      const alert = new Alert(defaultCAPAlert.toJSON(), 'abcd-1234');
+      const alert = new Alert({ alertJSON: defaultCAPAlert.toJSON(), eventID: 'abcd-1234' });
 
       expect({ ...alert }).toMatchObject(partialJSON);
       expect(alert.eventID).toBe('abcd-1234');
     });
 
     it('constructs correctly with an `url` argument', () => {
-      const alert = new Alert(defaultCAPAlert.toJSON(), 'abcd-1234', url);
+      const alert = new Alert({ alertJSON: defaultCAPAlert.toJSON(), eventID: 'abcd-1234', url });
 
       expect({ ...alert }).toMatchObject(partialJSON);
       expect(alert.url).toBe(url);
     });
 
     it('calls determineAlertLevel', () => {
-      const alert = new Alert(defaultCAPAlert.toJSON(), 'abcd-1234', url);
+      const alert = new Alert({ alertJSON: defaultCAPAlert.toJSON(), eventID: 'abcd-1234', url });
 
       expect({ ...alert }).toMatchObject(partialJSON);
       expect(alert.alertLevel).toBe(AlertLevel.Information);
@@ -64,21 +64,21 @@ describe('Alert', () => {
     });
 
     it('constructs correctly with an `eventID` argument', () => {
-      const alert = Alert.fromCAPAlert(defaultCAPAlert, 'abcd-1234');
+      const alert = Alert.fromCAPAlert(defaultCAPAlert, { eventID: 'abcd-1234' });
 
       expect({ ...alert }).toMatchObject(partialJSON);
       expect(alert.eventID).toBe('abcd-1234');
     });
 
     it('constructs correctly with an `url` argument', () => {
-      const alert = Alert.fromCAPAlert(defaultCAPAlert, 'abcd-1234', url);
+      const alert = Alert.fromCAPAlert(defaultCAPAlert, { eventID: 'abcd-1234', url });
 
       expect({ ...alert }).toMatchObject(partialJSON);
       expect(alert.url).toBe(url);
     });
 
     it('calls determineAlertLevel', () => {
-      const alert = Alert.fromCAPAlert(defaultCAPAlert, 'abcd-1234', url);
+      const alert = Alert.fromCAPAlert(defaultCAPAlert, { eventID: 'abcd-1234', url });
 
       expect({ ...alert }).toMatchObject(partialJSON);
       expect(alert.alertLevel).toBe(AlertLevel.Information);
@@ -88,7 +88,7 @@ describe('Alert', () => {
   describe('determineAlertLevel', () => {
     let alert: Alert;
     beforeEach(() => {
-      alert = new Alert(defaultCAPAlert.toJSON());
+      alert = new Alert({ alertJSON: defaultCAPAlert.toJSON() });
     });
 
     it('gets set on call from constructor', () => {

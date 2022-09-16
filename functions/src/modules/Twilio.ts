@@ -1,7 +1,6 @@
-import * as _ from 'lodash';
 import * as functions from 'firebase-functions';
-import * as twilio from 'twilio';
-import { retryOperation } from './utils';
+import twilio from 'twilio';
+import { retryOperation } from '../utils';
 import type { Twilio } from 'twilio';
 import type { VerificationInstance } from 'twilio/lib/rest/verify/v2/service/verification';
 import type { VerificationCheckInstance } from 'twilio/lib/rest/verify/v2/service/verificationCheck';
