@@ -50,8 +50,8 @@ export const sendVerificationCodeOnPhoneCreate = functions.database
   .ref('/participants/{id}/phone')
   .onCreate(async (snapshot, context): Promise<DBPhone> => {
     const participantID = context.params.id;
-    const val = snapshot.val();
-    if (!val?.phone?.number) return Promise.reject('No phone or phone number');
+    const val = snapshot.val() as DBPhone;
+    if (!val?.number) return Promise.reject('No phone or phone number');
     const phone = Phone.fromDB(val, participantID);
 
     const handleError = async (err: Error) => {
