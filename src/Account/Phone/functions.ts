@@ -1,8 +1,8 @@
 import { set } from 'firebase/database';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { getPhoneRef } from './utils';
-import type { HttpsCallable } from 'firebase/functions';
 import type { Phone, DBPhone } from '../../models';
+import type { HttpsCallable } from 'firebase/functions';
 
 export type AttemptVerifyPhoneType = HttpsCallable<{ code: string }, DBPhone>;
 export type SetUserPhoneType = (phone: Phone) => Promise<void>;

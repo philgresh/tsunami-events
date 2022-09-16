@@ -1,10 +1,10 @@
 import React from 'react';
+import type { MouseEvent } from 'react';
+import { Avatar, Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
 import { getAuth } from 'firebase/auth';
 import { Link as RouterLink } from 'react-router-dom';
-import { Avatar, Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
 import { NavPath } from '../constants';
 import { stringAvatar } from './utils';
-import type { MouseEvent } from 'react';
 import type { NavItem } from './types';
 
 type Props = {

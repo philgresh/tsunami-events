@@ -1,11 +1,11 @@
 import React, { Suspense, lazy, memo } from 'react';
-import { BrowserRouter, Navigate, Outlet, Routes, Route } from 'react-router-dom';
+import type { ReactNode } from 'react';
+import Container from '@mui/material/Container';
 import { getAuth } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import Container from '@mui/material/Container';
-import Navbar, { Loading } from './Nav';
+import { BrowserRouter, Navigate, Outlet, Routes, Route } from 'react-router-dom';
 import { NavPath, NAVBAR_HEIGHT } from './constants';
-import type { ReactNode } from 'react';
+import Navbar, { Loading } from './Nav';
 
 const Signin = lazy(() => import('./auth/Signin'));
 const Account = lazy(() => import('./Account'));

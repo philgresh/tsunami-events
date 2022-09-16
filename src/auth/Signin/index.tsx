@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { getAuth, EmailAuthProvider, GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { NavPath } from '../../constants';
 import StyledFirebaseAuth from '../StyledFirebaseUI';
 import 'firebaseui/dist/firebaseui.css';
-import { NavPath } from '../../constants';
 import type * as firebaseui from 'firebaseui';
 
 const StyledContainer = styled.div`
