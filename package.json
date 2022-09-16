@@ -36,7 +36,8 @@
     "test": "react-app-rewired test",
     "test:coverage": "npm test -- --coverage --changedSince=main --collectCoverageFrom=src/**/* --collectCoverageFrom=!src/**/*.stories.*",
     "eject": "react-scripts eject",
-    "lint": "eslint --ext .js,.ts,.tsx ./src",
+    "lint": "eslint --ext .js,.ts,.tsx ./src --max-warnings 100",
+    "lint:fix": "eslint --ext .js,.ts,.tsx ./src --fix",
     "emulators:start": "export env='LOCAL' && firebase emulators:start --import=\"./local_data\"",
     "emulators:start:export": "export env='LOCAL' && firebase emulators:start --import=\"./local_data\" --export-on-exit",
     "storybook": "start-storybook -p 6006 -s public",
@@ -52,7 +53,36 @@
       "plugin:jsx-a11y/recommended"
     ],
     "rules": {
-      "jsx-a11y/no-autofocus": "off"
+      "jsx-a11y/no-autofocus": "off",
+      "import/order": [
+        "error",
+        {
+          "groups": [
+            "builtin",
+            "external",
+            "internal",
+            "parent",
+            "sibling",
+            "index",
+            "object",
+            "type"
+          ],
+          "pathGroups": [
+            {
+              "pattern": "react",
+              "group": "external",
+              "position": "before"
+            }
+          ],
+          "pathGroupsExcludedImportTypes": [
+            "react"
+          ],
+          "alphabetize": {
+            "order": "asc",
+            "caseInsensitive": true
+          }
+        }
+      ]
     },
     "overrides": [
       {
@@ -112,6 +142,7 @@
     "babel-plugin-import": "^1.13.5",
     "babel-plugin-named-exports-order": "^0.0.2",
     "customize-cra": "^1.0.0",
+    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsx-a11y": "^6.6.1",
     "eslint-plugin-testing-library": "^5.6.2",
     "firebase-functions-test": "^2.3.0",
