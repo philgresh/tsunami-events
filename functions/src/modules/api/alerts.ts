@@ -1,10 +1,13 @@
 import * as functions from 'firebase-functions';
-import Alert from '../models/Alert';
-import { fetchXMLDocument } from '../utils';
+import { Role } from '../../constants';
+import Alert from '../../models/Alert';
+import { fetchXMLDocument } from '../../utils';
+import { isAuthenticated, isAuthorized } from './auth';
+import type { Application, Request, Response } from 'express';
 
 /**
- * `manuallyAddAlert` allows admin to manually add Alerts from a URL.
- * Usage: POST /manuallyAddAlert
+ * `manuallyAddAlerts` allows admin to manually add Alerts from a URL.
+ * Usage: POST /manuallyAddAlerts
  * @body `{ "alertURLs": string[] }`
  * @returns `
  * {
@@ -19,7 +22,7 @@ import { fetchXMLDocument } from '../utils';
  * }
  * `
  */
-export const manuallyAddAlert = functions.https.onRequest(async (req, res) => {
+const manuallyAddAlerts = async (req: Request, res: Response) => {
   if (!req?.body?.['alertURLs']?.length) {
     res.status(400).send('A request body is required');
     return Promise.reject();
@@ -36,7 +39,7 @@ export const manuallyAddAlert = functions.https.onRequest(async (req, res) => {
       // Validate each alertURL before trying to use it
       const url = new URL(alertURL);
       const alertXML = await fetchXMLDocument(url.toString());
-      const alert = await Alert.fromXML(alertXML, undefined, url.toString());
+      const alert = await Alert.fromXML(alertXML, { url: url.toString(), manuallyAdded: true });
       alertPromises.push(alert.create());
     } catch (e: any) {
       const errMessage = `Unable to manually add alert '${alertURL}': ${e?.message ?? e}`;
@@ -76,4 +79,8 @@ export const manuallyAddAlert = functions.https.onRequest(async (req, res) => {
       functions.logger.error(errMsg);
       res.status(500).send(errMsg);
     });
-});
+};
+
+export function alertsConfig(app: Application) {
+  app.post('/alerts', isAuthenticated, isAuthorized({ hasRole: [Role.Admin] }), manuallyAddAlerts);
+}
