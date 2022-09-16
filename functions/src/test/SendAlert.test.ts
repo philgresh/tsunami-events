@@ -1,5 +1,5 @@
 import { CAP_1_2 } from 'cap-ts';
-import SendAlert, { craftInfoSegmentMessage } from '../SendAlert';
+import SendAlert, { craftInfoSegmentMessage } from '../modules/SendAlert';
 import Alert from '../models/Alert';
 import Participant from '../models/Participant';
 import Phone from '../models/Phone';

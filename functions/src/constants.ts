@@ -2,6 +2,10 @@ import { X2jOptionsOptional } from 'fast-xml-parser';
 
 export const CRON_FREQUENCY = 'every 5 minutes';
 export const NTWC_TSUNAMI_FEED_URL = 'https://www.tsunami.gov/events/xml/PAAQAtom.xml';
+export enum Role {
+  Admin = 'admin',
+  User = 'user',
+}
 
 const feedAlwaysArray = new Set(['feed.entry', 'feed.entry.link']);
 export const FEED_PARSER_OPTIONS: X2jOptionsOptional = {
