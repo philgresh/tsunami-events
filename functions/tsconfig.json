@@ -9,8 +9,7 @@
     "strict": true,
     "target": "es2021",
     "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true
+    "skipLibCheck": true
   },
   "compileOnSave": true,
   "include": ["src/**/*.ts", "../src/models/Event.ts"],
