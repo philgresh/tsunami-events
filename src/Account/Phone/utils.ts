@@ -1,5 +1,5 @@
-import parsePhoneNumber from 'libphonenumber-js';
 import { ref, getDatabase } from 'firebase/database';
+import parsePhoneNumber from 'libphonenumber-js';
 import { DEFAULT_COUNTRY } from './constants';
 
 const EXPOSED_DIGITS_LENGTH = 4;

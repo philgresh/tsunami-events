@@ -1,8 +1,8 @@
-import { createTheme as MuiCreateTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
+import React from 'react';
 import { cyan, purple } from '@mui/material/colors';
+import { createTheme as MuiCreateTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { deepmerge } from '@mui/utils';
 import type { ThemeOptions } from '@mui/material/styles';
-import React from 'react';
 
 /**
  * `createTheme` creates a theme based on whether or not the user prefers dark mode.

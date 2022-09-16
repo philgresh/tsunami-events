@@ -1,5 +1,5 @@
-import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
+import { initializeApp } from 'firebase/app';
 import { getPerformance } from 'firebase/performance';
 
 const firebaseConfig = {

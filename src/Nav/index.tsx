@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import type { MouseEvent } from 'react';
+import { Menu as MenuIcon } from '@mui/icons-material';
 import {
   AppBar,
   Box,
@@ -14,14 +15,13 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import { Menu as MenuIcon } from '@mui/icons-material';
 import { getAuth } from 'firebase/auth';
+import { Link as RouterLink } from 'react-router-dom';
 import { NavPath, NAVBAR_HEIGHT } from '../constants';
-import UserMenu from './UserMenu';
 import { DRAWER_WIDTH, NAV_ITEMS } from './constants';
-import { useRouteMatch } from './utils';
 import Loading from './Loading';
-import type { MouseEvent } from 'react';
+import UserMenu from './UserMenu';
+import { useRouteMatch } from './utils';
 
 /** `NavTabs` renders routing buttons on desktop nav bar.
  * @link https://mui.com/material-ui/guides/routing/#button

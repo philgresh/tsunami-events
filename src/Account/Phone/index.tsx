@@ -1,12 +1,12 @@
 import React from 'react';
-import { useObjectVal } from 'react-firebase-hooks/database';
 import { CircularProgress, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { useObjectVal } from 'react-firebase-hooks/database';
 import { Phone } from '../../models';
 import { AddPhone, ExistingPhone, VerifyPhoneDialog } from './components';
+import { attemptVerifyPhone, setUserPhone } from './functions';
 import { useVerifyPhone } from './hooks';
 import { getPhoneNumberDisplay, getPhoneRef } from './utils';
-import { attemptVerifyPhone, setUserPhone } from './functions';
 import type { ValOptions } from 'react-firebase-hooks/database/dist/database/helpers';
 
 export type PhoneControllerProps = {
