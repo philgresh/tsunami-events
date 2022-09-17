@@ -41,7 +41,7 @@ export default class Participant {
     this.phone = args.phone;
     this.email = args.email ?? '';
     this.displayName = args.displayName ?? '';
-    this.active = !!args.active;
+    this.active = args.active ?? true;
   }
 
   /** `fromDB` converts a DBParticipant to an Participant instance */

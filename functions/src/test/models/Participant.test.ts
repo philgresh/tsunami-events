@@ -20,7 +20,7 @@ describe('Participant', () => {
     });
 
     it('sets defaults on optional arguments', () => {
-      expect(defaultParticipant.active).toBe(false);
+      expect(defaultParticipant.active).toBe(true);
       expect(defaultParticipant.email).toBe('');
     });
 
