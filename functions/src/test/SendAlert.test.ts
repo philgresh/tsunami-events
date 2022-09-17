@@ -150,7 +150,7 @@ describe('craftInfoSegmentMessage', () => {
 
   it('includes a fallback headline if one does not exist', async () => {
     infoSegment.headline = undefined;
-    expect(craftInfoSegmentMessage(infoSegment).includes('A tsunami event has occurred.')).toBe(true);
+    expect(craftInfoSegmentMessage(infoSegment).includes('A possible tsunami event has occurred.')).toBe(true);
   });
 
   it('includes instructions if they exist', async () => {

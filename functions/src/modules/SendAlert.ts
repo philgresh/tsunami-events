@@ -65,6 +65,9 @@ export default class SendAlert {
       return Promise.reject(errMsg);
     }
 
+    functions.logger.error(`SendAlert.sendAlertToParticipants: found ${participants.length} participants`);
+    if (participants.length === 0) return Promise.resolve();
+
     const messages = this.craftAlertMessages();
 
     type PromisesArrayEntryType = {
@@ -112,11 +115,13 @@ export default class SendAlert {
 export const craftInfoSegmentMessage = (infoSegment: CAP_1_2.Alert_info_list_info_toJSON_type): string => {
   const { headline, instruction, language, web } = infoSegment;
   if (language?.toLowerCase() !== 'en-us') return '';
-  const fallbackHeadline = 'A tsunami event has occurred.';
+  const websiteAnnounce = 'Tsunami.events: ';
+  const fallbackHeadline = 'A possible tsunami event has occurred.';
+  const topline = websiteAnnounce + (headline || fallbackHeadline);
 
-  const messageParts: string[] = [headline || fallbackHeadline];
+  const messageParts: string[] = [topline];
 
-  if (instruction) messageParts.push(instruction.replace(/\s\s+/g, ' '));
+  if (instruction) messageParts.push(instruction);
   if (web) messageParts.push(`For more details, visit: ${web}`);
-  return messageParts.join('\n');
+  return messageParts.join('\n').replace(/\s\s+/g, ' ');
 };
