@@ -7,9 +7,10 @@ import type { VerificationCheckInstance } from 'twilio/lib/rest/verify/v2/servic
 import type { MessageInstance, MessageListInstanceCreateOptions } from 'twilio/lib/rest/api/v2010/account/message';
 
 const TWILIO_LOG_LEVEL = process.env.TWILIO_LOG_LEVEL;
-const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
-const TWILIO_VERIFICATION_SERVICE_SID = process.env.TWILIO_VERIFICATION_SERVICE_SID;
-const TWILIO_SID = process.env.TWILIO_SID;
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN ?? 'not-a-real-auth-token'; // Prevent tests from failing
+const TWILIO_VERIFICATION_SERVICE_SID =
+  process.env.TWILIO_VERIFICATION_SERVICE_SID ?? 'VA-not-a-real-verification-service-sid';
+const TWILIO_SID = process.env.TWILIO_SID ?? 'AC-not-a-real-verification-service-sid';
 const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
 
 export type { VerificationInstance, VerificationCheckInstance };
