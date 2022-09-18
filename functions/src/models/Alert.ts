@@ -41,7 +41,6 @@ export enum AlertLevel {
  * Note: Realtime Database does not allow `undefined` values so we strip those via the `toDB` method.
  */
 export type DBAlert = {
-  eventID: string | undefined;
   identifier: string;
   sender: string;
   sent: string;
@@ -51,15 +50,16 @@ export type DBAlert = {
   code_list: string[];
   info_list: CAP_1_2.Alert_info_list_info_toJSON_type[];
   elem_list: string[];
-  addresses: string | undefined;
-  references: string | undefined;
-  source: string | undefined;
-  incidents: string | undefined;
-  restriction: string | undefined;
-  note: string | undefined;
-  url: string | undefined;
-  alertLevel: AlertLevel | undefined;
-  manuallyAdded: boolean | undefined;
+  addresses?: string;
+  alertLevel?: keyof typeof AlertLevel;
+  eventID?: string;
+  incidents?: string;
+  manuallyAdded?: boolean;
+  note?: string;
+  references?: string;
+  restriction?: string;
+  source?: string;
+  url?: string;
 };
 
 /**
@@ -80,9 +80,10 @@ const getAlertLevel = (str: string): AlertLevel => {
 
 export type AlertArgs = {
   alertJSON: CAP_1_2.Alert_toJSON_type;
+  alertLevel?: keyof typeof AlertLevel;
   eventID?: string;
-  url?: string;
   manuallyAdded?: boolean;
+  url?: string;
 };
 
 /**
@@ -90,7 +91,7 @@ export type AlertArgs = {
  */
 export default class Alert {
   /** `eventID` cross-references an Event */
-  eventID: string | undefined;
+  eventID?: string;
   identifier: string;
   sender: string;
   sent: string;
@@ -100,18 +101,18 @@ export default class Alert {
   code_list: string[];
   info_list: CAP_1_2.Alert_info_list_info_toJSON_type[];
   elem_list: string[];
-  addresses: string | undefined;
-  references: string | undefined;
-  source: string | undefined;
-  incidents: string | undefined;
-  restriction: string | undefined;
-  note: string | undefined;
-  url: string | undefined;
-  alertLevel: AlertLevel | undefined;
-  manuallyAdded: boolean | undefined;
+  addresses?: string;
+  references?: string;
+  source?: string;
+  incidents?: string;
+  restriction?: string;
+  note?: string;
+  url?: string;
+  alertLevel?: AlertLevel;
+  manuallyAdded?: boolean;
 
   constructor(args: AlertArgs) {
-    const { alertJSON, eventID, url, manuallyAdded } = args;
+    const { alertJSON, alertLevel, eventID, manuallyAdded, url } = args;
     this.identifier = alertJSON.identifier;
     this.sender = alertJSON.sender;
     this.sent = alertJSON.sent;
@@ -130,7 +131,11 @@ export default class Alert {
     this.eventID = eventID;
     this.url = url;
     this.manuallyAdded = manuallyAdded;
-    this.determineAlertLevel();
+    if (alertLevel) {
+      this.alertLevel = AlertLevel[alertLevel];
+    } else {
+      this.determineAlertLevel();
+    }
   }
 
   /**
@@ -229,25 +234,28 @@ export default class Alert {
    * Somewhat surprised that RealtimeDB doesn't have an `ignoreUndefinedProperties` parameter like Firestore.
    */
   toDB = () => {
+    const alertLevel = this.alertLevel ? AlertLevel[this.alertLevel] : '';
+
     const dbAlert: DBAlert = JSON.parse(
       JSON.stringify({
-        identifier: this.identifier ?? '',
-        sender: this.sender ?? '',
-        sent: this.sent ?? '',
-        status: this.status ?? '',
-        msgType: this.msgType ?? '',
-        scope: this.scope ?? '',
+        identifier: this.identifier,
+        sender: this.sender,
+        sent: this.sent,
+        status: this.status,
+        msgType: this.msgType,
+        scope: this.scope,
         code_list: this.code_list ?? [],
         info_list: this.info_list ?? [],
         elem_list: this.elem_list ?? [],
-        addresses: this.addresses ?? '',
-        references: this.references ?? '',
-        source: this.source ?? '',
-        incidents: this.incidents ?? '',
-        restriction: this.restriction ?? '',
-        note: this.note ?? '',
-        eventID: this.eventID ?? '',
+        addresses: this.addresses,
+        references: this.references,
+        source: this.source,
+        incidents: this.incidents,
+        restriction: this.restriction,
+        note: this.note,
+        eventID: this.eventID,
         url: this.url,
+        alertLevel,
       }),
       (_, val) => {
         if (isNil(val)) return;
