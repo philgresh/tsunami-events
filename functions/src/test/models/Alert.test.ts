@@ -1,6 +1,6 @@
 import { CAP_1_2 } from 'cap-ts';
 import { Alert } from '../../models';
-import { AlertLevel } from '../../models/Alert';
+import { AlertLevel } from '../../models/Alert/types';
 import { readXML } from '../test_utils';
 
 const defaultCAPAlert = CAP_1_2.Alert.fromXML(readXML());

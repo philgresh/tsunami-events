@@ -2,96 +2,15 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { isNil } from 'lodash';
 import { CAP_1_2 } from 'cap-ts';
-
-/**
- * `AlertLevel` represents a high-level idea of the severity/impact of a tsunami event.
- * @link https://tsunami.gov/?page=message_definitions
- * @link https://tsunami.gov/images/procChartLargePacific.gif
- */
-export enum AlertLevel {
-  DO_NOT_USE,
-  /** `Cancellation` is an information-only alert level.   */
-  Cancellation,
-
-  /** `Information` is an information-only alert level.
-   * There are no threats or this is a very distant event for which hazards have not been determined.
-   */
-  Information,
-
-  /** `Watch` is an intermediate alert level.
-   * Potential hazards are not yet known.
-   * Actions recommended include staying tuned for more info and getting prepared to act.
-   */
-  Watch,
-
-  /** `Advisory` is a moderately severe alert level.
-   * Potential hazards include strong currents and waves dangerous to those in or very near water.
-   * Actions recommended include staying out of water, away from beaches and waterways.
-   */
-  Advisory,
-
-  /** `Warning` is the most severe alert level.
-   * Potential hazards include dangerous coastal flooding and powerful currents.
-   * Actions recommended include moving to high ground or inland.
-   */
-  Warning,
-}
-/**
- * `DBAlert` represents the shape of an Alert on the database.
- * Note: Realtime Database does not allow `undefined` values so we strip those via the `toDB` method.
- */
-export type DBAlert = {
-  identifier: string;
-  sender: string;
-  sent: string;
-  status: string;
-  msgType: string;
-  scope: string;
-  code_list: string[];
-  info_list: CAP_1_2.Alert_info_list_info_toJSON_type[];
-  elem_list: string[];
-  addresses?: string;
-  alertLevel?: keyof typeof AlertLevel;
-  eventID?: string;
-  incidents?: string;
-  manuallyAdded?: boolean;
-  note?: string;
-  references?: string;
-  restriction?: string;
-  source?: string;
-  url?: string;
-};
-
-/**
- * `getAlertLevel` returns the AlertLevel enum value of an equivalent string.
- */
-const getAlertLevel = (str: string): AlertLevel => {
-  if (!str?.toLowerCase()) return AlertLevel.DO_NOT_USE;
-
-  if (str.toLowerCase().includes('warning')) return AlertLevel.Warning;
-  if (str.toLowerCase().includes('advisory')) return AlertLevel.Advisory;
-  if (str.toLowerCase().includes('watch')) return AlertLevel.Watch;
-  if (str.toLowerCase().includes('information')) return AlertLevel.Information;
-  if (str.toLowerCase().includes('cancelation')) return AlertLevel.Cancellation;
-  if (str.toLowerCase().includes('cancellation')) return AlertLevel.Cancellation;
-
-  return AlertLevel.DO_NOT_USE;
-};
-
-export type AlertArgs = {
-  alertJSON: CAP_1_2.Alert_toJSON_type;
-  alertLevel?: keyof typeof AlertLevel;
-  eventID?: string;
-  manuallyAdded?: boolean;
-  url?: string;
-};
+import { AlertLevel } from './types';
+import { getAlertLevel } from './utils';
+import type { AlertArgs, DBAlert } from './types';
 
 /**
  * `Alert` is the main model for the CAP_1_2 Alert (slightly extended). `Events` may reference multiple `Alerts`.
  */
 export default class Alert {
   /** `eventID` cross-references an Event */
-  eventID?: string;
   identifier: string;
   sender: string;
   sent: string;
@@ -101,15 +20,17 @@ export default class Alert {
   code_list: string[];
   info_list: CAP_1_2.Alert_info_list_info_toJSON_type[];
   elem_list: string[];
+
   addresses?: string;
-  references?: string;
-  source?: string;
-  incidents?: string;
-  restriction?: string;
-  note?: string;
-  url?: string;
   alertLevel?: AlertLevel;
+  eventID?: string;
+  incidents?: string;
   manuallyAdded?: boolean;
+  note?: string;
+  references?: string;
+  restriction?: string;
+  source?: string;
+  url?: string;
 
   constructor(args: AlertArgs) {
     const { alertJSON, alertLevel, eventID, manuallyAdded, url } = args;
