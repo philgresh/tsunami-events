@@ -4,6 +4,7 @@ import Alert from '../models/Alert';
 import Participant from '../models/Participant';
 import Phone from '../models/Phone';
 import { readXML } from './test_utils';
+import { AlertLevel } from '../models/Alert/types';
 
 const mockParticipant = new Participant({
   id: 'active-and-verified',
@@ -139,38 +140,58 @@ describe('craftInfoSegmentMessage', () => {
     infoSegment = alert.toDB().info_list[0];
   });
 
-  it('returns an empty string if the language is not EN-US', async () => {
+  it('returns an empty string if the language is not EN-US', () => {
     infoSegment.language = 'es-mx';
     expect(craftInfoSegmentMessage(infoSegment)).toBe('');
   });
 
-  it('includes a headline if one exists', async () => {
+  it('includes a headline if one exists', () => {
     expect(craftInfoSegmentMessage(infoSegment).includes('This is a Tsunami Information Statement.')).toBe(true);
   });
 
-  it('includes a fallback headline if one does not exist', async () => {
+  it('includes a fallback headline if one does not exist', () => {
     infoSegment.headline = undefined;
     expect(craftInfoSegmentMessage(infoSegment).includes('A possible tsunami event has occurred.')).toBe(true);
   });
 
-  it('includes instructions if they exist', async () => {
+  it('includes instructions if they exist and the alertLevel is not Cancellation', () => {
     expect(
-      craftInfoSegmentMessage(infoSegment).includes('An earthquake has occurred; a tsunami is not expected.')
+      craftInfoSegmentMessage(infoSegment, AlertLevel.Information).includes(
+        'An earthquake has occurred; a tsunami is not expected.'
+      )
     ).toBe(true);
   });
 
-  it('removes redundant spaces within instructions', async () => {
+  it('includes the cancellation message if the alertLevel is Cancellation', () => {
+    expect(
+      craftInfoSegmentMessage(infoSegment, AlertLevel.Cancellation).includes(
+        'Tsunami cancellations indicate the end of the damaging tsunami threat.'
+      )
+    ).toBe(true);
+  });
+
+  it('includes the earthquake location description if it exists', () => {
+    expect(
+      craftInfoSegmentMessage(
+        infoSegment,
+        AlertLevel.Information,
+        'magnitude 7.6 earthquake near the Tonga Islands'
+      ).includes('This message concerns an earthquake of magnitude 7.6 earthquake near the Tonga Islands.')
+    ).toBe(true);
+  });
+
+  it('removes redundant spaces within instructions', () => {
     expect(craftInfoSegmentMessage(infoSegment).includes('  ')).toBe(false);
   });
 
-  it('does not include instructions if none exists', async () => {
+  it('does not include instructions if none exists', () => {
     infoSegment.instruction = undefined;
     expect(
       craftInfoSegmentMessage(infoSegment).includes('An earthquake has occurred; a tsunami is not expected.')
     ).toBe(false);
   });
 
-  it('includes a link to the text bulletin if it exists', async () => {
+  it('includes a link to the text bulletin if it exists', () => {
     expect(
       craftInfoSegmentMessage(infoSegment).includes(
         'For more details, visit: http://ntwc.arh.noaa.gov/events/PAAQ/2022/06/04/rcz9ap/1/WEAK53/WEAK53.txt'
@@ -178,7 +199,7 @@ describe('craftInfoSegmentMessage', () => {
     ).toBe(true);
   });
 
-  it('does not include a link to the text bulletin if it does not exist', async () => {
+  it('does not include a link to the text bulletin if it does not exist', () => {
     infoSegment.web = undefined;
     expect(craftInfoSegmentMessage(infoSegment).includes('For more details')).toBe(false);
   });
