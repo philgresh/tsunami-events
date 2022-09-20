@@ -176,7 +176,7 @@ describe('craftInfoSegmentMessage', () => {
         infoSegment,
         AlertLevel.Information,
         'magnitude 7.6 earthquake near the Tonga Islands'
-      ).includes('This message concerns an earthquake of magnitude 7.6 earthquake near the Tonga Islands')
+      ).includes('This message concerns an earthquake of magnitude 7.6 earthquake near the Tonga Islands.')
     ).toBe(true);
   });
 
