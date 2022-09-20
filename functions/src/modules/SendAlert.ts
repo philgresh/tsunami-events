@@ -1,8 +1,12 @@
 import * as functions from 'firebase-functions';
 import { CAP_1_2 } from 'cap-ts';
 import { Alert, Participant } from '../models';
+import { AlertLevel } from '../models/Alert/types';
 import Twilio from './Twilio';
 import type { MessageInstance } from 'twilio/lib/rest/api/v2010/account/message';
+
+const CANCELLATION_MESSAGE =
+  'Tsunami cancellations indicate the end of the damaging tsunami threat. A cancellation is issued after an evaluation of sea level data confirms that a destructive tsunami will not impact the alerted region, or after tsunami levels have subsided to non-damaging levels.';
 
 export default class SendAlert {
   alert: Alert;
@@ -41,7 +45,7 @@ export default class SendAlert {
     const alertJSON = this.alert.toDB();
 
     alertJSON.info_list.forEach((infoSegment) => {
-      const message = craftInfoSegmentMessage(infoSegment);
+      const message = craftInfoSegmentMessage(infoSegment, this.alert.alertLevel, this.alert.earthquakeLocDesc);
       if (message) messages.push(message);
     });
 
@@ -112,16 +116,27 @@ export default class SendAlert {
   };
 }
 
-export const craftInfoSegmentMessage = (infoSegment: CAP_1_2.Alert_info_list_info_toJSON_type): string => {
+export const craftInfoSegmentMessage = (
+  infoSegment: CAP_1_2.Alert_info_list_info_toJSON_type,
+  alertLevel?: AlertLevel,
+  earthquakeLocDesc?: string
+): string => {
   const { headline, instruction, language, web } = infoSegment;
   if (language?.toLowerCase() !== 'en-us') return '';
   const websiteAnnounce = 'Tsunami.events: ';
   const fallbackHeadline = 'A possible tsunami event has occurred.';
   const topline = websiteAnnounce + (headline || fallbackHeadline);
+  const earthquakeMessage = `This message concerns an earthquake of ${earthquakeLocDesc}.`;
 
-  const messageParts: string[] = [topline];
+  const messageParts: string[] = [topline, earthquakeMessage];
 
-  if (instruction) messageParts.push(instruction);
+  const isCancellation = alertLevel === AlertLevel.Cancellation;
+
+  if (isCancellation) {
+    messageParts.push(CANCELLATION_MESSAGE);
+  } else if (instruction) {
+    messageParts.push(instruction);
+  }
   if (web) messageParts.push(`For more details, visit: ${web}`);
   return messageParts.join('\n').replace(/\s\s+/g, ' ');
 };
