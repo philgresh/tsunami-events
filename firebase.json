@@ -10,10 +10,6 @@
     "rewrites": [
       {
         "source": "**",
-        "function": "api"
-      },
-      {
-        "source": "**",
         "destination": "/index.html"
       }
     ]
