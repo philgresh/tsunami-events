@@ -49,6 +49,7 @@ export type DBAlert = {
   elem_list: string[];
   addresses?: string;
   alertLevel?: keyof typeof AlertLevel;
+  earthquakeLocDesc?: string;
   eventID?: string;
   incidents?: string;
   manuallyAdded?: boolean;
@@ -62,6 +63,7 @@ export type DBAlert = {
 export type AlertArgs = {
   alertJSON: CAP_1_2.Alert_toJSON_type;
   alertLevel?: keyof typeof AlertLevel;
+  earthquakeLocDesc?: string;
   eventID?: string;
   manuallyAdded?: boolean;
   url?: string;

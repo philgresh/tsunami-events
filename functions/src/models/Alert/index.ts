@@ -3,7 +3,7 @@ import * as functions from 'firebase-functions';
 import { isNil } from 'lodash';
 import { CAP_1_2 } from 'cap-ts';
 import { AlertLevel } from './types';
-import { getAlertLevel } from './utils';
+import { getAlertLevel, getEarthquakeLocDesc } from './utils';
 import type { AlertArgs, DBAlert } from './types';
 
 /**
@@ -22,6 +22,7 @@ export default class Alert {
 
   addresses?: string;
   alertLevel?: AlertLevel;
+  earthquakeLocDesc?: string;
   /** `eventID` cross-references an Event */
   eventID?: string;
   incidents?: string;
@@ -33,7 +34,7 @@ export default class Alert {
   url?: string;
 
   constructor(args: AlertArgs) {
-    const { alertJSON, alertLevel, eventID, manuallyAdded, url } = args;
+    const { alertJSON, alertLevel, earthquakeLocDesc, eventID, manuallyAdded, url } = args;
     this.identifier = alertJSON.identifier;
     this.sender = alertJSON.sender;
     this.sent = alertJSON.sent;
@@ -52,11 +53,11 @@ export default class Alert {
     this.eventID = eventID;
     this.url = url;
     this.manuallyAdded = manuallyAdded;
-    if (alertLevel) {
-      this.alertLevel = AlertLevel[alertLevel];
-    } else {
-      this.determineAlertLevel();
-    }
+
+    // Set `earthquakeLocDesc` based on the first `info_list` entry. From a cursory search, it seems that
+    // Alerts with multiple `info` entries will have the same earthquake parameters, e.g. PAAQ-21-r5qho6.
+    this.earthquakeLocDesc = earthquakeLocDesc || getEarthquakeLocDesc(this.info_list?.[0]?.parameter_list);
+    this.alertLevel = AlertLevel[alertLevel ?? 'DO_NOT_USE'] || this.determineAlertLevel();
   }
 
   /**
@@ -174,6 +175,7 @@ export default class Alert {
         incidents: this.incidents,
         restriction: this.restriction,
         note: this.note,
+        earthquakeLocDesc: this.earthquakeLocDesc,
         eventID: this.eventID,
         url: this.url,
         alertLevel,
