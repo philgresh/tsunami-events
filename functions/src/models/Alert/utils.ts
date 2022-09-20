@@ -54,8 +54,6 @@ export const getEarthquakeLocDesc = (
     }
   });
 
-  // if (!eventLocationNameParam || !eventPreliminaryMagnitudeParam) return '';
-
   const magnitude = Number.parseFloat(`${eventPreliminaryMagnitude}`).toFixed(1);
 
   if (!magnitude || !eventLocation) return '';
