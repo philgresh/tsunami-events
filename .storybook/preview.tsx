@@ -1,7 +1,6 @@
 import React from 'react';
 import { themes } from '@storybook/theming';
 import { useDarkMode } from 'storybook-dark-mode';
-import { addDecorator } from '@storybook/react';
 
 // your theme provider
 import ThemeProvider from '../src/material';
@@ -28,4 +27,5 @@ export const parameters = {
     // Override the default light theme
     light: { ...themes.normal },
   },
+  staticDirs: ['../public'],
 };
