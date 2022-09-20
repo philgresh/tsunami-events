@@ -10,7 +10,6 @@ import type { AlertArgs, DBAlert } from './types';
  * `Alert` is the main model for the CAP_1_2 Alert (slightly extended). `Events` may reference multiple `Alerts`.
  */
 export default class Alert {
-  /** `eventID` cross-references an Event */
   identifier: string;
   sender: string;
   sent: string;
@@ -23,6 +22,7 @@ export default class Alert {
 
   addresses?: string;
   alertLevel?: AlertLevel;
+  /** `eventID` cross-references an Event */
   eventID?: string;
   incidents?: string;
   manuallyAdded?: boolean;
