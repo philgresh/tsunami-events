@@ -118,7 +118,7 @@ export const craftInfoSegmentMessage = (
   const websiteAnnounce = 'Tsunami.events: ';
   const fallbackHeadline = 'A possible tsunami event has occurred.';
   const topline = websiteAnnounce + (headline || fallbackHeadline);
-  const earthquakeMessage = `This message concerns an earthquake of ${earthquakeLocDesc}.`;
+  const earthquakeMessage = `This message concerns an ${earthquakeLocDesc}.`;
 
   const messageParts: string[] = [topline, earthquakeMessage];
 
