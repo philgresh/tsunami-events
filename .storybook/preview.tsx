@@ -1,17 +1,15 @@
 import React from 'react';
 import { themes } from '@storybook/theming';
 import { useDarkMode } from 'storybook-dark-mode';
-
-// your theme provider
 import ThemeProvider from '../src/material';
 
 // create a component that uses the dark mode hook
-function ThemeWrapper({ children }: { children: React.ReactNode }) {
+export function ThemeWrapper({ children }: { children: React.ReactNode }) {
   // render your custom theme provider
   return <ThemeProvider prefersDarkMode={useDarkMode()}>{children}</ThemeProvider>;
 }
 
-export const decorators = [(renderStory) => <ThemeWrapper>{renderStory()}</ThemeWrapper>];
+export const decorators = [(renderStory: any) => <ThemeWrapper>{renderStory()}</ThemeWrapper>];
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
