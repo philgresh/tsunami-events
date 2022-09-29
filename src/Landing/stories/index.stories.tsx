@@ -1,6 +1,7 @@
 import React from 'react';
-import { Box, useTheme } from '@mui/material';
+import { Box } from '@mui/material';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { MemoryRouter } from 'react-router-dom';
 import Landing from '..';
 import { ThemeWrapper } from '../../../.storybook/preview';
 
@@ -11,17 +12,16 @@ export default {
 } as ComponentMeta<typeof Landing>;
 
 const Background = (props: any) => {
-  const theme = useTheme();
   return (
     <Box
       style={{
-        backgroundColor: theme.palette.background.paper,
         position: 'absolute',
         top: 0,
         left: 0,
         height: '100vh',
         width: '100vw',
       }}
+      id="storybook-background"
     >
       {props.children}
     </Box>
@@ -30,9 +30,11 @@ const Background = (props: any) => {
 
 const Template: ComponentStory<typeof Landing> = () => (
   <ThemeWrapper>
-    <Background>
-      <Landing />
-    </Background>
+    <MemoryRouter initialEntries={['/']}>
+      <Background>
+        <Landing />
+      </Background>
+    </MemoryRouter>
   </ThemeWrapper>
 );
 
