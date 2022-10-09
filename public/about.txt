@@ -1,5 +1,4 @@
-This favicon was generated using the following font:
-
+The favicon was generated using the following font:
 - Font Title: Asap Condensed
 - Font Author: Copyright 2018 The Asap Condensed Project Authors (https://github.com/Omnibus-Type/AsapCondensed), with Reserved Font Name "(Asap Condensed)".
 - Font Source: http://fonts.gstatic.com/s/asapcondensed/v15/pxieypY1o9NHyXh3WvSbGSggdO9TTGlEgGqgp-pO.ttf
@@ -8,3 +7,9 @@ This favicon was generated using the following font:
 The beach background photo was created by Spencer Watson:
 - URL: https://unsplash.com/photos/eo3tBGMR9yY
 - License: https://unsplash.com/license
+
+The seismic wave image was created by James St John:
+- URL: https://www.flickr.com/photos/jsjgeology/51859962977/in/photostream/
+- License: https://creativecommons.org/licenses/by/2.0/
+- Modifications (./seismic-wave.png)
+  - Removed background and text via https://www.remove.bg
