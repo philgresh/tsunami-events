@@ -4,3 +4,7 @@ This favicon was generated using the following font:
 - Font Author: Copyright 2018 The Asap Condensed Project Authors (https://github.com/Omnibus-Type/AsapCondensed), with Reserved Font Name "(Asap Condensed)".
 - Font Source: http://fonts.gstatic.com/s/asapcondensed/v15/pxieypY1o9NHyXh3WvSbGSggdO9TTGlEgGqgp-pO.ttf
 - Font License: SIL Open Font License, 1.1 (http://scripts.sil.org/OFL))
+
+The beach background photo was created by Spencer Watson:
+- URL: https://unsplash.com/photos/eo3tBGMR9yY
+- License: https://unsplash.com/license

@@ -5,6 +5,7 @@ import { getAuth } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { BrowserRouter, Navigate, Outlet, Routes, Route } from 'react-router-dom';
 import { NavPath, NAVBAR_HEIGHT } from './constants';
+import Landing from './Landing';
 import Navbar, { Loading } from './Nav';
 
 const Signin = lazy(() => import('./auth/Signin'));
@@ -37,8 +38,7 @@ const Router = () => {
       <Navbar />
       <Container maxWidth="md" sx={{ position: 'fixed', top: NAVBAR_HEIGHT }} component="main">
         <Routes>
-          <Route path="/" element={<div>Home</div>} />
-          <Route path={NavPath.Events} element={<div>Events</div>} />
+          <Route path={NavPath.Landing} element={<Landing />} />
           <Route
             path={NavPath.Account}
             element={

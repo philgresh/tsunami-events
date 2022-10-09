@@ -23,6 +23,9 @@ export const createTheme = (prefersDarkMode: boolean) => {
         black: '#444',
         white: '#eee',
       },
+      background: {
+        paper: '#eee',
+      },
     },
     typography: {
       /** Use h5 for site title */
@@ -44,6 +47,9 @@ export const createTheme = (prefersDarkMode: boolean) => {
     palette: {
       mode: 'dark',
       contrastThreshold: 4,
+      background: {
+        paper: '#121212', // restore to default
+      },
     },
     components: {
       MuiTabs: {
