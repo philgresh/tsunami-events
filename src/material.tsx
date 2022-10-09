@@ -20,11 +20,11 @@ export const createTheme = (prefersDarkMode: boolean) => {
       },
       contrastThreshold: 4,
       common: {
-        black: '#444',
-        white: '#eee',
+        black: '#222222',
+        white: '#eeeeee',
       },
       background: {
-        paper: '#eee',
+        paper: '#eeeeee',
       },
     },
     typography: {
@@ -49,6 +49,9 @@ export const createTheme = (prefersDarkMode: boolean) => {
       contrastThreshold: 4,
       background: {
         paper: '#121212', // restore to default
+      },
+      text: {
+        primary: '#eeeeee',
       },
     },
     components: {
