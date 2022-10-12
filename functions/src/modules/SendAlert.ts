@@ -108,6 +108,10 @@ export default class SendAlert {
   };
 }
 
+/**
+ * `craftInfoSegmentMessage` creates a newline-separated message from an `infoSegment`, `alertLevel`,
+ * and earthquake location description. Cancellation messages are treated differently.
+ */
 export const craftInfoSegmentMessage = (
   infoSegment: CAP_1_2.Alert_info_list_info_toJSON_type,
   alertLevel?: AlertLevel,
@@ -118,7 +122,7 @@ export const craftInfoSegmentMessage = (
   const websiteAnnounce = 'Tsunami.events: ';
   const fallbackHeadline = 'A possible tsunami event has occurred.';
   const topline = websiteAnnounce + (headline || fallbackHeadline);
-  const earthquakeMessage = `This message concerns an ${earthquakeLocDesc}.`;
+  const earthquakeMessage = `This message concerns a ${earthquakeLocDesc}.`;
 
   const messageParts: string[] = [topline, earthquakeMessage];
 
