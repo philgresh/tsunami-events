@@ -1,4 +1,4 @@
-import { useTheme } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
 /**
  * `usePrimaryColor` is a custom hook to return the "primary color" of the theme.

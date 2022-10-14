@@ -5,11 +5,13 @@ import type { SxProps, Theme } from '@mui/material/styles';
 
 const CURVY_LINES_PNG = `${process.env.PUBLIC_URL}/curvylines.png`;
 
-const item: SxProps<Theme> = {
+const itemStyles: SxProps<Theme> = {
   display: 'grid',
   gridTemplateColumns: '50px auto',
   gridColumnGap: '1em',
   gridRowGap: '1em',
+  marginX: '10vw',
+  paddingTop: '1em',
 };
 
 /**
@@ -19,7 +21,7 @@ export const Step = ({ children, index }: { children: React.ReactNode; index: nu
   const primaryColor = usePrimaryColor();
   return (
     <Grid item xs={12} key={index}>
-      <Box sx={item}>
+      <Box sx={itemStyles}>
         <Typography variant="h4" component="span" color={primaryColor} sx={{ paddingTop: '1rem' }}>
           {index}.
         </Typography>
@@ -30,11 +32,9 @@ export const Step = ({ children, index }: { children: React.ReactNode; index: nu
 };
 
 /**
- * `HowItWorksLayout` lays out the How It Works section, including a header and
- * styled 'steps'.
+ * `HowItWorksLayout` lays out the How It Works section, including a header and styled 'steps'.
  */
 const HowItWorksLayout = ({ steps }: { steps: React.ReactNode[] }) => {
-  const primaryColor = usePrimaryColor();
   return (
     <Box component="section" sx={{ display: 'flex', bgcolor: 'background.paper', overflow: 'hidden' }}>
       <Container
@@ -59,7 +59,7 @@ const HowItWorksLayout = ({ steps }: { steps: React.ReactNode[] }) => {
             opacity: 0.7,
           }}
         />
-        <Typography variant="h3" component="h2" sx={{ mb: 14 }} color={primaryColor}>
+        <Typography variant="h3" component="h2" sx={{ mb: 5 }}>
           How it works
         </Typography>
         <Grid container spacing={5}>
