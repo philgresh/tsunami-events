@@ -2,14 +2,14 @@ import React from 'react';
 import { Box } from '@mui/material';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { MemoryRouter } from 'react-router-dom';
-import Landing from '..';
+import LandingComponent from '..';
 import { ThemeWrapper } from '../../../.storybook/preview';
 
 export default {
   title: 'Landing',
-  component: Landing,
+  component: LandingComponent,
   argTypes: {},
-} as ComponentMeta<typeof Landing>;
+} as ComponentMeta<typeof LandingComponent>;
 
 const Background = (props: any) => {
   return (
@@ -28,14 +28,14 @@ const Background = (props: any) => {
   );
 };
 
-const Template: ComponentStory<typeof Landing> = () => (
+const Template: ComponentStory<typeof LandingComponent> = () => (
   <ThemeWrapper>
     <MemoryRouter initialEntries={['/']}>
       <Background>
-        <Landing />
+        <LandingComponent />
       </Background>
     </MemoryRouter>
   </ThemeWrapper>
 );
 
-export const Primary = Template.bind({});
+export const Landing = Template.bind({});

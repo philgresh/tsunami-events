@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Button, Typography, useTheme } from '@mui/material';
+import { Button, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { Link as RouterLink } from 'react-router-dom';
 import styled from 'styled-components';
 import { NavPath } from '../../constants';

@@ -7,17 +7,20 @@ import { SxProps } from '@mui/system';
 import styled from 'styled-components';
 import type { Theme } from '@mui/material';
 
-const StyledHeroLayout = styled('section')(({ theme }) => ({
-  color: theme.palette.common.white,
-  position: 'relative',
-  display: 'flex',
-  alignItems: 'center',
-  [theme.breakpoints.up('sm')]: {
-    height: '80vh',
-    minHeight: 500,
-    maxHeight: 1300,
-  },
-}));
+const StyledHeroLayout = styled('section')((props) => {
+  const theme = props.theme as Theme;
+  return {
+    color: theme.palette.common.white,
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    [theme.breakpoints.up('sm')]: {
+      height: '80vh',
+      minHeight: 500,
+      maxHeight: 1300,
+    },
+  };
+});
 
 const StyledBackground = styled(Box)({
   position: 'absolute',
@@ -30,9 +33,9 @@ const StyledBackground = styled(Box)({
   zIndex: -2,
 });
 
-interface HeroLayoutProps {
+type HeroLayoutProps = {
   sxBackground: SxProps<Theme>;
-}
+};
 
 const HeroLayout = (props: React.HTMLAttributes<HTMLDivElement> & HeroLayoutProps) => {
   const { sxBackground, children } = props;
