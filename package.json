@@ -8,8 +8,6 @@
   },
   "private": true,
   "dependencies": {
-    "@emotion/react": "^11.10.0",
-    "@emotion/styled": "^11.10.0",
     "@mui/icons-material": "^5.10.2",
     "@mui/material": "^5.10.2",
     "dot-env": "^0.0.1",
@@ -25,12 +23,13 @@
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
     "styled-components": "^5.3.5",
-    "typescript": "^4.7.3",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "export BROWSER='firefox' && react-app-rewired start",
-    "build": "mkdir -p build && react-app-rewired build",
+    "prestart": "export BROWSER='firefox'",
+    "start": "react-app-rewired start",
+    "prebuild": "mkdir -p build",
+    "build": "react-app-rewired build",
     "deploy": "npm run build && cd ./functions && npm run build",
     "postdeploy": "./scripts/deploy.sh $1",
     "test": "react-app-rewired test",
@@ -147,10 +146,13 @@
     "eslint-plugin-jsx-a11y": "^6.6.1",
     "eslint-plugin-testing-library": "^5.6.2",
     "firebase-functions-test": "^2.3.0",
+    "postcss": "^8.4.18",
+    "postcss-loader": "^7.0.1",
     "prop-types": "^15.8.1",
     "react-app-rewired": "^2.2.1",
     "sinon": "^14.0.0",
     "storybook-dark-mode": "^1.1.2",
+    "typescript": "^4.8.4",
     "webpack": "^5.74.0"
   }
 }
