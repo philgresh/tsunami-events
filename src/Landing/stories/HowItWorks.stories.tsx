@@ -1,18 +1,18 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { ThemeWrapper } from '../../../.storybook/preview';
-import HowItWorks from '../HowItWorks';
+import HowItWorksComponent from '../HowItWorks';
 
 export default {
   title: 'Landing/HowItWorks',
-  component: HowItWorks,
+  component: HowItWorksComponent,
   argTypes: {},
-} as ComponentMeta<typeof HowItWorks>;
+} as ComponentMeta<typeof HowItWorksComponent>;
 
-const Template: ComponentStory<typeof HowItWorks> = () => (
+const Template: ComponentStory<typeof HowItWorksComponent> = () => (
   <ThemeWrapper>
-    <HowItWorks />
+    <HowItWorksComponent />
   </ThemeWrapper>
 );
 
-export const Primary = Template.bind({});
+export const HowItWorks = Template.bind({});
