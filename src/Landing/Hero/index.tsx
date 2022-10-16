@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { Button, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { Link as RouterLink } from 'react-router-dom';
 import styled from 'styled-components';
-import { NavPath } from '../../constants';
+import CTAButton from '../CTAButton';
 import HeroLayout from './HeroLayout';
 import type { Theme } from '@mui/material';
 
@@ -54,16 +53,7 @@ const Hero = () => {
           Stay informed about these potentially deadly events as they happen.
         </Typography>
       </StyledHeadline>
-      <Button
-        color="secondary"
-        variant="contained"
-        size="large"
-        component={RouterLink}
-        to={NavPath.SignIn}
-        sx={{ minWidth: 200 }}
-      >
-        Register to receive updates
-      </Button>
+      <CTAButton text="Register to receive updates" />
     </HeroLayout>
   );
 };
