@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Box, Container, Grid, Typography } from '@mui/material';
+import CTAButton from '../CTAButton';
 import { usePrimaryColor } from './hooks';
 import type { SxProps, Theme } from '@mui/material/styles';
 
@@ -69,6 +70,9 @@ const HowItWorksLayout = ({ steps }: { steps: React.ReactNode[] }) => {
             </Step>
           ))}
         </Grid>
+        <Box sx={{ marginTop: 5 }}>
+          <CTAButton text="Start receiving updates" />
+        </Box>
       </Container>
     </Box>
   );
