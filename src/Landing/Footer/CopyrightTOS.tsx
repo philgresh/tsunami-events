@@ -1,10 +1,16 @@
 import React from 'react';
-import { Box, Link, Typography } from '@mui/material';
+import { Box, Link, Stack, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Link as RouterLink } from 'react-router-dom';
 import { NavPath } from '../../constants';
 import type { LinkProps } from 'react-router-dom';
 
+const LICENSE_URL = 'https://spdx.org/licenses/GPL-3.0-or-later.html';
+
+/**
+ * `CopyrightTOS` displays the copyright and links to the privacy policy, TOS, license, etc.
+ * It does not change between light/dark mode.
+ */
 const CopyrightTOS = () => {
   const theme = useTheme();
 
@@ -23,7 +29,7 @@ const CopyrightTOS = () => {
     </Box>
   );
 
-  const LinkedText = ({ linkProps, children }: { linkProps: LinkProps; children: React.ReactNode }) => {
+  const InternalLink = ({ linkProps, children }: { linkProps: LinkProps; children: React.ReactNode }) => {
     return (
       <Box sx={{ display: 'inline-block' }}>
         <Link component={RouterLink} {...linkProps} underline="hover" color="inherit" variant="overline">
@@ -32,14 +38,6 @@ const CopyrightTOS = () => {
       </Box>
     );
   };
-
-  const Divider = () => (
-    <Box sx={{ display: 'inline-block' }}>
-      <Typography color="inherit" variant="overline" sx={{ marginX: 2 }}>
-        |
-      </Typography>
-    </Box>
-  );
 
   return (
     <Box
@@ -52,13 +50,20 @@ const CopyrightTOS = () => {
       }}
     >
       <Copyright />
-      <Box sx={{ marginTop: 2 }}>
-        <LinkedText linkProps={{ to: NavPath.PrivacyPolicy }}>Privacy Policy</LinkedText>
-        <Divider />
-        <LinkedText linkProps={{ to: NavPath.ToS }}>Terms of Service</LinkedText>
-      </Box>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        spacing={{ xs: 0, sm: 2, md: 4 }}
+        justifyContent="center"
+        sx={{ marginTop: 2 }}
+      >
+        <InternalLink linkProps={{ to: NavPath.PrivacyPolicy }}>Privacy Policy</InternalLink>
+        <InternalLink linkProps={{ to: NavPath.ToS }}>Terms of Service</InternalLink>
+        <Link href={LICENSE_URL} underline="hover" color="inherit" variant="overline">
+          License
+        </Link>
+      </Stack>
     </Box>
   );
 };
 
-export default CopyrightTOS;
+export default React.memo(CopyrightTOS);
