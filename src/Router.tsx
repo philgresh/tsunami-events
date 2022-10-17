@@ -12,6 +12,7 @@ import type { Breakpoint } from '@mui/material';
 
 const Signin = lazy(() => import('./auth/Signin'));
 const Account = lazy(() => import('./Account'));
+const PrivacyPolicy = lazy(() => import('./components/Privacy'));
 const SMSToS = lazy(() => import('./components/SMSToS'));
 
 const StyledMain = styled.main`
@@ -87,6 +88,16 @@ const Router = () => {
             <Suspense fallback={<Loading />}>
               <ContainerizedRoute>
                 <SMSToS />
+              </ContainerizedRoute>
+            </Suspense>
+          }
+        />
+        <Route
+          path={NavPath.PrivacyPolicy}
+          element={
+            <Suspense fallback={<Loading />}>
+              <ContainerizedRoute>
+                <PrivacyPolicy />
               </ContainerizedRoute>
             </Suspense>
           }
