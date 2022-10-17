@@ -7,6 +7,7 @@
     "url": "https://github.com/philgresh/tsunami-alert-gcp/issues"
   },
   "private": true,
+  "license": "GPL-3.0-or-later",
   "dependencies": {
     "@mui/icons-material": "^5.10.2",
     "@mui/material": "^5.10.2",
