@@ -1,3 +1,4 @@
+import Privacy from './Privacy';
 import SMSToS from './SMSToS';
 
-export { SMSToS };
+export { Privacy, SMSToS };
