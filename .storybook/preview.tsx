@@ -1,5 +1,6 @@
 import React from 'react';
 import { themes } from '@storybook/theming';
+import { MemoryRouter } from 'react-router-dom';
 import { useDarkMode } from 'storybook-dark-mode';
 import ThemeProvider from '../src/material';
 
@@ -9,7 +10,13 @@ export function ThemeWrapper({ children }: { children: React.ReactNode }) {
   return <ThemeProvider prefersDarkMode={useDarkMode()}>{children}</ThemeProvider>;
 }
 
-export const decorators = [(renderStory: any) => <ThemeWrapper>{renderStory()}</ThemeWrapper>];
+export const decorators = [
+  (renderStory: any) => (
+    <ThemeWrapper>
+      <MemoryRouter>{renderStory()}</MemoryRouter>
+    </ThemeWrapper>
+  ),
+];
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },

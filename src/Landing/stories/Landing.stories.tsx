@@ -1,9 +1,7 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { MemoryRouter } from 'react-router-dom';
 import LandingComponent from '..';
-import { ThemeWrapper } from '../../../.storybook/preview';
 
 export default {
   title: 'Landing',
@@ -29,13 +27,9 @@ const Background = (props: any) => {
 };
 
 const Template: ComponentStory<typeof LandingComponent> = () => (
-  <ThemeWrapper>
-    <MemoryRouter initialEntries={['/']}>
-      <Background>
-        <LandingComponent />
-      </Background>
-    </MemoryRouter>
-  </ThemeWrapper>
+  <Background>
+    <LandingComponent />
+  </Background>
 );
 
 export const Landing = Template.bind({});

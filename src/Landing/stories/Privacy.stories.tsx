@@ -1,6 +1,5 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { ThemeWrapper } from '../../../.storybook/preview';
 import PrivacyComponent from '../../components/Privacy';
 
 export default {
@@ -9,10 +8,6 @@ export default {
   argTypes: {},
 } as ComponentMeta<typeof PrivacyComponent>;
 
-const Template: ComponentStory<typeof PrivacyComponent> = () => (
-  <ThemeWrapper>
-    <PrivacyComponent />
-  </ThemeWrapper>
-);
+const Template: ComponentStory<typeof PrivacyComponent> = () => <PrivacyComponent />;
 
 export const Privacy = Template.bind({});

@@ -1,6 +1,5 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { ThemeWrapper } from '../../../.storybook/preview';
 import HowItWorksComponent from '../HowItWorks';
 
 export default {
@@ -9,10 +8,6 @@ export default {
   argTypes: {},
 } as ComponentMeta<typeof HowItWorksComponent>;
 
-const Template: ComponentStory<typeof HowItWorksComponent> = () => (
-  <ThemeWrapper>
-    <HowItWorksComponent />
-  </ThemeWrapper>
-);
+const Template: ComponentStory<typeof HowItWorksComponent> = () => <HowItWorksComponent />;
 
 export const HowItWorks = Template.bind({});

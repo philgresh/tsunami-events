@@ -1,9 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { MemoryRouter } from 'react-router-dom';
-import { ThemeWrapper } from '../../../.storybook/preview';
 import CTAButtonComponent from '../CTAButton';
-
 import type { CTAButtonProps } from '../CTAButton';
 
 export default {
@@ -12,13 +9,7 @@ export default {
   argTypes: {},
 } as ComponentMeta<typeof CTAButtonComponent>;
 
-const Template: ComponentStory<typeof CTAButtonComponent> = (args: CTAButtonProps) => (
-  <ThemeWrapper>
-    <MemoryRouter>
-      <CTAButtonComponent {...args} />
-    </MemoryRouter>
-  </ThemeWrapper>
-);
+const Template: ComponentStory<typeof CTAButtonComponent> = (args: CTAButtonProps) => <CTAButtonComponent {...args} />;
 
 export const CTAButton = Template.bind({});
 CTAButton.args = { text: 'Register to receive updates' };
