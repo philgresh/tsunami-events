@@ -1,16 +1,18 @@
 import React from 'react';
 import ReactHelmet from 'react-helmet';
 import { tosHTML } from './policies';
+import TextFromHTML from './TextFromHTML';
 
-const createHTML = () => ({ __html: tosHTML });
-
+/**
+ * `TOS` displays the terms of service within a memoized `TextFromHTML` component.
+ */
 const TOS = () => (
   <div>
     <ReactHelmet>
       <title>Terms of Use</title>
     </ReactHelmet>
-    <div dangerouslySetInnerHTML={createHTML()} />
+    <TextFromHTML html={tosHTML} />
   </div>
 );
 
-export default React.memo(TOS);
+export default TOS;
