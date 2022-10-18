@@ -1,7 +1,8 @@
 import React from 'react';
-import Footer from './Footer';
-import Hero from './Hero';
-import HowItWorks from './HowItWorks';
+
+const Footer = React.lazy(() => import('./Footer'));
+const Hero = React.lazy(() => import('./Hero'));
+const HowItWorks = React.lazy(() => import('./HowItWorks'));
 
 const Landing = () => {
   return (
