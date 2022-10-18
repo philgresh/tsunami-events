@@ -31,7 +31,7 @@
   "scripts": {
     "prestart": "export BROWSER='firefox'",
     "start": "react-app-rewired start",
-    "prebuild": "mkdir -p build",
+    "prebuild": "rm -rf build && mkdir build",
     "build": "react-app-rewired build",
     "deploy": "npm run build && cd ./functions && npm run build",
     "postdeploy": "./scripts/deploy.sh $1",
