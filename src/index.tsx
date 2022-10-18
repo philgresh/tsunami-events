@@ -20,6 +20,7 @@ const App = () => {
           name="description"
           content="Tsunami.Events displays recent tsunami alerts and sends SMS updates to participants"
         />
+        <meta name="theme-color" content={theme.palette.primary.main} />
       </Helmet>
       <CssBaseline enableColorScheme={prefersDarkMode} />
       <Router />
