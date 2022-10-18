@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import PrivacyComponent from './Privacy';
+import PrivacyComponent from '../Privacy';
 
 export default {
   title: 'TOS/Privacy',
