@@ -15,4 +15,4 @@ const TOS = () => (
   </div>
 );
 
-export default React.memo(TOS);
+export default TOS;
