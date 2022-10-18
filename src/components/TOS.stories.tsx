@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import ToSComponent from '../../components/ToS';
+import ToSComponent from './ToS';
 
 export default {
   title: 'TOS/Terms of Service',
