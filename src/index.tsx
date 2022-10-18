@@ -7,6 +7,7 @@ import Helmet from 'react-helmet';
 import './firebase'; // Keep as one of the first imports since the FIrebase app is initialized here
 import { createTheme } from './material';
 import Router from './Router';
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 const App = () => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -19,6 +20,7 @@ const App = () => {
           name="description"
           content="Tsunami.Events displays recent tsunami alerts and sends SMS updates to participants"
         />
+        <meta name="theme-color" content={theme.palette.primary.main} />
       </Helmet>
       <CssBaseline enableColorScheme={prefersDarkMode} />
       <Router />
@@ -32,3 +34,8 @@ root.render(
     <App />
   </StrictMode>
 );
+
+// If you want your app to work offline and load faster, you can change
+// unregister() to register() below. Note this comes with some pitfalls.
+// Learn more about service workers: https://cra.link/PWA
+serviceWorkerRegistration.register();
