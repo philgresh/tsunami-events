@@ -6,7 +6,8 @@ import CTAButton from '../CTAButton';
 import HeroLayout from './HeroLayout';
 import type { Theme } from '@mui/material';
 
-const BACKGROUND_IMAGE_URL = `${process.env.PUBLIC_URL}/spencer-watson-eo3tBGMR9yY-unsplash.jpg`;
+const BACKGROUND_IMAGE_URL_JPG = `${process.env.PUBLIC_URL}/spencer-watson-eo3tBGMR9yY-unsplash.jpg`;
+const BACKGROUND_IMAGE_URL_WEBP = `${process.env.PUBLIC_URL}/spencer-watson-eo3tBGMR9yY-unsplash.webp`;
 const BACKGROUND_IMAGE_FALLBACK_COLOR = '#fcdbae';
 
 const StyledHeadline = styled.hgroup<{ theme: Theme }>`
@@ -18,15 +19,13 @@ const Hero = () => {
   const theme = useTheme();
   return (
     <HeroLayout
-      sxBackground={{
+      background={{
         backgroundColor: BACKGROUND_IMAGE_FALLBACK_COLOR,
-        backgroundImage: `url(${BACKGROUND_IMAGE_URL})`,
-        backgroundPosition: 'center',
+        backgroundImageJpg: BACKGROUND_IMAGE_URL_JPG,
+        backgroundImageWebp: BACKGROUND_IMAGE_URL_WEBP,
       }}
       id="hero"
     >
-      {/* Increase the network loading priority of the background image. */}
-      <img style={{ display: 'none' }} src={BACKGROUND_IMAGE_URL} alt="increase priority" />
       <StyledHeadline theme={theme}>
         <Typography
           color="#111"

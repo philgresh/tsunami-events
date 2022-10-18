@@ -22,26 +22,32 @@ const StyledHeroLayout = styled('section')((props) => {
   };
 });
 
-const StyledBackground = styled(Box)({
-  position: 'absolute',
-  left: 0,
-  right: 0,
-  top: 0,
-  bottom: 0,
-  backgroundSize: 'cover',
-  backgroundRepeat: 'no-repeat',
-  zIndex: -2,
-});
-
-type HeroLayoutProps = {
-  sxBackground: SxProps<Theme>;
+type StyledBackgroundProps = {
+  backgroundColor: string;
+  backgroundImageJpg: string;
+  backgroundImageWebp: string;
 };
 
-const HeroLayout = (props: React.HTMLAttributes<HTMLDivElement> & HeroLayoutProps) => {
-  const { sxBackground, children } = props;
+const StyledBackground = styled(Box)<StyledBackgroundProps>`
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: -2;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: ${(props) => props.backgroundColor};
+  background-image: url(${(props) => props.backgroundImageJpg});
+  background-image: url(${(props) => props.backgroundImageWebp});
+`;
+
+const HeroLayout = (props: React.HTMLAttributes<HTMLDivElement> & { background: StyledBackgroundProps }) => {
+  const { background, children, ...divProps } = props;
   const theme = useTheme();
   return (
-    <StyledHeroLayout theme={theme}>
+    <StyledHeroLayout theme={theme} {...divProps}>
       <Container
         sx={{
           mt: 3,
@@ -65,7 +71,7 @@ const HeroLayout = (props: React.HTMLAttributes<HTMLDivElement> & HeroLayoutProp
             zIndex: -1,
           }}
         />
-        <StyledBackground sx={sxBackground} />
+        <StyledBackground {...background} />
         <ArrowCircleDownIcon color="action" fontSize="large" sx={{ position: 'absolute', bottom: 32 }} />
       </Container>
     </StyledHeroLayout>
