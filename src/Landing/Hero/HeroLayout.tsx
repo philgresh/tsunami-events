@@ -3,7 +3,6 @@ import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { useTheme } from '@mui/material/styles';
-import { SxProps } from '@mui/system';
 import styled from 'styled-components';
 import type { Theme } from '@mui/material';
 
