@@ -1,5 +1,13 @@
 {
   "projects": {
     "default": "tsunami-c067e"
+  },
+  "targets": {},
+  "etags": {
+    "tsunami-c067e": {
+      "extensionInstances": {
+        "delete-user-data": "6f2ecdc6ac7c0272bc5d35df7f6d55f3ab7a6ec5abe7cfff3640b9fc2f9330b7"
+      }
+    }
   }
 }
