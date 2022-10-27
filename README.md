@@ -1,9 +1,6 @@
-[![Maintainability](https://api.codeclimate.com/v1/badges/d38f044c7268e28e22eb/maintainability)](https://codeclimate.com/github/philgresh/tsunami-alert-gcp/maintainability)
-<a href="https://codeclimate.com/github/philgresh/tsunami-alert-gcp/test_coverage"><img src="https://api.codeclimate.com/v1/badges/d38f044c7268e28e22eb/test_coverage" /></a>
-# Tsunami Alert
+# Tsunami Events
 
-
-Tsunamis are a major hazard to visitors and residents in low-lying areas close to the ocean. Many seaside areas have tsunami alert sirens, but for visitors to beaches without sirens, a tsunami could become deadly. This app sets up a listener for tsunami events and distributes an SMS alert to participants to provide supplemental warning.
+Tsunamis are a major hazard to visitors and residents in low-lying areas close to the ocean. Many seaside areas have tsunami alert sirens, but for residents of and visitors to beaches without sirens, a tsunami could become deadly. This app sets up a listener for tsunami events and distributes an SMS alert to participants to provide supplemental warning.
 
 ## Disclaimer
 You accept all risks and responsibility for losses, damages, costs and other consequences resulting directly or indirectly from using this site and/or application and any information or material available or received from it.
