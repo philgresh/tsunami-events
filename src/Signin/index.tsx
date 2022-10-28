@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
 import { getAuth, EmailAuthProvider, GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { NavPath } from '../../constants';
-import StyledFirebaseAuth from '../StyledFirebaseUI';
+import { NavPath } from '../constants';
+import StyledFirebaseAuth from './StyledFirebaseUI';
 import 'firebaseui/dist/firebaseui.css';
-import type * as firebaseui from 'firebaseui';
+import type { ProtectedRouteState } from '../types';
+import type firebaseui from 'firebaseui';
 
 const StyledContainer = styled.div`
   position: fixed;
@@ -23,21 +24,28 @@ const StyledContainer = styled.div`
   font-family: sans-serif;
 `;
 
-const Login = () => {
+/**
+ * `SignIn` is the main interface for signing into the app.
+ */
+const SignIn = () => {
   const [user, loading, error] = useAuthState(getAuth());
   const navigate = useNavigate();
+  const location = useLocation();
+  const state: ProtectedRouteState = location.state;
+
+  const signInSuccessUrl = state.intended ?? NavPath.Account;
 
   useEffect(() => {
     if (loading) {
       return;
     }
-    if (user) navigate(NavPath.Account);
-  }, [navigate, user, loading]);
+    if (user) navigate(signInSuccessUrl);
+  }, [navigate, user, loading, signInSuccessUrl]);
 
   const config: firebaseui.auth.Config = {
     signInFlow: 'popup',
     signInOptions: [EmailAuthProvider.PROVIDER_ID, GoogleAuthProvider.PROVIDER_ID, GithubAuthProvider.PROVIDER_ID],
-    signInSuccessUrl: NavPath.Account,
+    signInSuccessUrl,
     siteName: 'Tsunami Events',
     callbacks: {
       signInSuccessWithAuthResult: (_authResult, _redirectUrl) => {
@@ -48,7 +56,6 @@ const Login = () => {
       },
     },
     tosUrl: NavPath.SMSToS,
-    // TODO:
     privacyPolicyUrl: NavPath.PrivacyPolicy,
   };
 
@@ -66,12 +73,8 @@ const Login = () => {
 
   return (
     <StyledContainer>
-      {!user && (
-        <div>
-          <StyledFirebaseAuth className={'firebaseUi'} uiConfig={config} firebaseAuth={getAuth()} />
-        </div>
-      )}
+      {!user && <StyledFirebaseAuth className={'firebaseUi'} uiConfig={config} firebaseAuth={getAuth()} />}
     </StyledContainer>
   );
 };
-export default Login;
+export default SignIn;
