@@ -3,17 +3,16 @@ import type { ReactNode } from 'react';
 import Container from '@mui/material/Container';
 import { getAuth } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { BrowserRouter, Navigate, Outlet, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Navigate, Outlet, Routes, Route } from 'react-router-dom';
 import styled from 'styled-components';
 import { NavPath, NAVBAR_HEIGHT } from './constants';
 import Landing from './Landing';
 import Navbar, { Loading } from './Nav';
-import type { ProtectedRouteState } from './types';
 import type { Breakpoint } from '@mui/material';
 
+const Signin = lazy(() => import('./auth/Signin'));
 const Account = lazy(() => import('./Account'));
 const PrivacyPolicy = lazy(() => import('./components/Privacy'));
-const Signin = lazy(() => import('./Signin'));
 const SMSToS = lazy(() => import('./components/SMSToS'));
 const TOS = lazy(() => import('./components/ToS'));
 
@@ -34,12 +33,8 @@ const ProtectedRoute = memo(
     children?: ReactNode;
     redirectPath?: string;
   }) => {
-    const location = useLocation();
-    const redirectURL = redirectPath ?? NavPath.SignIn;
-
     if (!isAllowed) {
-      const state: ProtectedRouteState = { intended: location.pathname };
-      return <Navigate to={redirectURL} replace state={state} />;
+      return <Navigate to={redirectPath} replace />;
     }
 
     return <>{children ? children : <Outlet />}</>;
@@ -71,7 +66,7 @@ const Router = () => {
         <Route
           path={NavPath.Account}
           element={
-            <ProtectedRoute isAllowed={!!user}>
+            <ProtectedRoute isAllowed={!!user} redirectPath={NavPath.SignIn}>
               <Suspense fallback={<Loading />}>
                 <ContainerizedRoute maxWidth="md">
                   <Account user={user!} />
