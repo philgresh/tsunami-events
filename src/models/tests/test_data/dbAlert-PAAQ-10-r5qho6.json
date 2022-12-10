@@ -1,0 +1,389 @@
+{
+  "addresses": "",
+  "alertLevel": "Advisory",
+  "code_list": ["IPAWSv1.0"],
+  "eventID": "",
+  "identifier": "PAAQ-10-r5qho6",
+  "incidents": "r5qho6",
+  "info_list": [
+    {
+      "area_list": [
+        {
+          "areaDesc": "Coastal areas between and including The Cal./Mexico Border  to Attu, Alaska",
+          "geocode_list": [
+            {
+              "value": "PZZ530",
+              "valueName": "UGC"
+            },
+            {
+              "value": "PZZ531",
+              "valueName": "UGC"
+            },
+            {
+              "value": "CAZ043",
+              "valueName": "UGC"
+            },
+            {
+              "value": "CAZ040",
+              "valueName": "UGC"
+            },
+            {
+              "value": "CAZ041",
+              "valueName": "UGC"
+            },
+            {
+              "value": "CAZ552",
+              "valueName": "UGC"
+            },
+            {
+              "value": "CAZ087",
+              "valueName": "UGC"
+            },
+            {
+              "value": "CAZ549",
+              "valueName": "UGC"
+            },
+            {
+              "value": "CAZ550",
+              "valueName": "UGC"
+            },
+            {
+              "value": "CAZ039",
+              "valueName": "UGC"
+            },
+            {
+              "value": "CAZ034",
+              "valueName": "UGC"
+            },
+            {
+              "value": "CAZ035",
+              "valueName": "UGC"
+            },
+            {
+              "value": "CAZ529",
+              "valueName": "UGC"
+            },
+            {
+              "value": "CAZ530",
+              "valueName": "UGC"
+            },
+            {
+              "value": "CAZ006",
+              "valueName": "UGC"
+            },
+            {
+              "value": "CAZ505",
+              "valueName": "UGC"
+            },
+            {
+              "value": "CAZ506",
+              "valueName": "UGC"
+            },
+            {
+              "value": "CAZ508",
+              "valueName": "UGC"
+            },
+            {
+              "value": "CAZ509",
+              "valueName": "UGC"
+            },
+            {
+              "value": "CAZ109",
+              "valueName": "UGC"
+            },
+            {
+              "value": "CAZ104",
+              "valueName": "UGC"
+            },
+            {
+              "value": "CAZ103",
+              "valueName": "UGC"
+            },
+            {
+              "value": "CAZ101",
+              "valueName": "UGC"
+            },
+            {
+              "value": "ORZ021",
+              "valueName": "UGC"
+            },
+            {
+              "value": "ORZ022",
+              "valueName": "UGC"
+            },
+            {
+              "value": "ORZ002",
+              "valueName": "UGC"
+            },
+            {
+              "value": "ORZ001",
+              "valueName": "UGC"
+            },
+            {
+              "value": "WAZ001",
+              "valueName": "UGC"
+            },
+            {
+              "value": "WAZ021",
+              "valueName": "UGC"
+            },
+            {
+              "value": "WAZ510",
+              "valueName": "UGC"
+            },
+            {
+              "value": "WAZ514",
+              "valueName": "UGC"
+            },
+            {
+              "value": "WAZ515",
+              "valueName": "UGC"
+            },
+            {
+              "value": "WAZ516",
+              "valueName": "UGC"
+            },
+            {
+              "value": "WAZ517",
+              "valueName": "UGC"
+            },
+            {
+              "value": "BCZ160",
+              "valueName": "UGC"
+            },
+            {
+              "value": "BCZ142",
+              "valueName": "UGC"
+            },
+            {
+              "value": "BCZ141",
+              "valueName": "UGC"
+            },
+            {
+              "value": "BCZ150",
+              "valueName": "UGC"
+            },
+            {
+              "value": "BCZ121",
+              "valueName": "UGC"
+            },
+            {
+              "value": "BCZ220",
+              "valueName": "UGC"
+            },
+            {
+              "value": "BCZ210",
+              "valueName": "UGC"
+            },
+            {
+              "value": "BCZ922",
+              "valueName": "UGC"
+            },
+            {
+              "value": "BCZ912",
+              "valueName": "UGC"
+            },
+            {
+              "value": "BCZ921",
+              "valueName": "UGC"
+            },
+            {
+              "value": "BCZ911",
+              "valueName": "UGC"
+            },
+            {
+              "value": "BCZ110",
+              "valueName": "UGC"
+            },
+            {
+              "value": "BCZ122",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ027",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ028",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ029",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ023",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ024",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ026",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ018",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ019",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ020",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ021",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ022",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ025",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ017",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ131",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ135",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ125",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ121",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ171",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ181",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ185",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ187",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ195",
+              "valueName": "UGC"
+            },
+            {
+              "value": "AKZ191",
+              "valueName": "UGC"
+            }
+          ]
+        }
+      ],
+      "audience": "",
+      "category_list": ["Geo"],
+      "certainty": "Likely",
+      "contact": "",
+      "description": "The tsunami Advisory remains in effect for the coastal areas of California, Oregon, Washington, British Columbia and Alaska from The Cal./Mexico Border  to Attu, Alaska. - Event details: Preliminary magnitude 1.0 (Ml) earthquake / Lat: -20.500, Lon: -175.400 at 2022-01-15T04:26:30 UTC Tsunami advisories mean that a tsunami capable of producing strong currents or waves dangerous to people in or very near the water is expected.  Significant widespread inundation is not expected for areas under an advisory.  Currents may be hazardous to swimmers, boats, and coastal structures and may continue for several hours after the initial wave arrival.",
+      "effective": "2022-01-15T19:30:29-00:00",
+      "event": "Tsunami Advisory",
+      "expires": "2022-01-15T22:00:29-00:00",
+      "headline": "The tsunami Advisory remains in effect for the coastal areas of California, Oregon, Washington, British Columbia and Alaska from The Cal./Mexico Border  to Attu, Alaska.",
+      "instruction": "Actions to protect human life and property willvary within tsunami advisory areas.If you are in a tsunami advisory area:  Move out of the water, off the beach, and away from harbors, marinas, bays, and inlets.  Be alert to and follow instructions from your local emergency officials because they may have more detailed or specific information for your location.  If you feel a strong earthquake or extended ground rolling take immediate protective actions such as moving inland and/or uphill preferably by foot.  Boat operators:    Where time and conditions permit, move your boat out to sea to a depth of at least 180 feet.    If at sea avoid entering shallow water, harbors, marinas, bays, and inlets to avoid floating and submerged debris, and strong currents.  Do not go to the shore to observe the tsunami.  Do not return to the coast until local emergency officials indicate it is safe to do so.Additional Information and Next Update:   The tsunami message will remain in effect until further notice.   Refer to the internet site tsunami.gov for more information.  This message will be updated in 60 minutes or sooner if the situation warrants.",
+      "language": "en-US",
+      "onset": "2022-01-15T19:30:29-00:00",
+      "parameter_list": [
+        {
+          "value": "near the Tonga Islands",
+          "valueName": "EventLocationName"
+        },
+        {
+          "value": 1,
+          "valueName": "EventPreliminaryMagnitude"
+        },
+        {
+          "value": "Ml",
+          "valueName": "EventPreliminaryMagnitudeType"
+        },
+        {
+          "value": "2022-01-15T04:26:30-00:00",
+          "valueName": "EventOriginTime"
+        },
+        {
+          "value": "1 kilometers",
+          "valueName": "EventDepth"
+        },
+        {
+          "value": "-20.500,-175.400 0.000",
+          "valueName": "EventLatLon"
+        },
+        {
+          "value": "/O.CON.PAAQ.TS.Y.0003.000000T0000Z-000000T0000Z/",
+          "valueName": "VTEC"
+        },
+        {
+          "value": "PZZ530-531-CAZ043-040-041-552-087-549-550-039-034-035-529-530-006-505-506-508-509-109-104-103-101-ORZ021-022-002-001-WAZ001-021-510-514>517-BCZ160-142-141-150-121-220-210-922-912-921-911-110-122-AKZ027>029-023-024-026-018>022-025-017-131-135-125-121-171-181-185-187-195-191-152100-",
+          "valueName": "NWSUGC"
+        },
+        {
+          "value": "Tsunami advisories mean that a tsunami capable of producing strong currents or waves dangerous to people in or very near the water is expected.  Significant widespread inundation is not expected for areas under an advisory.  Currents may be hazardous to swimmers, boats, and coastal structures and may continue for several hours after the initial wave arrival.",
+          "valueName": "ProductDefinition"
+        },
+        {
+          "value": "Public Tsunami Warnings, Watches, and Advisories for AK, BC, and US West Coast",
+          "valueName": "WEAK51"
+        },
+        {
+          "value": "WXR",
+          "valueName": "EAS-ORG"
+        }
+      ],
+      "resource_list": [
+        {
+          "mimeType": "image/jpeg",
+          "resourceDesc": "Energy Map",
+          "uri": "http://ntwc.arh.noaa.gov/events/PAAQ/2022/01/15/r5qho6/10/WEAK51/energyr5qho6.jpg"
+        },
+        {
+          "mimeType": "image/jpeg",
+          "resourceDesc": "Tsunami Travel Time Map",
+          "uri": "http://ntwc.arh.noaa.gov/events/PAAQ/2022/01/15/r5qho6/10/WEAK51/ttvur5qho6-10.jpg"
+        },
+        {
+          "mimeType": "application/json",
+          "resourceDesc": "Event Data as a JSON document",
+          "uri": "http://ntwc.arh.noaa.gov/events/PAAQ/2022/01/15/r5qho6/10/WEAK51/PAAQ.json"
+        }
+      ],
+      "responseType_list": ["Prepare"],
+      "senderName": "NWS National Tsunami Warning Center Palmer AK",
+      "severity": "Moderate",
+      "urgency": "Immediate",
+      "web": "http://ntwc.arh.noaa.gov/events/PAAQ/2022/01/15/r5qho6/10/WEAK51/WEAK51.txt"
+    }
+  ],
+  "msgType": "Update",
+  "note": "",
+  "references": "ntwc@noaa.gov,PAAQ-1-r5qho6,2022-01-15T11:00:42-00:00 ntwc@noaa.gov,PAAQ-2-r5qho6,2022-01-15T12:53:18-00:00 ntwc@noaa.gov,PAAQ-3-r5qho6,2022-01-15T13:27:49-00:00 ntwc@noaa.gov,PAAQ-4-r5qho6,2022-01-15T14:09:28-00:00 ntwc@noaa.gov,PAAQ-5-r5qho6,2022-01-15T14:32:45-00:00 ntwc@noaa.gov,PAAQ-6-r5qho6,2022-01-15T15:28:24-00:00 ntwc@noaa.gov,PAAQ-7-r5qho6,2022-01-15T16:28:40-00:00 ntwc@noaa.gov,PAAQ-8-r5qho6,2022-01-15T17:32:38-00:00 ntwc@noaa.gov,PAAQ-9-r5qho6,2022-01-15T18:27:37-00:00",
+  "restriction": "",
+  "scope": "Public",
+  "sender": "ntwc@noaa.gov",
+  "sent": "2022-01-15T19:30:29-00:00",
+  "source": "NTWC",
+  "status": "Actual",
+  "url": "https://tsunami.gov/events/PAAQ/2022/01/15/r5qho6/10/WEAK51/PAAQCAP.xml"
+}
