@@ -10,7 +10,7 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@emotion/react": "^11.10.4",
-    "@emotion/styled": "^11.10.4",
+    "@emotion/styled": "^11.10.5",
     "@mui/icons-material": "^5.10.9",
     "@mui/material": "^5.10.11",
     "dot-env": "^0.0.1",
