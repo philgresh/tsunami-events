@@ -9,7 +9,7 @@ describe('SMSToS', () => {
 
   it('renders paragraphs', async () => {
     render(<SMSToS />);
-    await screen.findByText(/1. /g);
-    await screen.findByText(/2. /g);
+    await screen.findByText(/1. /);
+    await screen.findByText(/2. /);
   });
 });
