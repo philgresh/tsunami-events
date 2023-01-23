@@ -12,7 +12,7 @@
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@mui/icons-material": "^5.11.0",
-    "@mui/material": "^5.11.4",
+    "@mui/material": "^5.11.5",
     "cap-ts": "git+https://github.com/philgresh/cap-ts#bc599f9",
     "dot-env": "^0.0.1",
     "firebase": "^9.15.0",
