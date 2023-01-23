@@ -22,7 +22,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "axios": "^1.2.2",
+    "axios": "^1.2.3",
     "body-parser": "^1.20.1",
     "cap-ts": "git+https://github.com/philgresh/cap-ts#bc599f9",
     "cors": "^2.8.5",
