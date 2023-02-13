@@ -62,7 +62,7 @@
     "jest-mock-axios": "^4.6.2",
     "jsonwebtoken": "^9.0.0",
     "mocha": "^10.2.0",
-    "prettier": "^2.8.3",
+    "prettier": "^2.8.4",
     "sinon": "^15.0.1",
     "ts-jest": "^29.0.5",
     "ts-node": "^10.9.1",
