@@ -33,7 +33,7 @@
     "firebase-functions": "^4.1.1",
     "lodash": "^4.17.21",
     "luxon": "^3.2.1",
-    "tslib": "^2.4.1",
+    "tslib": "^2.5.0",
     "twilio": "^3.84.1",
     "uuid": "^9.0.0"
   },
