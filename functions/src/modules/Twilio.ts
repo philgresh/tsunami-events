@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import twilio from 'twilio';
 import { retryOperation } from '../utils';
-import type { Twilio, ClientOpts } from 'twilio';
+import type { Twilio } from 'twilio';
 import type { VerificationInstance } from 'twilio/lib/rest/verify/v2/service/verification';
 import type { VerificationCheckInstance } from 'twilio/lib/rest/verify/v2/service/verificationCheck';
 import type { MessageInstance, MessageListInstanceCreateOptions } from 'twilio/lib/rest/api/v2010/account/message';
@@ -26,7 +26,7 @@ export type SendCodeAttempt = {
 export class TwilioClient {
   client: Twilio;
   constructor() {
-    const options: ClientOpts = {};
+    const options: twilio.Twilio.TwilioClientOptions = {};
     if (TWILIO_LOG_LEVEL) options.logLevel = TWILIO_LOG_LEVEL;
     if (!TWILIO_SID) functions.logger.error('Unable to initialize Twilio client: No SID');
     if (!TWILIO_AUTH_TOKEN) functions.logger.error('Unable to initialize Twilio client: No auth token');
