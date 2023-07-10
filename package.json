@@ -32,7 +32,7 @@
     "@mui/material": "^5.11.7",
     "cap-ts": "git+https://github.com/philgresh/cap-ts#bc599f9",
     "dot-env": "^0.0.1",
-    "firebase": "^9.17.1",
+    "firebase": "^10.0.0",
     "firebaseui": "^6.0.2",
     "libphonenumber-js": "^1.10.19",
     "lodash": "^4.17.21",
